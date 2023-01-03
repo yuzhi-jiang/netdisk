@@ -18,6 +18,7 @@
     </parent>
     <modules>
         <module>netdisk-common</module>
+        <module>cloud-hadoop</module>
 
     </modules>
 
@@ -36,18 +37,21 @@
 
 
     <dependencyManagement>
+
+
+
         <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter</artifactId>
-                <version>2.1.5.RELEASE</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-starter</artifactId>-->
+<!--                <version>2.1.5.RELEASE</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>2.1.5.RELEASE</version>
-                <scope>compile</scope>
+<!--                <scope>compile</scope>-->
             </dependency>
 
             <dependency>
@@ -62,6 +66,39 @@
                 <version>${devtools.version}</version>
             </dependency>
 
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.24</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>1.2.8</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.5.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>8.0.30</version>
+            </dependency>
+
+
+<!--            日志门面-->
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.11</version>
+            </dependency>
 
 
         </dependencies>
