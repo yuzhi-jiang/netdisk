@@ -18,7 +18,7 @@
     </parent>
     <modules>
         <module>netdisk-common</module>
-<!--        <module>cloud-hadoop</module>-->
+        <module>cloud-hadoop</module>
 
     </modules>
 

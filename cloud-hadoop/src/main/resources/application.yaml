@@ -1,0 +1,12 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: Hadoop
+
+
+hdfs:
+  properties:
+    hostname: sdf
+    port: 9000
+    username: root
