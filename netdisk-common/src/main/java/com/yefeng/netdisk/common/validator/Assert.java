@@ -1,6 +1,6 @@
-package com.yefeng.validator;
+package com.yefeng.netdisk.common.validator;
 
-import com.yefeng.exception.BizException;
+import com.yefeng.netdisk.common.exception.BizException;
 import org.apache.commons.lang3.StringUtils;
 /**
  * @author 夜枫

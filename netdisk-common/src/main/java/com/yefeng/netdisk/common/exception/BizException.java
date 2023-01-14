@@ -1,4 +1,4 @@
-package com.yefeng.exception;
+package com.yefeng.netdisk.common.exception;
 
 import lombok.Data;
 
@@ -18,7 +18,7 @@ public class BizException extends RuntimeException {
 
     public BizException(String message) {
         super(message);
-        this.msg = msg;
+        this.msg = message;
     }
 
 }

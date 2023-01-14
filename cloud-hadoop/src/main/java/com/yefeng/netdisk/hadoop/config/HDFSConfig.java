@@ -1,4 +1,4 @@
-package com.yefeng.hadoop.config;
+package com.yefeng.netdisk.hadoop.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

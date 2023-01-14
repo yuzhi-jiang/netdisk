@@ -1,2 +1,18 @@
-server:
-  port: 8080
+
+
+
+#jwt: data :这个路径是根据JWTUtil中的
+#@ConfigurationProperties("jwt.data")配置的
+jwt:
+  data:
+    #    jwt加密密钥
+    SECRET: jwt-token-secret
+    #    jwt储存的请求头Authorization固定写法
+    tokenHeader: Authorization
+    #      jwt的过期时间(60s*60min*24h*7day)
+    expiration: 604800
+    #    jwt负载中拿到的头信息
+    tokenHead: Bearer
+logging:
+  level:
+    root: info

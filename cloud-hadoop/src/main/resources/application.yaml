@@ -1,12 +1,22 @@
 server:
   port: 8081
-spring:
-  application:
-    name: Hadoop
-
+  servlet:
+    context-path: /hdfs
 
 hdfs:
-  properties:
-    hostname: sdf
-    port: 9000
-    username: root
+  hdfsPath: hdfs://dockerhadoop:9000
+  hdfsName: root
+
+spring:
+  servlet:
+    multipart:
+      max-request-size: 10240MB
+      max-file-size: 5120MB
+
+  devtools:
+    restart:
+      enabled: true  #设置开启热部署
+      additional-paths: src/main/java #重启目录
+      exclude: WEB-INF/**
+    thymeleaf:
+      cache: false #使用Thymeleaf模板引擎，关闭缓存

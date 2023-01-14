@@ -1,3 +1,5 @@
 /netdisk-common/target/
-*.target/
+**/target/
 /.idea/.cache/
+/netdisk-gateway/target/
+/cloud-hadoop/target/

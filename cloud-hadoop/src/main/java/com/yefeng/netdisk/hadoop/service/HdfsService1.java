@@ -1,6 +1,6 @@
-package com.yefeng.hadoop.service;
+package com.yefeng.netdisk.hadoop.service;
 
-import com.yefeng.hadoop.config.HDFSConfig;
+import com.yefeng.netdisk.hadoop.config.HDFSConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,50 +19,50 @@ import java.util.Map;
 /**
  * @author 夜枫
  */
-public class HDFSService {
+public class HdfsService1 {
 
     private static FileSystem fileSystem;
 
-    private static final String hostName = "hadoop102";
-    private static final String port = "9000";
-    private static final String username = "root";
+    private static final String HOST_NAME = "dockerhadoop";
+    private static final String PORT = "9000";
+    private static final String USERNAME = "root";
 
 
-     static {
-//        HDFSConfig config = new HDFSConfig();
-//        config.setHostname(hostName);
-//        config.setPort(port);
-//        config.setUsername(username);
-//        Configuration configuration = new Configuration();
-//        configuration.set("dfs.client.use.datanode.hostname", "true");
-//        try {
-//            System.out.println("getHdfsUrl(config): " + getHdfsUrl(config));
-//            // 获得FileSystem对象，指定使用root用户上传
-//            fileSystem = FileSystem.get(new URI(getHdfsUrl(config)),  configuration,
-//                    config.getUsername());
-//
-//            System.out.println(fileSystem);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
-
-         Configuration configuration = null;
-         String HADOOP_HOME = "D:\\oneDrive\\毕设\\网盘设计\\hadoop";
+    static {
+        HDFSConfig config = new HDFSConfig();
+        config.setHostname(HOST_NAME);
+        config.setPort(PORT);
+        config.setUsername(USERNAME);
+        Configuration configuration = new Configuration();
+        configuration.set("dfs.client.use.datanode.hostname", "true");
         try {
-            configuration = new Configuration();
-            configuration.set("fs.defaultFS", "hdfs://hadoop102:9000/");
-            configuration.set("dfs.client.use.datanode.hostname", "true");
+//            System.out.println("getHdfsUrl(config): " + getHdfsUrl(config));
+            // 获得FileSystem对象，指定使用root用户上传
+            fileSystem = FileSystem.get(new URI(getHdfsUrl(config)), configuration,
+                    config.getUsername());
 
-            /*System.setProperty("HADOOP_USER_NAME", "hdfs");*/
-            System.setProperty("HADOOP_USER_NAME", "root");
-            System.setProperty("hadoop.home.dir", HADOOP_HOME);
-            configuration.set("dfs.permissions", "false");
-            fileSystem = FileSystem.get(configuration);
-        } catch (IOException e) {
+            System.out.println("fileSystem=");
+            System.out.println(fileSystem);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+//         Configuration configuration = null;
+//         String HADOOP_HOME = "D:\\oneDrive\\毕设\\网盘设计\\hadoop";
+//        try {
+//            configuration = new Configuration();
+//            configuration.set("fs.defaultFS", "hdfs://hadoop102:9000/");
+//            configuration.set("dfs.client.use.datanode.hostname", "true");
+//
+//            /*System.setProperty("HADOOP_USER_NAME", "hdfs");*/
+//            System.setProperty("HADOOP_USER_NAME", "root");
+//            System.setProperty("hadoop.home.dir", HADOOP_HOME);
+//            configuration.set("dfs.permissions", "false");
+//            fileSystem = FileSystem.get(configuration);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -150,6 +151,24 @@ public class HDFSService {
     }
 
     /**
+     * 文件下载，返回数据流
+     *
+     * @param source 目标文件
+     * @return InputStream
+     */
+    public static InputStream download(String source) {
+        try {
+            // 调用open方法进行下载，参数HDFS路径
+            InputStream in = fileSystem.open(new Path(source));
+            // 创建输出流，参数指定文件输出地址
+            return in;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * 删除文件
      *
      * @param target
@@ -163,6 +182,7 @@ public class HDFSService {
         try {
             // 调用delete方法，删除指定的文件。参数:false:表示是否递归删除
             flag = fileSystem.delete(new Path(target), false);
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -207,8 +227,28 @@ public class HDFSService {
         builder.append("hdfs://").append(config.getHostname()).append(":").append(config.getPort());
         return builder.toString();
     }
+
     public static void listFile1() throws Exception {
         try {
+            FileStatus[] fileStatuses = fileSystem.listStatus(new Path("/yefeng"));
+
+
+//            FSDataInputStream  inputStream = fileSystem.open(new Path(""));
+
+
+
+
+
+            for (FileStatus fileStatus : fileStatuses) {
+                //判断当前迭代对象是否是目录
+                boolean isDir = fileStatus.isDirectory();
+                //获取当前文件的绝对路径
+                String fullPath = fileStatus.getPath().toString();
+                System.out.println("isDir:" + isDir + ",Path:" + fullPath);
+            }
+
+            System.out.println("--------------------------------");
+
             //获取所有的文件或者文件夹; 指定遍历的路径，指定是否要递归遍历
             RemoteIterator<LocatedFileStatus> locatedFileStatusRemoteIterator = fileSystem.listFiles(new Path("/"), true);
             while (locatedFileStatusRemoteIterator.hasNext()) {
@@ -218,14 +258,25 @@ public class HDFSService {
                 System.out.println(fileStatus.getPath());
                 System.out.println(fileStatus.getPath().getName());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
+    public static void getFileInfo(String path) {
+        try {
+
+            FileStatus fs = fileSystem.getFileStatus(new Path(path));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public static void main(String[] args) {
-        Logger logger = LoggerFactory.getLogger(HDFSService.class);
+        Logger logger = LoggerFactory.getLogger(HdfsService1.class);
         try {
             logger.info("info");
             logger.warn("warn");
@@ -233,10 +284,18 @@ public class HDFSService {
             logger.error("error");
 //            List<Map<String, Object>> list = readPathInfo("/");
 //            list.forEach(System.out::println);
-//            listFile1();
-//            upload("F:\\Projects\\IDEAproject\\netdisk\\cloud-hadoop\\src\\main\\resources\\logback-test.xml","wcinput/logback1.xml");
-//            delete("yefeng/logback-test.xml");
-//            download("wcinput/logback1.xml","./logback1.xml");
+            listFile1();
+//            Long start = System.currentTimeMillis();
+//            upload("E:\\Videos\\爬虫\\day1\\20220920_200037.mp4","/yefeng/c.mp4");
+//            Long end = System.currentTimeMillis();
+//            System.out.println("总共耗时间："+(end-start)+" ms");
+//            delete("/yefeng,/yefeng/file");
+
+
+//            download("/yefeng/钢化玻璃膜-贴膜教程.mp4","./钢化玻璃膜-贴膜教程.mp4");
+
+//            getFileInfo("/yefeng/d.mp4");
+
         } catch (Exception e) {
 //            e.printStackTrace();
             throw new RuntimeException(e);

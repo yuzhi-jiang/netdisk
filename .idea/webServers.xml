@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="0669f997-88c3-4bac-ae21-be5dd689601c" name="nas">
+        <fileTransfer rootFolder="/homes/yefeng/netdisk" accessType="SFTP" host="192.168.10.14" port="22" sshConfigId="f34fa437-ecb3-4e4c-9d2c-56a0aa95d3d1" sshConfig="yefeng@192.168.10.14:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
