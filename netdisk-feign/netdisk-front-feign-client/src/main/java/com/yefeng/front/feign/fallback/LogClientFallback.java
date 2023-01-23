@@ -1,7 +1,8 @@
 package com.yefeng.front.feign.fallback;
 
 import com.yefeng.front.feign.client.LogClient;
-import org.springframework.cloud.openfeign.FallbackFactory;
+import feign.hystrix.FallbackFactory;
+
 
 /**
  * This class is for

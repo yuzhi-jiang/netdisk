@@ -11,12 +11,11 @@
         <module name="netdisk-front" />
         <module name="netdisk-hdfs-feign-client" />
         <module name="cloud-hadoop" />
+        <module name="netdisk-front-feign-client" />
         <module name="netdisk-common" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="11">
-      <module name="netdisk-front-feign-client" target="11" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="11" />
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
