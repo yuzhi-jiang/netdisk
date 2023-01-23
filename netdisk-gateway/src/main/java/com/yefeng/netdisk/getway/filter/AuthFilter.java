@@ -2,6 +2,7 @@ package com.yefeng.netdisk.getway.filter;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yefeng.netdisk.common.exception.BizException;
+import com.yefeng.netdisk.common.exception.TokenException;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.IPUtils;
 import com.yefeng.netdisk.common.util.JWTUtil;
@@ -12,6 +13,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -23,16 +25,18 @@ import javax.annotation.Resource;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * This class is for
- *  全局过滤器
+ * 全局过滤器
+ *
  * @author 夜枫
  * @version 2023-01-12 22:22
  */
 @Component
 @Slf4j
-public class AuthFilter implements GlobalFilter, Ordered  {
+public class AuthFilter implements GlobalFilter, Ordered {
 
     @Resource
     private WhitelistConfig whiteList;
@@ -42,7 +46,7 @@ public class AuthFilter implements GlobalFilter, Ordered  {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         Set<String> whiteListSet = whiteList.getWhiteList();
 
-        log.info("whiteListSet:{}",whiteListSet.toArray());
+        log.info("whiteListSet:{}", whiteListSet.toArray());
 
         ServerHttpRequest request = exchange.getRequest();
 
@@ -56,28 +60,54 @@ public class AuthFilter implements GlobalFilter, Ordered  {
         URI uri = exchange.getRequest().getURI();
 
 
-
-        log.info("the request ip:[{}] the URL is: [{}] ",ipAddr,uri);
+        log.info("the request ip:[{}] the URL is: [{}] ", ipAddr, uri);
 
         //the path is included in the whiteList
-        if(whiteListSet.contains(path)) {
-           return chain.filter(exchange);
+        if (whiteListSet.contains(path)) {
+            return chain.filter(exchange);
         }
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
-
+        log.info("token is  {}", token);
 
         try {
 
-            Assert.isBlank(token,"需要先登录");
+            Assert.isBlank(token, "需要先登录");
             JWTUtil.validateToken(token);
-        }catch (BizException ex){
+
+
+            Object subject = JWTUtil.getSubjectFromToken(token);
+            Object[] payload = JWTUtil.getPayloadFromToken(token, "username");
+
+
+            log.info("subject is {}", subject);
+
+//
+//            exchange.getAttributes().put("subject", subject);
+//            if (payload != null && payload.length > 0) {
+//                log.info("payload is {}", payload[0]);
+//                exchange.getAttributes().put("username", payload[0]);
+//            }
+            // 追加请求头用户信息
+            Consumer<HttpHeaders> httpHeaders = httpHeader -> {
+                httpHeader.set("subject", (String) subject);
+                if (payload != null && payload.length > 0) {
+
+                    httpHeader.set("username", (String) payload[0]);
+                }else{
+                    httpHeader.set("username", "内网用户");
+                }
+            };
+            ServerHttpRequest serverHttpRequest = exchange.getRequest()
+                    .mutate()
+                    .headers(httpHeaders)
+                    .build();
+            exchange.mutate().request(serverHttpRequest).build();
+
+        } catch (BizException |TokenException ex) {
             log.warn(ex.getMessage());
             return response401(exchange.getResponse(), ResultUtil.custom(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
 
         }
-
-        log.info("token is  {}",token);
-
 
 
 
@@ -91,7 +121,7 @@ public class AuthFilter implements GlobalFilter, Ordered  {
         return 0;
     }
 
-    private Mono<Void> response401(ServerHttpResponse response,Object jsonObject){
+    private Mono<Void> response401(ServerHttpResponse response, Object jsonObject) {
 
         byte[] bits = JSONObject.toJSONString(jsonObject).getBytes(StandardCharsets.UTF_8);
         DataBuffer buffer = response.bufferFactory().wrap(bits);
@@ -100,7 +130,6 @@ public class AuthFilter implements GlobalFilter, Ordered  {
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         return response.writeWith(Mono.just(buffer));
     }
-
 
 
 }

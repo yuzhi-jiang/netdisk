@@ -1,14 +1,11 @@
 package com.yefeng.netdisk.common.util;
 
 
-
 import com.yefeng.netdisk.common.exception.TokenException;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 夜枫
@@ -19,7 +16,8 @@ public class JWTUtil {
     /**
      * 创建对象主体
      */
-    private static final String CLAIM_KEY_USERNAME = "subject";
+//    private static final String CLAIM_KEY_USERNAME = "subject";
+    private static final String CLAIM_KEY_USERNAME = "sub";
     /**
      * 创建创建时间
      */
@@ -28,11 +26,11 @@ public class JWTUtil {
     /**
      * 创建加密盐
      */
-    private static final String SECRET="sadfkjljksdafjin123,kdf";
+    private static final String SECRET = "sadfkjljksdafjin123,kdf";
     /**
      * 过期时间
      */
-    private static final Long EXPIRE_TIME =60*60*24*7L;//单位秒  7天
+    private static final Long EXPIRE_TIME = 60 * 60 * 24 * 7L;//单位秒  7天
 
 
     /**
@@ -78,6 +76,26 @@ public class JWTUtil {
         return subject;
     }
 
+    public static Object[] getPayloadFromToken(String token, String... payloadKeys) {
+        Object[] payloads = null;
+        try {
+
+            Claims claims = getClaimsFromToken(token);
+            List<String> keys = Arrays.asList(payloadKeys);
+            payloads = new Object[keys.size()];
+            int i = 0;
+            for (String key : payloadKeys) {
+                Object payload = claims.get(key);
+                payloads[i++] =payload;
+            }
+
+        } catch (Exception e) {
+            payloads = null;
+            log.info("error:{}", "payload未能获取 from token");
+        }
+        return payloads;
+    }
+
     /**
      * 从token中获取荷载
      */
@@ -90,11 +108,10 @@ public class JWTUtil {
 //                    .parseClaimsJws(token)
 //                    .getBody();
 
-             claims = Jwts.parser()
+            claims = Jwts.parser()
                     .setSigningKey(SECRET)
                     .parseClaimsJws(token)
                     .getBody();
-
         } catch (ExpiredJwtException e) {
             e.printStackTrace();
         } catch (UnsupportedJwtException e) {
@@ -109,6 +126,7 @@ public class JWTUtil {
 
     /**
      * 验证token有效
+     *
      * @param token
      * @return
      */
@@ -128,7 +146,7 @@ public class JWTUtil {
                 log.debug("token:{} is invalid", token);
             }
             throw new TokenException("本系统不支持该JWT，请勿篡改token");
-        } catch (MalformedJwtException |SignatureException |IllegalArgumentException e) {
+        } catch (MalformedJwtException | SignatureException | IllegalArgumentException e) {
             if (log.isDebugEnabled()) {
                 log.debug("token:{} is invalid", token);
             }
@@ -152,6 +170,7 @@ public class JWTUtil {
 //        String token = builder.sign(Algorithm.HMAC256(SECRET));
 
         return Jwts.builder()
+
                 .setClaims(claims)
                 .setExpiration(expirationDate())
                 .signWith(SignatureAlgorithm.HS256, SECRET)
@@ -205,18 +224,23 @@ public class JWTUtil {
 
 
     public static void main(String[] args) throws InterruptedException {
-        String token = createToken(1234324);
+//        Map<String, Object> map = new HashMap<String, Object>() {
+//            private static final long serialVersionUID = 1L;
+//            {
+//                put("uid", Integer.parseInt("123"));
+//                put("expire_time", System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 15);
+//            }
+//        };
+        String token = createToken(1234324,new HashMap<>(1){
+            {
+                put("username","yefeng");
+            }
+        });
         System.out.println(token);
         System.out.println(getExpiredDateFeomToken(token));
 
         Claims claims = getClaimsFromToken(token);
         System.out.println(claims);
-
-
-        token="eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzM2ODU2NDAsInN1YmplY3QiOjEyMzQzMjQsImNyZWF0ZWQiOjE2NzM2ODUxNDA0MDR9.H4OdsrCQyb8PVOZKVttPDcbpUSBBG-OU-DFe4KdNs8A";
-
-//        Thread.sleep(6000);
-        validateToken(token);
 
     }
 }

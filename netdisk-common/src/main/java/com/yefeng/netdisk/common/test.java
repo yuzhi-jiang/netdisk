@@ -1,9 +1,6 @@
 package com.yefeng.netdisk.common;
 
-import cn.hutool.core.io.FileUtil;
-
-import java.util.ArrayList;
-import java.util.List;
+import cn.hutool.crypto.digest.BCrypt;
 
 /**
  * This class is for
@@ -12,19 +9,17 @@ import java.util.List;
  * @version 2023-01-07 17:43
  */
 public class test {
+    static String gensalt="$2a$10$wOx7KHziMDOlrEYhdbT0MO";
     public static void main(String[] args) {
-        String filename="aa.html";
-        List<String> list= new ArrayList<String>();
-        list.add("aa.txt");
-        list.add("aa.html");
-        list.add("aa.mp4");
-        list.add("aa.mp3");
-        list.add("aa.jpg");
-        list.add("aa.png");
 
-        list.forEach(it-> System.out.println(
-                FileUtil.getMimeType(it)
-        ));
+        String password="jiangshao";
+
+
+
+        String hashpw = BCrypt.hashpw(password, gensalt);
+        System.out.println(hashpw);
+
+        System.out.println("密码匹配吗："+(BCrypt.checkpw(password, hashpw)==true?"匹配":"不匹配"));
 
 
     }

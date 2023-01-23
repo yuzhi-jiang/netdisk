@@ -1,7 +1,5 @@
 package com.yefeng.netdisk.common.result;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
@@ -39,6 +37,17 @@ public class ApiResult<T>  implements Serializable {
         this.code=HttpCodeEnum.OK.getCode();
         this.msg=HttpCodeEnum.OK.getMessage();
     }
+    public ApiResult(HttpCodeEnum codeEnum,T data) {
+        this.code=codeEnum.getCode();
+        this.msg=codeEnum.getMessage();
+        this.data = data;
+    }
+    public ApiResult(HttpCodeEnum codeEnum) {
+        this.code=codeEnum.getCode();
+        this.msg=codeEnum.getMessage();
+
+    }
+
 
     /**
      * 得到json字符串
@@ -59,14 +68,14 @@ public class ApiResult<T>  implements Serializable {
         res += "}";
         return res;
     }
-    public JSONObject toJsonObject() {
-        JSONObject jsonObject = JSONUtil.parseObj(getJsonString());
-
-        return jsonObject;
-    }
-
+//    public JSONObject toJsonObject() {
+//        JSONObject jsonObject = JSONUtil.parseObj(getJsonString());
+//
+//        return jsonObject;
+//    }
     @Override
     public String toString() {
+
         return getJsonString();
     }
     /**

@@ -132,7 +132,7 @@ public class HdfsController {
             }
             int n = 0;
             long readLength = 0;
-            int bsize = 1024*512;//51k
+            int bsize = 1024 * 512;//51k
             byte[] bytes = new byte[bsize];
             if (rangeSwitch == 2) {
                 // 针对 bytes=27000-39000 的请求，从27000开始写数据
@@ -259,17 +259,18 @@ public class HdfsController {
 
 
     @ApiOperation("create file")
-    @PostMapping(value = "/file", consumes = "multipart/form-data")
+    @PostMapping(value = "/file")
     public ApiResult createFile(
             @ApiParam(name = "path", required = true)
-            @RequestParam(name = "path", required = true)
+            @RequestParam(name = "path")
             String path,
 
             @ApiParam(name = "file", required = true)
-            @RequestParam(name = "file", required = true)
+            @RequestPart("file")
             MultipartFile file
     ) {
         boolean flag = hdfsService.createFile(path, file);
+        log.info("createFile flag is {}", flag);
         return ResultUtil.success(flag);
     }
 

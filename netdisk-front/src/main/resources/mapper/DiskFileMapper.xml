@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yefeng.netdisk.front.mapper.DiskFileMapper">
+
+
+    <sql id="selectFileBo">
+        select df.id,
+               df.disk_id,
+               df.file_id,
+               df.file_name,
+               df.parent_file_id,
+               bf.length,
+
+               bf.hash,
+               bf.type,
+               bf.is_valid
+        from tb_disk_file as df
+        join tb_file as bf
+        on bf.id = df.file_id
+    </sql>
+
+    <select id="getFileList" resultType="com.yefeng.netdisk.front.bo.FileBo"
+    >
+        <include refid="selectFileBo"/>
+        where df.disk_id = #{diskId}
+        and df.parent_file_id = #{parentFileId}
+    </select>
+</mapper>

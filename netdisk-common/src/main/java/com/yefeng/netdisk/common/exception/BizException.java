@@ -1,24 +1,51 @@
 package com.yefeng.netdisk.common.exception;
 
-import lombok.Data;
-
 /**
- * This class is for 自定义异常 业务异常
- *
  * @author 夜枫
- * @version 2023-01-01 13:17
  */
-@Data
-
 public class BizException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private String msg;
     private int code = 500;
 
-    public BizException(String message) {
-        super(message);
-        this.msg = message;
+    public BizException(String msg) {
+        super(msg);
+        this.msg = msg;
     }
+
+    public BizException(String msg, Throwable e) {
+        super(msg, e);
+        this.msg = msg;
+    }
+
+    public BizException(String msg, int code) {
+        super(msg);
+        this.msg = msg;
+        this.code = code;
+    }
+
+    public BizException(String msg, int code, Throwable e) {
+        super(msg, e);
+        this.msg = msg;
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
 
 }

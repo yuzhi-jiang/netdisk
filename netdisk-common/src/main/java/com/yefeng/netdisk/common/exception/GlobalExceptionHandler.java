@@ -2,20 +2,17 @@ package com.yefeng.netdisk.common.exception;
 
 
 import com.yefeng.netdisk.common.result.ApiResult;
+import com.yefeng.netdisk.common.result.HttpCodeEnum;
 import com.yefeng.netdisk.common.result.ResultUtil;
-import com.yefeng.netdisk.common.util.IPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,26 +22,58 @@ import java.util.Objects;
  * @author wangjiao
  * @since 2020/11/14
  */
-@ControllerAdvice
-@RestController
+@RestControllerAdvice
+//@RestController
 @Slf4j
 public class GlobalExceptionHandler {
+
+
+
     /**
      * 默认的异常处理
      *
      * @param exception exception
      * @return res
      */
-    @ExceptionHandler(value = {Exception.class, ArithmeticException.class,NoClassDefFoundError.class})
+    @ExceptionHandler(value = {Exception.class, ArithmeticException.class, NoClassDefFoundError.class})
     @ResponseStatus(HttpStatus.OK)
     public ApiResult exceptionHandler(Exception exception) {
 
-        log.error("exceptionHandler:exceptionName->{} | [exception:{}]", exception.getClass().getName(), exception.getMessage());
+        log.error("GlobalExceptionHandler:exceptionName->{} | [exception:{}]", exception.getClass().getName(), exception.getMessage());
         if (Objects.nonNull(exception.getMessage())) {
             return ResultUtil.error(exception.getMessage());
         }
         return ResultUtil.error("业务发生了错误，请稍后再试吧!");
     }
+
+    @ExceptionHandler(value = {BizException.class})
+//    @ResponseStatus(HttpStatus.OK)
+    public ApiResult bizExceptionHandler(BizException ex) {
+        log.error("GlobalExceptionHandler:exceptionName->{} | [exception:{}]", ex.getClass().getName(), ex.getMessage());
+
+//        log.info("ip:{},path:{},msg:{}", IPUtils.getIpAddr((HttpServletRequest) request),request.getPath(),ex.getMessage());
+        return new ApiResult(HttpCodeEnum.FAIL.getCode(),ex.getMessage());
+    }
+
+
+    @ExceptionHandler(value = {CheckFailException.class})
+//    @ResponseStatus(HttpStatus.OK)
+    public ApiResult bizExceptionHandler(CheckFailException ex) {
+        log.error("GlobalExceptionHandler:exceptionName->{} | [exception:{}]", ex.getClass().getName(), ex.getMessage());
+
+//        log.info("ip:{},path:{},msg:{}", IPUtils.getIpAddr((HttpServletRequest) request),request.getPath(),ex.getMessage());
+        return new ApiResult(HttpCodeEnum.UNPROCESABLE_ENTITY.getCode(),HttpCodeEnum.UNPROCESABLE_ENTITY+":"+ex.getMessage());
+    }
+    @ExceptionHandler(value = {TokenException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public ApiResult tokenExceptionHandler(TokenException ex) {
+        log.error("GlobalExceptionHandler:exceptionName->{} | [exception:{}]", ex.getClass().getName(), ex.getMessage());
+
+//        log.info("ip:{},path:{},msg:{}", IPUtils.getIpAddr((HttpServletRequest) request), request.getPath(), ex.getMessage());
+        return new ApiResult(HttpCodeEnum.TOKEN_ERR.getCode(), ex.getMessage());
+    }
+
+
 
     /**
      * 非法参数验证异常
@@ -56,6 +85,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(value = HttpStatus.OK)
     public ApiResult handleMethodArgumentNotValidExceptionHandler(
             MethodArgumentNotValidException ex) {
+        log.error("GlobalExceptionHandler:exceptionName->{} | [exception:{}]", ex.getClass().getName(), ex.getMessage());
+
         BindingResult bindingResult = ex.getBindingResult();
         List<String> list = new ArrayList<>();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -68,19 +99,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler({TokenException.class })
-    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-    public ApiResult tokenExceptionHandler(ServerHttpRequest request, TokenException ex){
-        log.info("ip:{},path:{},msg:{}", IPUtils.getIpAddr((HttpServletRequest) request),request.getPath(),ex.getMessage());
-        return ResultUtil.error(ex.getMessage());
-    }
-
-    @ExceptionHandler(BizException.class)
-    @ResponseStatus(value = HttpStatus.OK)
-    public ApiResult bizExceptionHandler(ServerHttpRequest request, BizException ex){
-        log.info("ip:{},path:{},msg:{}", IPUtils.getIpAddr((HttpServletRequest) request),request.getPath(),ex.getMessage());
-        return ResultUtil.error(ex.getMessage());
-    }
 //
 //  /**
 //   * HTTP解析请求参数异常

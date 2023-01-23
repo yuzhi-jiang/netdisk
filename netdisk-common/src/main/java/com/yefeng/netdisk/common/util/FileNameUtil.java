@@ -1,6 +1,7 @@
 package com.yefeng.netdisk.common.util;
 
 import cn.hutool.core.io.FileUtil;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * This class is for
@@ -18,7 +19,18 @@ public class FileNameUtil {
         String name1 = getFileNameByPath(name);
         System.out.println("name: " + name);
         System.out.println("name1: " + name1);
-
     }
 
+    public static String getFileNameByPath(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+//        String fileName1 = file.getResource().getFilename();
+
+
+        String name = FileNameUtil.getFileNameByPath(fileName);
+        return name;
+    }
+    public static String getMimeType(MultipartFile file){
+        String name = getFileNameByPath(file);
+        return FileUtil.getMimeType(name);
+    }
 }

@@ -132,9 +132,11 @@ public class HDFSServiceImpl implements HDFSService {
             InputStream in=file.getInputStream();
             IOUtils.copyBytes(in, outputStream, 4096, true);
 
+            log.info("上传文件{}成功",name);
 //            outputStream.write(file.getBytes());
             target = true;
         } catch (IOException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         } finally {
             if (null != outputStream) {

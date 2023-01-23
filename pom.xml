@@ -20,6 +20,10 @@
         <module>netdisk-common</module>
         <module>cloud-hadoop</module>
         <module>netdisk-gateway</module>
+        <module>netdisk-front</module>
+        <module>netdisk-feign</module>
+<!--        <module>netdisk-feign/netdisk-front-feign-client</module>-->
+<!--        <module>netdisk-feign/netdisk-hdfs-feign-client</module>-->
 
     </modules>
 
@@ -39,11 +43,30 @@
 
 
         <dependencies>
+            <dependency>
+
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+
+                <version>2.1.5.RELEASE</version>
+            </dependency>
+
             <!--            <dependency>-->
             <!--                <groupId>org.springframework.boot</groupId>-->
             <!--                <artifactId>spring-boot-starter</artifactId>-->
             <!--                <version>2.1.5.RELEASE</version>-->
             <!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.cloud</groupId>-->
+<!--                <artifactId>spring-cloud-starter-openfeign</artifactId>-->
+<!--            </dependency>-->
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>2.1.5.RELEASE</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>

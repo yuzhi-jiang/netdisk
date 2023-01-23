@@ -14,6 +14,7 @@
           <mappings>
             <mapping deploy="/homes/yefeng/netdisk" local="$PROJECT_DIR$/cloud-hadoop" web="/hadoop" />
             <mapping deploy="/homes/yefeng/netdisk" local="$PROJECT_DIR$/netdisk-gateway" web="/gateway" />
+            <mapping deploy="/homes/yefeng/netdisk" local="$PROJECT_DIR$/netdisk-front/target" web="/front" />
           </mappings>
         </serverdata>
       </paths>
