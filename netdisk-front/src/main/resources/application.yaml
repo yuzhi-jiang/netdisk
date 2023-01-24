@@ -13,11 +13,13 @@ spring:
       max-request-size: 10240MB
       max-file-size: 5120MB
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
     #    url: jdbc:mysql://localhost:3306/netdisk?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
-    url: jdbc:mysql://127.0.0.1:3306/netdisk?serverTimezone=UTC
+#    url: jdbc:mysql://127.0.0.1:3306/netdisk?serverTimezone=UTC
+    url: jdbc:mysql://146.56.116.51:3306/netdisk?serverTimezone=UTC
     username: root
-    password: xxxx
+    password: xxxxxx
     # 指定类型为我们自己的
     type: com.alibaba.druid.pool.DruidDataSource
 

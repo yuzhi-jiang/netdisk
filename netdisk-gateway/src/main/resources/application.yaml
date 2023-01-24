@@ -15,8 +15,8 @@ spring:
             #以下是断言条件，必选全部符合条件
             - Path=/hdfs/**   #/dept/list/**               #断言，路径匹配 注意：Path 中 P 为大写
             - Method=GET,POST,PUT,DELETE #只能时 GET 请求时，才能访问
-        - id: netdisk-cloud-account
-          uri: lb://netdisk-cloud-account
+        - id: netdisk-cloud-front
+          uri: lb://netdisk-cloud-front
           predicates:
             - Path=/front
             - Method=GET,POST,PUT,DELETE
@@ -27,3 +27,8 @@ logging:
   path: hgatewayLogs
   level:
     root: info
+system:
+  whitelist:
+    - /hdfs/api/v1/hdfs/file
+    - /hdfs/api/v1/hdfs/file/list
+    - /front/*

@@ -6,6 +6,7 @@ import com.yefeng.netdisk.common.exception.TokenException;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.IPUtils;
 import com.yefeng.netdisk.common.util.JWTUtil;
+import com.yefeng.netdisk.common.util.PathUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.getway.config.WhitelistConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ import reactor.core.publisher.Mono;
 import javax.annotation.Resource;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -39,14 +40,14 @@ import java.util.function.Consumer;
 public class AuthFilter implements GlobalFilter, Ordered {
 
     @Resource
-    private WhitelistConfig whiteList;
+    private WhitelistConfig whitelistconfig;
 
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        Set<String> whiteListSet = whiteList.getWhiteList();
+        List<String> whiteList = whitelistconfig.getWhitelist();
 
-        log.info("whiteListSet:{}", whiteListSet.toArray());
+        log.info("whiteList:{}", whiteList);
 
         ServerHttpRequest request = exchange.getRequest();
 
@@ -63,9 +64,19 @@ public class AuthFilter implements GlobalFilter, Ordered {
         log.info("the request ip:[{}] the URL is: [{}] ", ipAddr, uri);
 
         //the path is included in the whiteList
-        if (whiteListSet.contains(path)) {
+        boolean flag = whiteList.stream().anyMatch(pattern -> {
+            return PathUtil.wildcardMatch(pattern, path);
+        });
+        if (flag) {
+            log.info("the request ip:[{}] the URL is: [{}] is in the whiteList ", ipAddr, uri);
             return chain.filter(exchange);
         }
+
+        if (whiteList.contains(path)) {
+            return chain.filter(exchange);
+        }
+
+
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
         log.info("token is  {}", token);
 

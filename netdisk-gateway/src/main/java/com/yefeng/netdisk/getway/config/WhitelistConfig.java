@@ -1,12 +1,12 @@
 package com.yefeng.netdisk.getway.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * This class is for
@@ -17,36 +17,49 @@ import java.util.Set;
 
 @Component
 @RefreshScope
+@ConfigurationProperties(prefix = "system")
 public class WhitelistConfig {
 
 
-    @Value("${system.whitelist}")
+//    @Value("${system.whitelist}")
+//
+//    String whiteListStr;
 
-    String whiteListStr;
 
+    String[] whitelist;
 
-
-    public String getWhiteListStr() {
-        return whiteListStr;
+    public void setWhitelist(String[] whitelist) {
+        this.whitelist = whitelist;
     }
 
-    public void setWhiteListStr(String whiteListStr) {
-        this.whiteListStr = whiteListStr;
+    public List<String> getWhitelist() {
+        HashSet<String> hashSet = new HashSet<>(List.of(whitelist));
+        return new ArrayList<>(hashSet);
     }
 
-    public Set<String> getWhiteList() {
-        String whitelists = this.whiteListStr;
-        if (StringUtils.isEmpty(whitelists)) {
-            return new HashSet<>();
-        }
-        Set<String> whiteList = new HashSet<>();
-        String[] whiteArray = whitelists.split(",");
-        for (int i = 0; i < whiteArray.length; i++) {
-            String str = whiteArray[i];
-            whiteList.add(whiteArray[i]);
-        }
-        return whiteList;
-    }
+
+
+//    public String getWhiteListStr() {
+//        return whiteListStr;
+//    }
+//
+//    public void setWhiteListStr(String whiteListStr) {
+//        this.whiteListStr = whiteListStr;
+//    }
+//
+//    public Set<String> getWhiteList() {
+//        String whitelists = this.whiteListStr;
+//        if (StringUtils.isEmpty(whitelists)) {
+//            return new HashSet<>();
+//        }
+//        Set<String> whiteList = new HashSet<>();
+//        String[] whiteArray = whitelists.split(",");
+//        for (int i = 0; i < whiteArray.length; i++) {
+//            String str = whiteArray[i];
+//            whiteList.add(whiteArray[i]);
+//        }
+//        return whiteList;
+//    }
 
 
 }

@@ -7,12 +7,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="netdisk-front-feign-client" />
         <module name="netdisk-gateway" />
         <module name="netdisk-front" />
         <module name="netdisk-hdfs-feign-client" />
-        <module name="cloud-hadoop" />
-        <module name="netdisk-front-feign-client" />
         <module name="netdisk-common" />
+        <module name="cloud-hadoop" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />

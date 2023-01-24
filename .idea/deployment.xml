@@ -12,9 +12,9 @@
       <paths name="192.168.10.14">
         <serverdata>
           <mappings>
-            <mapping deploy="/homes/yefeng/netdisk" local="$PROJECT_DIR$/cloud-hadoop" web="/hadoop" />
-            <mapping deploy="/homes/yefeng/netdisk" local="$PROJECT_DIR$/netdisk-gateway" web="/gateway" />
-            <mapping deploy="/homes/yefeng/netdisk" local="$PROJECT_DIR$/netdisk-front/target" web="/front" />
+            <mapping deploy="/homes/yefeng/netdisk/hadoop" local="$PROJECT_DIR$/cloud-hadoop" web="/hadoop" />
+            <mapping deploy="/homes/yefeng/netdisk/gateway" local="$PROJECT_DIR$/netdisk-gateway" web="/gateway" />
+            <mapping deploy="/homes/yefeng/netdisk/front" local="$PROJECT_DIR$/netdisk-front/target" web="/front" />
           </mappings>
         </serverdata>
       </paths>
