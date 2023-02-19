@@ -20,3 +20,9 @@ spring:
       exclude: WEB-INF/**
     thymeleaf:
       cache: false #使用Thymeleaf模板引擎，关闭缓存
+
+
+mycloud:
+  downloadToken:
+    enable: true #是否需要开启下载token校验
+    position: parameter #默认为header 可以选项 header 和 parameter

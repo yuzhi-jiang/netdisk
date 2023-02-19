@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,10 +18,11 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
+@RefreshScope
 public class RedisAspect {
     private Logger logger = LoggerFactory.getLogger(getClass());
     //是否开启redis缓存  true开启   false关闭
-    @Value("${mycloud.redis.open: false}")
+    @Value("${mycloud.redis.open}")
     private boolean open;
 
     @Around("execution(* com.yefeng.netdisk.front.util.RedisUtil.*(..))")

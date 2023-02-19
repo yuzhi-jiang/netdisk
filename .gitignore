@@ -3,3 +3,6 @@
 /.idea/.cache/
 /netdisk-gateway/target/
 /cloud-hadoop/target/
+*.log
+/hgatewayLogs/
+**/test/**

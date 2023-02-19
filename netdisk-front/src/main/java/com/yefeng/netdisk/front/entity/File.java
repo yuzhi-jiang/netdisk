@@ -26,7 +26,7 @@ public class File implements Serializable {
     private Long id;
 
     @ApiModelProperty("父文件夹id")
-    private Long parentId;
+    private String fileId;
 
     @ApiModelProperty("源文件名")
     private String originalName;
@@ -40,6 +40,17 @@ public class File implements Serializable {
     @ApiModelProperty("文件长度/大小")
     private String length;
 
+    @ApiModelProperty("上传id")
+    private String upload_id;
+
+    public String getUpload_id() {
+        return upload_id;
+    }
+
+    public void setUpload_id(String upload_id) {
+        this.upload_id = upload_id;
+    }
+
     @ApiModelProperty("文件类型  0：目录  1：文件")
     private Byte type;
 
@@ -47,23 +58,24 @@ public class File implements Serializable {
     private String hash;
 
     @ApiModelProperty("是否有效,可用于敏感文件排除")
-    private Byte isValid;
+    private Byte status;
 
     public Long getId() {
         return id;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
 
     public String getOriginalName() {
         return originalName;
@@ -113,26 +125,33 @@ public class File implements Serializable {
         this.hash = hash;
     }
 
-    public Byte getIsValid() {
-        return isValid;
+
+    public void setType(Byte type) {
+        this.type = type;
     }
 
-    public void setIsValid(Byte isValid) {
-        this.isValid = isValid;
+    public Byte getStatus() {
+        return status;
     }
+
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
+
 
     @Override
     public String toString() {
         return "File{" +
-            "id = " + id +
-            ", parentId = " + parentId +
-            ", originalName = " + originalName +
-            ", name = " + name +
-            ", path = " + path +
-            ", length = " + length +
-            ", type = " + type +
-            ", hash = " + hash +
-            ", isValid = " + isValid +
-        "}";
+                "id=" + id +
+                ", fileId='" + fileId + '\'' +
+                ", originalName='" + originalName + '\'' +
+                ", name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", length='" + length + '\'' +
+                ", upload_id='" + upload_id + '\'' +
+                ", type=" + type +
+                ", hash='" + hash + '\'' +
+                ", status=" + status +
+                '}';
     }
 }

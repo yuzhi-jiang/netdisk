@@ -1,11 +1,12 @@
 server:
-  port: 9527
+  port: 8082
+  servlet:
+    context-path: /front
+
 spring:
-  profiles:
-      active: dev
   # 服务逻辑名称
   application:
-    name: netdisk-cloud-gateway
+    name: netdisk-cloud-front
   cloud:
     nacos:
       # 配置中心

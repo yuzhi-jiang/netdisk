@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
+/**
+ * @author 夜枫
+ */
 public class RequestParams extends HashMap {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestParams.class);
@@ -42,4 +45,5 @@ public class RequestParams extends HashMap {
         }
         return object.toString();
     }
+
 }

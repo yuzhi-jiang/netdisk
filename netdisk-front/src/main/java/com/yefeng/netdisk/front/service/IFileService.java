@@ -1,7 +1,7 @@
 package com.yefeng.netdisk.front.service;
 
-import com.yefeng.netdisk.front.entity.File;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yefeng.netdisk.front.entity.File;
 
 /**
  * <p>
@@ -13,4 +13,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IFileService extends IService<File> {
 
+    /**
+     * 获取文件
+     *
+     * @param diskId
+     * @param fileId
+     * @return
+     */
+    File getFileWithDiskIdAndFileId(String diskId, String fileId);
 }

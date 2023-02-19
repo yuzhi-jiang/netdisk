@@ -2,4 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yefeng.netdisk.front.mapper.FileMapper">
 
+
+    <sql id="fileVo">
+        ${tf}.id,
+            length ,
+            `hash`,
+            `path`,
+            `status`,
+        ${tdf}.file_name as `name`
+    </sql>
+    <sql id="fileColumns">
+        ${tf}.id,
+            ${tdf}.file_id,
+            original_name,
+            `path`,
+            length,
+        ${tdf}.type,
+            `hash`,
+            ${tdf}.`status`,
+        ${tdf}.file_name as `name`
+    </sql>
+    <select id="selectFileWithDiskIdAndFileId" resultType="com.yefeng.netdisk.front.entity.File">
+        select
+        <include refid="fileColumns">
+            <property name="tf" value="tf"/>
+            <property name="tdf" value="df"/>
+        </include>
+        from tb_disk_file as df
+        join tb_file tf on df.file_id = tf.id
+        where df.disk_id=#{disk_id}
+        and df.disk_file_id=#{file_id}
+    </select>
 </mapper>

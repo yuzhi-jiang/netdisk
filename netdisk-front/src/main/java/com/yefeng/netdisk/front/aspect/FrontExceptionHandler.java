@@ -8,8 +8,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
@@ -59,11 +61,18 @@ public class FrontExceptionHandler {
         return new ApiResult(HttpCodeEnum.FAIL.getCode(), "数据库连接失败");
     }
 
-    @ExceptionHandler(value = {BadSqlGrammarException.class})
+    @ExceptionHandler(value = {CannotGetJdbcConnectionException.class,BadSqlGrammarException.class})
     public ApiResult BadSqlGrammarException(Exception ex){
         log.error("BadSqlGrammarException msg:{}",ex.getMessage());
         ex.printStackTrace();
         return new ApiResult(HttpCodeEnum.FAIL.getCode(),"数据库业务出现异常");
     }
+    @ExceptionHandler(value = {MissingServletRequestPartException.class})
+    public ApiResult MissingServletRequestPartException(Exception ex){
+        log.error("MissingServletRequestPartException msg:{}",ex.getMessage());
+        ex.printStackTrace();
+        return new ApiResult(HttpCodeEnum.FAIL.getCode(),"请检查参数正确");
+    }
+
 
 }

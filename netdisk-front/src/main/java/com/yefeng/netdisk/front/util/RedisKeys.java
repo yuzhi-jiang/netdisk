@@ -13,6 +13,10 @@ public class RedisKeys {
         return "capatcha:"+ key;
     }
 
+    public static String getUploadKey(String key){
+        return "uploadid:"+ key;
+    }
+
     public static String getForgetCapatchaKey(String key){
         return "forgetMobile:"+ key;
     }
@@ -20,5 +24,8 @@ public class RedisKeys {
     public static String getImageKey(){
         return "imageCapatcha:";
     }
+
+
+
 
 }

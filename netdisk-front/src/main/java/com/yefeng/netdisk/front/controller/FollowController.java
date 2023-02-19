@@ -15,4 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/follow")
 public class FollowController {
 
+    //查看关注用户列表
+
+
+    //关注用户
+
+    //取消关注
+
+
+
+
 }

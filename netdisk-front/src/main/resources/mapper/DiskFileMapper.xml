@@ -4,25 +4,36 @@
 
 
     <sql id="selectFileBo">
-        select df.id,
-               df.disk_id,
-               df.file_id,
-               df.file_name,
-               df.parent_file_id,
-               bf.length,
+        select tdf.id,
+               tdf.disk_id,
+               tdf.file_id,
+               tdf.file_name,
+               tdf.parent_file_id,
 
-               bf.hash,
-               bf.type,
-               bf.is_valid
-        from tb_disk_file as df
-        join tb_file as bf
-        on bf.id = df.file_id
+               tf.length,
+
+               tf.hash,
+               tf.type,
+               tf.status
+        from tb_disk_file as tdf
+        join tb_file as tf
+        on tf.id = tdf.file_id
     </sql>
 
     <select id="getFileList" resultType="com.yefeng.netdisk.front.bo.FileBo"
     >
         <include refid="selectFileBo"/>
-        where df.disk_id = #{diskId}
-        and df.parent_file_id = #{parentFileId}
+        where tdf.disk_id = #{diskId}
+        and tdf.parent_file_id = #{parentFileId}
     </select>
+
+    <sql id="fileVo">
+        ${tf}.id,
+            length ,
+            `hash`,
+            `path`,
+            `status`,
+        ${tdf}.file_name as `name`
+    </sql>
+
 </mapper>

@@ -40,6 +40,7 @@ public class GlobalExceptionHandler {
     public ApiResult exceptionHandler(Exception exception) {
 
         log.error("GlobalExceptionHandler:exceptionName->{} | [exception:{}]", exception.getClass().getName(), exception.getMessage());
+        exception.printStackTrace();
         if (Objects.nonNull(exception.getMessage())) {
             return ResultUtil.error(exception.getMessage());
         }

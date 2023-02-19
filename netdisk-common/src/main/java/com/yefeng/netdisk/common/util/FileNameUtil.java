@@ -15,7 +15,7 @@ public class FileNameUtil {
     }
 
     public static void main(String[] args) {
-        String name = getFileNameByPath("E:\\Videos\\爬虫\\day1\\20220920_200037.mp4");
+        String name = getFileNameByPath("/yefeng/20220920_200037.mp4");
         String name1 = getFileNameByPath(name);
         System.out.println("name: " + name);
         System.out.println("name1: " + name1);

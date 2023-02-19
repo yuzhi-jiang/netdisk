@@ -1,6 +1,6 @@
 package com.yefeng.netdisk.getway.filter;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONObject;
 import com.yefeng.netdisk.common.exception.BizException;
 import com.yefeng.netdisk.common.exception.TokenException;
 import com.yefeng.netdisk.common.result.ResultUtil;
@@ -134,8 +134,11 @@ public class AuthFilter implements GlobalFilter, Ordered {
 
     private Mono<Void> response401(ServerHttpResponse response, Object jsonObject) {
 
-        byte[] bits = JSONObject.toJSONString(jsonObject).getBytes(StandardCharsets.UTF_8);
-        DataBuffer buffer = response.bufferFactory().wrap(bits);
+//        byte[] bits = JSONObject.toJSONString(jsonObject).getBytes(StandardCharsets.UTF_8);
+        JSONObject jsonObject1 = new JSONObject(jsonObject);
+        byte[] bytes = jsonObject1.toString().getBytes(StandardCharsets.UTF_8);
+
+        DataBuffer buffer = response.bufferFactory().wrap(bytes);
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         // 指定编码，否则在浏览器中会中文乱码
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");

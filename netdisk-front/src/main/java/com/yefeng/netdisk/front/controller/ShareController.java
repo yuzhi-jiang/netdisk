@@ -14,5 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/share")
 public class ShareController {
+    //分享文件
+
+    //取消分享文件
 
 }

@@ -27,13 +27,52 @@ public class DiskFile implements Serializable {
 
     private Long diskId;
 
-    @ApiModelProperty("文件/文件夹id")
+    @ApiModelProperty("云盘文件/文件夹id")
+    private String diskFileId;
+
+    @ApiModelProperty("数据库文件id")
     private Long fileId;
+
+    @Override
+    public String toString() {
+        return "DiskFile{" +
+                "id=" + id +
+                ", diskId=" + diskId +
+                ", diskFileId='" + diskFileId + '\'' +
+                ", fileId=" + fileId +
+                ", fileName='" + fileName + '\'' +
+                ", parentFileId='" + parentFileId + '\'' +
+                ", type=" + type +
+                ", status=" + status +
+                '}';
+    }
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
 
     @ApiModelProperty("用户文件的名称（同样的文件每个人文件有不同的名称）")
     private String fileName;
     @ApiModelProperty("用户文件的父文件夹名称（同样的文件每个人文件有不同的路径）")
     private String parentFileId;
+
+    @ApiModelProperty("文件类型  1：文件  2：文件夹")
+    private Byte type;
+
+    @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
+    private Byte status;
+
+    public Byte getType() {
+        return type;
+    }
+
+    public void setType(Byte type) {
+        this.type = type;
+    }
 
     public String getParentFileId() {
         return parentFileId;
@@ -59,13 +98,6 @@ public class DiskFile implements Serializable {
         this.diskId = diskId;
     }
 
-    public Long getFileId() {
-        return fileId;
-    }
-
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
-    }
 
     public String getFileName() {
         return fileName;
@@ -75,14 +107,20 @@ public class DiskFile implements Serializable {
         this.fileName = fileName;
     }
 
-    @Override
-    public String toString() {
-        return "DiskFile{" +
-                "id=" + id +
-                ", diskId=" + diskId +
-                ", fileId=" + fileId +
-                ", fileName='" + fileName + '\'' +
-                ", parentFileId='" + parentFileId + '\'' +
-                '}';
+    public Byte getStatus() {
+        return status;
     }
+
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
+
+    public String getDiskFileId() {
+        return diskFileId;
+    }
+
+    public void setDiskFileId(String diskFileId) {
+        this.diskFileId = diskFileId;
+    }
+
 }

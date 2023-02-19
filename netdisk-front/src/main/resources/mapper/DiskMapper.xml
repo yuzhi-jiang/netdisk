@@ -2,4 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yefeng.netdisk.front.mapper.DiskMapper">
 
+    <update id="updateCapacity">
+        update tb_disk set
+        <choose>
+            <when test="type!=null and type==1">
+                use_capacity=use_capacity + #{capacity}
+            </when>
+
+            <when test="type!=null and type==2">
+                use_capacity=use_capacity-#{capacity}
+            </when>
+
+            <when test="type!=null and type==3">
+                total_capacity=total_capacity+#{capacity}
+            </when>
+            <when test="type!=null and type==4">
+                total_capacity=total_capacity-#{capacity}
+            </when>
+        </choose>
+        where id=#{diskId}
+    </update>
 </mapper>

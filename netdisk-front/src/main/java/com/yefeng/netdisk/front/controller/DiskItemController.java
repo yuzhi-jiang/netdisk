@@ -1,6 +1,5 @@
 package com.yefeng.netdisk.front.controller;
 
-import com.yefeng.netdisk.front.entity.DiskItem;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -16,6 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/front/diskItem")
 public class DiskItemController {
 
+    //查看网盘容量
+
+    //给网盘增加容量
+
+    //给网盘减少容量
 
 
 }

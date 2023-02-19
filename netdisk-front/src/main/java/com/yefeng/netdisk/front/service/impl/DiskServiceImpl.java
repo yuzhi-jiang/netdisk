@@ -60,6 +60,8 @@ public class DiskServiceImpl extends ServiceImpl<DiskMapper, Disk> implements ID
 //    @Transactional(rollbackForClassName = "Exception")
     @Override
     public DiskVo getDiskInfoByUerId(Long userId) {
+
+
         Disk disk = baseMapper.selectOne(new QueryWrapper<Disk>().eq("user_id", userId));
 
         Assert.isNull(disk,"用户没有云盘");

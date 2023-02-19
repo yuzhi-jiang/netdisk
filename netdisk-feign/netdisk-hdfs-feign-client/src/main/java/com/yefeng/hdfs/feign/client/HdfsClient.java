@@ -5,6 +5,7 @@ import com.yefeng.netdisk.common.result.ApiResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -33,5 +34,9 @@ public interface HdfsClient {
             @RequestPart( "file")
             MultipartFile file
     );
+    @GetMapping(value = "/hdfs/api/v1/hdfs/file")
+    void downloadFile(
+                      @RequestParam(name = "path") String path,
+                      @RequestParam(name = "preview", required = false) Boolean preview);
 
 }

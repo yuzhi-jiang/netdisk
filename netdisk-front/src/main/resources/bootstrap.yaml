@@ -1,23 +1,18 @@
 server:
   port: 8081
-  servlet:
-    context-path: /front
 spring:
   profiles:
     active: dev
-  # 服务逻辑名称
-  application:
-    name: netdisk-cloud-front
-  cloud:
-    nacos:
-      # 配置中心
-      config:
-        server-addr: 192.168.10.14:8848
-        file-extension: yaml
 
-        namespace: 02179d64-6944-44c9-afc3-e3677bc0f6a2
-        enabled: true
-      # 注册中心
-      discovery:
-        server-addr: 192.168.10.14:8848
-        namespace: 02179d64-6944-44c9-afc3-e3677bc0f6a2
+---
+server:
+  port: 8082
+spring:
+  profiles: local
+
+
+---
+server:
+  port: 8083
+spring:
+  profiles: prod

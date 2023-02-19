@@ -6,6 +6,7 @@ import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.IPUtils;
 import com.yefeng.netdisk.common.validator.Assert;
+import com.yefeng.netdisk.hadoop.annotation.DownloadToken;
 import com.yefeng.netdisk.hadoop.entity.FileEntity;
 import com.yefeng.netdisk.hadoop.service.HDFSService;
 import io.swagger.annotations.ApiOperation;
@@ -37,10 +38,13 @@ import java.util.Map;
 public class HdfsController {
     @Resource
     private HDFSService hdfsService;
+    @Resource
+    HttpServletRequest request;
+    @Resource
+    HttpServletResponse response;
 
-
-    void downFileOnRange(HttpServletRequest request, HttpServletResponse response,
-                         InputStream ins, long fileLength, String fileName, Boolean enablePreview) {
+    void downFileOnRange(
+            InputStream ins, long fileLength, String fileName, Boolean enablePreview) {
         BufferedInputStream bis = null;
         OutputStream out = null;
         try {
@@ -178,28 +182,38 @@ public class HdfsController {
     }
 
 
-    void downFileOnRange(HttpServletRequest request, HttpServletResponse response,
-                         InputStream ins, long fileLength, String fileName) {
-        downFileOnRange(request, response, ins, fileLength, fileName, false);
-    }
-
-
     @ApiOperation("下载文件支持断点续传,可根据参数跳转是否预览")
+    @DownloadToken
     @GetMapping("/file")
-    private void downFile(HttpServletResponse response, HttpServletRequest request, @RequestParam(name = "path") String path, @RequestParam(name = "preview", required = false) Boolean preview) {
+    public void downFile(@RequestParam(name = "path") String path, @RequestParam(name = "preview", required = false) Boolean preview
+    ,@RequestParam(value = "downloadToken",required = false) String downloadToken
+    ) {
         FileEntity fileEntity = hdfsService.getFileEntity(path);
         Assert.isNull(fileEntity, "文件路径错误");
         FSDataInputStream ins = hdfsService.downloadFile(path);
-
         log.info("调用下载");
         if (preview == null || !preview) {
-            downFileOnRange(request, response, ins, fileEntity.getLength(), fileEntity.getFileName());
+            downFileOnRange(ins, fileEntity.getLength(), fileEntity.getFileName());
         } else {
-            downFileOnRange(request, response, ins, fileEntity.getLength(), fileEntity.getFileName(), true);
+            downFileOnRange(ins, fileEntity.getLength(), fileEntity.getFileName(), true);
         }
-
     }
 
+    void downFileOnRange(InputStream ins, long fileLength, String fileName) {
+        downFileOnRange(ins, fileLength, fileName, false);
+    }
+
+    @ApiOperation("下载文件，获取流")
+    @DownloadToken
+    @GetMapping("/file/inputStream")
+    public  InputStream downFile(@RequestParam(name = "path") String path
+            ,@RequestParam(value = "downloadToken",required = false) String downloadToken
+    ) {
+        FileEntity fileEntity = hdfsService.getFileEntity(path);
+        Assert.isNull(fileEntity, "文件路径错误");
+        InputStream ins = hdfsService.downloadFile(path);
+        return ins;
+    }
 
     @ApiOperation("create folder")
     @PostMapping("/folder")

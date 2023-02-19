@@ -1,9 +1,9 @@
 package com.yefeng.netdisk.front.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.mapper.FileMapper;
 import com.yefeng.netdisk.front.service.IFileService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,4 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements IFileService {
 
+
+    @Override
+    public File getFileWithDiskIdAndFileId(String diskId, String fileId) {
+        return baseMapper.selectFileWithDiskIdAndFileId(diskId,fileId);
+    }
 }

@@ -49,6 +49,9 @@ public class ResultUtil {
     public static ApiResult fail() {
         return new ApiResult(HttpCodeEnum.FAIL.getCode(), HttpCodeEnum.FAIL.getMessage());
     }
+    public static ApiResult failMsg(String msg) {
+        return new ApiResult(HttpCodeEnum.FAIL.getCode(), msg);
+    }
     /**
      * 操作失败
      * @return

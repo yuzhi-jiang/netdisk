@@ -59,6 +59,23 @@ public class JWTUtil {
 
         return createToken(claims);
     }
+    public static String createToken(Map<String, Object> claims,long expireTime) {
+        //jjwt构建jwt builder
+        //设置信息，过期时间，signnature
+//
+//        JWTCreator.Builder builder = JWT.create();
+//        builder.withExpiresAt(expirationDate());
+//
+//
+//        String token = builder.sign(Algorithm.HMAC256(SECRET));
+
+        return Jwts.builder()
+
+                .setClaims(claims)
+                .setExpiration(new Date(System.currentTimeMillis() + expireTime * 1000))
+                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .compact();
+    }
 
 
     /**
@@ -112,16 +129,15 @@ public class JWTUtil {
                     .setSigningKey(SECRET)
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (ExpiredJwtException e) {
-            e.printStackTrace();
-        } catch (UnsupportedJwtException e) {
-            e.printStackTrace();
-        } catch (MalformedJwtException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
+        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
             e.printStackTrace();
         }
         return claims;
+    }
+
+    public static void main(String[] args) {
+        String downloadToken="eyJhbGciOiJIUzI1NiJ9.eyJmaWxlX25hbWUiOiJ4c3luYyIsImV4cGlyZV90aW1lIjo2MDAsImRpc2tJZCI6IjE2MTcxNjkxMzEzMjc0NTkzMjkiLCJ0eXBlIjoiZG93bmxvYWQiLCJleHAiOjE2NzY3MzM3OTB9.KvTQC8btuVRUt-DevuvO008SzDb_tk_iLEZYDQgN3Wo";
+        JWTUtil.validateToken(downloadToken);
     }
 
     /**
@@ -223,25 +239,25 @@ public class JWTUtil {
     }
 
 
-    public static void main(String[] args) throws InterruptedException {
-//        Map<String, Object> map = new HashMap<String, Object>() {
-//            private static final long serialVersionUID = 1L;
+//    public static void main(String[] args) throws InterruptedException {
+////        Map<String, Object> map = new HashMap<String, Object>() {
+////            private static final long serialVersionUID = 1L;
+////            {
+////                put("uid", Integer.parseInt("123"));
+////                put("expire_time", System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 15);
+////            }
+////        };
+//        String token = createToken(1234324,new HashMap<>(1){
 //            {
-//                put("uid", Integer.parseInt("123"));
-//                put("expire_time", System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 15);
+//                put("username","yefeng");
 //            }
-//        };
-        String token = createToken(1234324,new HashMap<>(1){
-            {
-                put("username","yefeng");
-            }
-        });
-        System.out.println(token);
-        System.out.println(getExpiredDateFeomToken(token));
-
-        Claims claims = getClaimsFromToken(token);
-        System.out.println(claims);
-
-    }
+//        });
+//        System.out.println(token);
+//        System.out.println(getExpiredDateFeomToken(token));
+//
+//        Claims claims = getClaimsFromToken(token);
+//        System.out.println(claims);
+//
+//    }
 }
 

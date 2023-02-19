@@ -30,6 +30,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
@@ -149,8 +150,6 @@ public class UserController {
         if (type == LoginEnum.ACCOUNT.getType() || type == LoginEnum.MOBILE_PASS.getType()) {
 
             String account = (String) params.get("account");
-
-
             QueryWrapper<User> query = new QueryWrapper<User>();
 
             if (type == LoginEnum.MOBILE_PASS.getType()) {
@@ -323,7 +322,7 @@ public class UserController {
     }
 
 
-    //todo 修改用户信息 、密码
+    //todo 修改用户信息 、密码，不包括头像
     @PutMapping("/userinfo")
     public ApiResult updateUserInfo(@RequestHeader("subject") String subject, @RequestBody BUser bUser) {
 
@@ -359,7 +358,7 @@ public class UserController {
 
         //验证次数超过5次则冻结30分钟不准发验证码，冻结3次则今天不准/冻结用户
 
-        if (!captchaUtil.checkCaptcha(mobile, captcha,true)) {
+        if (!captchaUtil.checkCaptcha(mobile, captcha, true)) {
             throw new BizException("验证码错误请重试!");
         }
         User user = getUserByMobile(mobile);
@@ -380,11 +379,39 @@ public class UserController {
     }
 
 
-    public ApiResult getResultByFlag(Boolean flag){
+    /**
+     * 上传头像
+     * @param avatar
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/avatar", method = RequestMethod.POST)
+    public ApiResult uploadAvatar(@RequestParam("avatar") MultipartFile avatar, @RequestParam("userId") String userId) {
+        if (avatar == null || avatar.isEmpty()) {
+            return ResultUtil.failMsg("上传头像失败，请重新上传");
+        }
+        String originalFilename = avatar.getOriginalFilename();
+        // 根据原始文件名获取文件后缀
+        String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        // 如果文件后缀不符合要求，则返回失败信息
+        if (!suffix.equals("jpg") && !suffix.equals("png")) {
+            return ResultUtil.failMsg("上传头像失败，仅支持jpg或png格式的图片");
+        }
+        // 上传头像的文件夹
+//        String folder = "avatar/" + userId;
+
+        Boolean flag = userService.uploadAvatar(avatar, userId);
+
+        return getResultByFlag(flag);
+
+    }
+
+
+    public ApiResult getResultByFlag(Boolean flag) {
         try {
             if (flag) {
                 return ResultUtil.success();
-            }else{
+            } else {
                 return ResultUtil.fail();
             }
         } catch (Exception e) {
