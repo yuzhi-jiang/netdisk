@@ -1,13 +1,6 @@
 server:
   port: 8082
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-logging:
-  level:
-    com.baomidou.mybatisplus: debug
-  config:
-    console-show-sql: true
+
 mycloud:
   register:
     registerByMobileLogin: true #未注册手机 通过登录直接注册
@@ -22,6 +15,9 @@ mycloud:
     tokenExpire: 600 #600 sec  is 10 minutes
   download:
     urlExpireTime: 3600 #downloadUrltoken失效时间 默认10分钟600秒
+
+
+
 spring:
   # 线程池配置
   thread-pool:
@@ -106,4 +102,3 @@ feign:
       hdfsUpload:
         connectTimeout: 100000
         readTimeout: 100000
-

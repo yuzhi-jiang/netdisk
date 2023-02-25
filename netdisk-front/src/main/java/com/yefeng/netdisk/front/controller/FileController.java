@@ -18,6 +18,7 @@ import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
+import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.util.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,7 +51,6 @@ public class FileController {
 
     //查找文件
     // search
-
     /*
 
 {
@@ -73,10 +73,9 @@ public class FileController {
     IDiskFileService diskFileService;
 
 
-
     @PostMapping("/hash")
     public ApiResult getFileHash(@ApiParam(name = "file", required = true) @RequestPart("file")
-                                  MultipartFile file){
+                                 MultipartFile file) {
         try {
             String contentHash = DigestUtil.sha1Hex(file.getBytes());
             return ResultUtil.success(contentHash);
@@ -87,11 +86,9 @@ public class FileController {
     }
 
 
-
 //    public List<DiskFile> ListDiskFiles(String diskId,String parentFileId,Integer limit){
 //        diskFileService
 //    }
-
 
 
     /**
@@ -349,9 +346,6 @@ public class FileController {
     }
 
 
-
-
-
     /**
      * 上传文件逻辑
      * 1.文件名不同
@@ -429,7 +423,7 @@ public class FileController {
                     }
                 };
                 //生产token 和 uploadId
-                String token = JWTUtil.createToken( hashMap,uploadTokenExpire);
+                String token = JWTUtil.createToken(hashMap, uploadTokenExpire);
                 jsonObject.putOnce("token", token);
                 jsonObject.putOnce("upload_id", uploadId);
             }
@@ -452,17 +446,25 @@ public class FileController {
     @Autowired
     private RedisUtil redisUtil;
 
+    /**
+     * 上传文件块
+     *
+     * @param uploadId
+     * @param token
+     * @param file
+     * @return
+     */
     @PutMapping("/uploadPart")
-    public ApiResult uploadPart(@RequestParam("upload_id") String uploadId,@RequestParam("token") String token,
+    public ApiResult uploadPart(@RequestParam("upload_id") String uploadId, @RequestParam("token") String token,
                                 @ApiParam(name = "file", required = true) @RequestPart("file")
-    MultipartFile file) {
+                                MultipartFile file) {
         try {
             System.out.println("you have uploaded");
             JWTUtil.validateToken(token);
             String contentHash = DigestUtil.sha1Hex(file.getBytes());
             System.out.println(contentHash);
-            Object[] payload =  JWTUtil.getPayloadFromToken(token, "upload_id", "content_hash", "file_id");
-            if(payload==null || payload.length!=3){
+            Object[] payload = JWTUtil.getPayloadFromToken(token, "upload_id", "content_hash", "file_id");
+            if (payload == null || payload.length != 3) {
                 return ResultUtil.failMsg("token 参数校验不通过");
             }
             if (contentHash != null && !contentHash.equals(payload[1])) {
@@ -471,21 +473,20 @@ public class FileController {
             if (uploadId != null && !uploadId.equals(payload[0])) {
                 return ResultUtil.failMsg("uploadId mismatch");
             }
-            String uploadKey="";
-            if(openRedis){
-                 uploadKey = RedisKeys.getUploadKey(uploadId);
-                Object flag =  redisUtil.get(uploadKey);
-                if (flag!=null) {
+            String uploadKey = "";
+            if (openRedis) {
+                uploadKey = RedisKeys.getUploadKey(uploadId);
+                Object flag = redisUtil.get(uploadKey);
+                if (flag != null) {
                     //上传过了
                     return ResultUtil.success("upload is successfully");
                 }
-            }else{
+            } else {
                 File file1 = fileService.getOne(new QueryWrapper<File>().eq("uploadId", uploadId));
                 if (file1.getStatus() == FileStatusEnum.upload.getCode()) {
                     return ResultUtil.success("upload is successfully");
                 }
             }
-
 
 
             ApiResult apiResult = hdfsClient.uploadFile(hdfsBasePath, file);
@@ -531,8 +532,15 @@ public class FileController {
     @Value("${mycloud.redis.open}")
     private boolean openRedis;
 
+    /**
+     * 上传完成，请求合并
+     *
+     * @param diskId
+     * @param diskFileId
+     * @param uploadId
+     * @return
+     */
     @PostMapping("/complete")
-
     public ApiResult complete(@RequestParam("disk_id") String diskId, @RequestParam("file_id") String diskFileId, @RequestParam("upload_id") String uploadId) {
         Boolean flag = false;
         Long fileId = null;
@@ -541,12 +549,12 @@ public class FileController {
                 String uploadKey = RedisKeys.getUploadKey(uploadId);
                 Object afileId = redisUtil.get(uploadKey);
 
-                fileId=Long.valueOf(afileId.toString());
-            }catch (Exception e) {
+                fileId = Long.valueOf(afileId.toString());
+            } catch (Exception e) {
                 log.error("Error getting upload");
             }
         }
-        if(fileId==null) {
+        if (fileId == null) {
             File file = fileService.getOne(new QueryWrapper<File>().eq("upload_id", uploadId));
             if (file.getStatus() == FileStatusEnum.upload.getCode()) {
                 fileId = file.getId();
@@ -599,4 +607,83 @@ public class FileController {
   "location": "cn-beijing"
 }
      */
+
+
+    /**
+      {
+      "share_id": "SoUvRnD5HLm",
+      "parent_file_id": "627fb51e4ee16e1110bd44fa9497bb5aa1a71c62",
+      "limit": 20,
+      "image_thumbnail_process": "image/resize,w_256/format,jpeg",
+      "image_url_process": "image/resize,w_1920/format,jpeg/interlace,1",
+      "video_thumbnail_process": "video/snapshot,t_1000,f_jpg,ar_auto,w_256",
+      "order_by": "name",
+      "order_direction": "DESC"
+      }
+
+
+
+     [
+         {
+         "drive_id": "358565",
+         "domain_id": "bj29",
+         "file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838",
+         "share_id": "xSX2h1D5RHL",
+         "name": "余胜军java",
+         "type": "folder",
+         "created_at": "2022-08-14T14:49:14.589Z",
+         "updated_at": "2022-11-20T14:12:47.466Z",
+         "parent_file_id": "root"
+         }
+     ]
+
+     [
+         {
+         "drive_id": "358565",
+         "domain_id": "bj29",
+         "file_id": "62f9ac458f827b6828d947fb985f0d0783924f63",
+         "share_id": "xSX2h1D5RHL",
+         "name": "每特教育&蚂蚁课堂JavaWeb开发基础2022版本",
+         "type": "folder",
+         "created_at": "2022-08-15T02:15:33.549Z",
+         "updated_at": "2022-08-15T02:15:33.549Z",
+         "parent_file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838"
+         },
+         {
+         "drive_id": "358565",
+
+         "file_id": "62f9ac1deb190306e1414e4c9fe043823fbeb6b4",
+         "share_id": "xSX2h1D5RHL",
+         "name": "java基础",
+         "type": "folder",
+         "created_at": "2022-08-15T02:14:53.893Z",
+         "updated_at": "2022-08-15T02:14:53.893Z",
+         "parent_file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838"
+         }
+     ]
+     **/
+
+
+    @Resource
+    IShareService shareService;
+
+    /**
+     * 根据分享id查看文件
+     *
+     * @param shareId
+     * @param parentFileId
+     * @param limit
+     * @return
+     */
+    @GetMapping("/list_by_share")
+    public ApiResult listByShare(@RequestParam("share_id") String shareId,
+                                 @RequestParam(name= "parent_file_id",defaultValue = "root") String parentFileId,
+                                 @RequestParam(name = "pageCount", defaultValue = "0") Integer pageCount,@RequestParam(name = "pageSize", defaultValue = "0")Integer pageSize) {
+
+        List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId,pageCount,pageSize);
+
+        return ResultUtil.success(diskFiles);
+
+    }
+
 }

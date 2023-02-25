@@ -1,9 +1,10 @@
 package com.yefeng.netdisk.front.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -22,23 +23,45 @@ public class Share implements Serializable {
     @ApiModelProperty("ID")
     private Long id;
 
-    @ApiModelProperty("用户id")
-    private Long fromUserId;
+    @ApiModelProperty("分享云盘id")
+    private Long diskId;
 
-    @ApiModelProperty("用户名")
-    private String fromUserName;
 
-    @ApiModelProperty("文件id")
-    private Long fileId;
+//    @ApiModelProperty("文件id")
+//    private Long fileId;
 
-    @ApiModelProperty("文件名")
-    private String fileName;
+    @ApiModelProperty("分享标题")
+    private String shareTitle;
+
+    @ApiModelProperty("分享标题")
+    private String sharePwd;
+    @ApiModelProperty("分享msg")
+    private String fullShareMsg;
 
     @ApiModelProperty("过期时间")
-    private Long expiredTime;
+    private String expiredTime;
 
     @ApiModelProperty("是否有效")
     private Byte isValid;
+
+    @ApiModelProperty("分享类型，1.文件，2.文件夹")
+    private Byte type;
+
+    public Byte getType() {
+        return type;
+    }
+
+    public void setType(Byte type) {
+        this.type = type;
+    }
+
+    public String getSharePwd() {
+        return sharePwd;
+    }
+
+    public void setSharePwd(String sharePwd) {
+        this.sharePwd = sharePwd;
+    }
 
     public Long getId() {
         return id;
@@ -48,43 +71,35 @@ public class Share implements Serializable {
         this.id = id;
     }
 
-    public Long getFromUserId() {
-        return fromUserId;
+    public Long getDiskId() {
+        return diskId;
     }
 
-    public void setFromUserId(Long fromUserId) {
-        this.fromUserId = fromUserId;
+    public void setDiskId(Long diskId) {
+        this.diskId = diskId;
     }
 
-    public String getFromUserName() {
-        return fromUserName;
+    public String getShareTitle() {
+        return shareTitle;
     }
 
-    public void setFromUserName(String fromUserName) {
-        this.fromUserName = fromUserName;
+    public void setShareTitle(String shareTitle) {
+        this.shareTitle = shareTitle;
     }
 
-    public Long getFileId() {
-        return fileId;
+    public String getFullShareMsg() {
+        return fullShareMsg;
     }
 
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
+    public void setFullShareMsg(String fullShareMsg) {
+        this.fullShareMsg = fullShareMsg;
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public Long getExpiredTime() {
+    public String getExpiredTime() {
         return expiredTime;
     }
 
-    public void setExpiredTime(Long expiredTime) {
+    public void setExpiredTime(String expiredTime) {
         this.expiredTime = expiredTime;
     }
 
@@ -99,13 +114,14 @@ public class Share implements Serializable {
     @Override
     public String toString() {
         return "Share{" +
-            "id = " + id +
-            ", fromUserId = " + fromUserId +
-            ", fromUserName = " + fromUserName +
-            ", fileId = " + fileId +
-            ", fileName = " + fileName +
-            ", expiredTime = " + expiredTime +
-            ", isValid = " + isValid +
-        "}";
+                "id=" + id +
+                ", diskId=" + diskId +
+                ", shareTitle='" + shareTitle + '\'' +
+                ", sharePwd='" + sharePwd + '\'' +
+                ", fullShareMsg='" + fullShareMsg + '\'' +
+                ", expiredTime=" + expiredTime +
+                ", isValid=" + isValid +
+                ", type=" + type +
+                '}';
     }
 }

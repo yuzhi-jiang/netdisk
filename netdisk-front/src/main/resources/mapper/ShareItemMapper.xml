@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yefeng.netdisk.front.mapper.ShareItemMapper">
+
+
+    <insert id="insertShareItems">
+        insert into tb_share_item (`file_id`,`share_id`,`type`,`disk_id`)
+        values
+        <foreach collection="shareItems" item="item" index="index" separator="," >
+            (#{item.fileId},#{item.shareId},#{item.type},#{item.diskId})
+        </foreach>
+    </insert>
+</mapper>

@@ -33,6 +33,20 @@ public class DiskFile implements Serializable {
     @ApiModelProperty("数据库文件id")
     private Long fileId;
 
+
+
+    @ApiModelProperty("用户文件的名称（同样的文件每个人文件有不同的名称）")
+    private String fileName;
+    @ApiModelProperty("用户文件的父文件夹名称（同样的文件每个人文件有不同的路径）")
+    private String parentFileId;
+
+    @ApiModelProperty("文件类型  1：文件  2：文件夹")
+    private Byte type;
+
+    @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
+    private Byte status;
+
+
     @Override
     public String toString() {
         return "DiskFile{" +
@@ -54,17 +68,6 @@ public class DiskFile implements Serializable {
     public void setFileId(Long fileId) {
         this.fileId = fileId;
     }
-
-    @ApiModelProperty("用户文件的名称（同样的文件每个人文件有不同的名称）")
-    private String fileName;
-    @ApiModelProperty("用户文件的父文件夹名称（同样的文件每个人文件有不同的路径）")
-    private String parentFileId;
-
-    @ApiModelProperty("文件类型  1：文件  2：文件夹")
-    private Byte type;
-
-    @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
-    private Byte status;
 
     public Byte getType() {
         return type;

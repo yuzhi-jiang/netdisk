@@ -177,30 +177,6 @@ public class DiskFileController {
     //上传文件夹
 
 
-    /**
-     * 创建文件
-     */
-    @PostMapping("/createWithFolders")
-    public ApiResult createWithFolders(
-            @RequestParam("disk_id")
-            String diskId,
-
-            @ApiParam(name = "parent_file_id", required = true)
-            @RequestParam("parent_file_id")
-            String parentFileId,
-
-            @ApiParam(name = "name")
-            @RequestParam("name")
-            String name,
-            @ApiParam(name = "type")
-            @RequestParam("type")
-            String type
-    ) {
-
-
-        //todo 创建文件夹
-        return null;
-    }
 
 
     /**
@@ -212,12 +188,10 @@ public class DiskFileController {
             @RequestBody
             RequestParams[] requestParams
     ) {
-
-
-        List<String> IdLists = new ArrayList<String>(requestParams.length);
+        List<String> idLists = new ArrayList<String>(requestParams.length);
         for (int i = 0; i < requestParams.length; i++) {
             System.out.println(requestParams[i]);
-            IdLists.add(requestParams[i].getStringValue("file_id"));
+            idLists.add(requestParams[i].getStringValue("file_id"));
         }
 //        diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_id",))
         //todo 删除文件，/回收站
@@ -281,4 +255,9 @@ public class DiskFileController {
         System.out.println("jsonObject= " + jsonObject.toString());
         return ResultUtil.success(jsonObject);
     }
+
+
+
+
+
 }
