@@ -24,6 +24,9 @@ import com.yefeng.netdisk.front.util.RedisUtil;
 import com.yefeng.netdisk.front.vo.DiskVo;
 import com.yefeng.netdisk.front.vo.UserDiskVo;
 import com.yefeng.netdisk.front.vo.UserVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -42,7 +45,7 @@ import java.io.IOException;
 
 /**
  * <p>
- * 前端控制器
+ * 用户控制器
  * </p>
  *
  * @author yefeng
@@ -51,6 +54,7 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequestMapping("/user")
+@Api(tags = "用户")
 public class UserController {
 
 
@@ -141,6 +145,9 @@ public class UserController {
 
     @ApiOperation(value = "用户登录,使用用户名/邮箱，或是手机号")
     @PostMapping("/login")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type",value = "登陆类型,")
+    })
     public ApiResult login(@RequestBody RequestParams params) {
 
         int type = params.getIntValue("type");
@@ -177,7 +184,8 @@ public class UserController {
 
             userVo.setToken(token);
             return ResultUtil.success(userVo);
-        } else if (type == LoginEnum.MOBILE_CAPTCHA.getType()) {
+        }
+        else if (type == LoginEnum.MOBILE_CAPTCHA.getType()) {
             String mobile = (String) params.get("mobile");
             String captcha = (String) params.get("captcha");
 
@@ -212,7 +220,6 @@ public class UserController {
             userVo.setToken(token);
             return ResultUtil.success(userVo);
         }
-
 
         log.info("params is {}", params.toString());
         throw new BizException("登录方式不正确");

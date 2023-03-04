@@ -32,6 +32,10 @@ public class Result<T> {
 
     }
 
+    public Result() {
+
+    }
+
     /**
      * 成功时候的调用
      *

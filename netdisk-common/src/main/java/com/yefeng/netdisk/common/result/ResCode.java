@@ -73,7 +73,7 @@ public enum ResCode {
     Advertisement_Add_Failed(704   ,"添加广告失败" ),
     Advertisement_Update_Failed(705,"更新广告失败" ),
     Advertisement_Delete_Failed(706,"删除广告失败" ),
-    Page_Size_Too_Large(707,"分页数量过大，请不用使用爬虫" ),
+    pageSize_Too_Large(707,"分页数量过大，请不用使用爬虫" ),
     ROLE_NOT_EXIST(203,"角色获取失败" ),
     AdvertiseType_Get_Failed(803,"获取广告类型失败" ),
     AdvertiseType_Add_Failed(804,"添加广告类型失败" ),

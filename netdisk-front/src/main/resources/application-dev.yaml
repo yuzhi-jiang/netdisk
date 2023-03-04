@@ -1,6 +1,7 @@
 server:
   port: 8082
-
+  servlet:
+    context-path: /front
 mycloud:
   register:
     registerByMobileLogin: true #未注册手机 通过登录直接注册

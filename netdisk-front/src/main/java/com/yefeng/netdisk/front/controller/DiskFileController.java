@@ -3,6 +3,7 @@ package com.yefeng.netdisk.front.controller;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.github.pagehelper.PageHelper;
 import com.qcloud.cos.utils.Md5Utils;
 import com.yefeng.hdfs.feign.client.HdfsClient;
 import com.yefeng.netdisk.common.constans.FileTypeEnum;
@@ -70,14 +71,16 @@ public class DiskFileController {
 
     //todo 根据路径获取文件列表
     @ApiOperation("获取云盘列表")
-    @GetMapping("/list")
-    public ApiResult getDiskFile(@RequestParam("disk_id") String diskId,
-                                 @RequestParam(name = "parent_file_id", defaultValue = "root")
-                                 String parentFileId,
-                                 @RequestParam(name = "limit", defaultValue = "20")
-                                 Integer limit
+    @GetMapping("/list/{disk_id}")
+    public ApiResult list(@PathVariable("disk_id") String diskId,
+                          @RequestParam(name = "parent_file_id", defaultValue = "root")
+                          String parentFileId,
+                          @RequestParam(name = "pageNum")
+                          Integer pageNum,
+                          @RequestParam(name = "pageSize", defaultValue = "20") Integer pageSize
 
     ) {
+        PageHelper.startPage(pageNum, pageSize);
         List<FileBo> fileBoList = diskFileService.getFileList(diskId, parentFileId);
 
         log.info("Disk file list:{}", fileBoList);
@@ -91,8 +94,8 @@ public class DiskFileController {
     DiskMapper diskMapper;
 
     //上传文件到当前文件夹  使用feign调用hdfs
-    @ApiOperation("上传文件")
-    @PostMapping(value = "/file")
+//    @ApiOperation("上传文件")
+//    @PostMapping(value = "/file")
     public ApiResult uploadFile(
             @RequestParam("disk_id")
             String diskId,
@@ -173,12 +176,6 @@ public class DiskFileController {
         return ResultUtil.fail();
     }
 
-
-    //上传文件夹
-
-
-
-
     /**
      * 我的删除文件  列表
      */
@@ -234,7 +231,7 @@ public class DiskFileController {
             String fileId) {
         //todo 获取文件下载地址  ?拼接token,过期时间等验证参数
         File file = fileService.getFileWithDiskIdAndFileId(diskId, fileId);
-        Assert.isNull(file,"没有该文件");
+        Assert.isNull(file, "没有该文件");
 
         String downloadToken = JWTUtil.createToken(new HashMap<>() {
             {
@@ -255,9 +252,6 @@ public class DiskFileController {
         System.out.println("jsonObject= " + jsonObject.toString());
         return ResultUtil.success(jsonObject);
     }
-
-
-
 
 
 }

@@ -6,6 +6,7 @@ import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
 import com.yefeng.hdfs.feign.client.HdfsClient;
 import com.yefeng.netdisk.common.constans.FileTypeEnum;
 import com.yefeng.netdisk.common.request.RequestParams;
@@ -20,9 +21,7 @@ import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
 import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.util.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,14 +42,11 @@ import java.util.Objects;
  * @author yefeng
  * @since 2023-01-15
  */
-@Api(tags = "文件控制器")
+@Api(tags = "文件模块")
 @RestController
 @RequestMapping("/file")
 @Slf4j
 public class FileController {
-
-    //查找文件
-    // search
     /*
 
 {
@@ -68,11 +64,10 @@ public class FileController {
 }
      */
 
-
     @Resource
     IDiskFileService diskFileService;
 
-
+    @ApiOperation(value = "获取文件hash,方式为sha1，仅做测试使用", notes = "仅做测试使用")
     @PostMapping("/hash")
     public ApiResult getFileHash(@ApiParam(name = "file", required = true) @RequestPart("file")
                                  MultipartFile file) {
@@ -84,11 +79,6 @@ public class FileController {
             throw new RuntimeException(e);
         }
     }
-
-
-//    public List<DiskFile> ListDiskFiles(String diskId,String parentFileId,Integer limit){
-//        diskFileService
-//    }
 
 
     /**
@@ -107,12 +97,15 @@ public class FileController {
                             @RequestParam(value = "order_by", required = false) String order_by,
                             @RequestParam(value = "limit", defaultValue = "20") Integer limit
     ) {
+
         QueryWrapper<DiskFile> wrapper = QueryWrapperUtil.getWrapper(query);
         wrapper.eq("disk_id", disk_id);
         String[] s = order_by.split(" ");
         if (s.length > 1) {
             wrapper.orderBy(true, Objects.equals(s[1], "ASC"), s[0]);
         }
+
+        PageHelper.startPage(0, limit);
         List<DiskFile> list = diskFileService.list(wrapper);
         return ResultUtil.success(list);
     }
@@ -360,7 +353,15 @@ public class FileController {
      * @param params
      * @return
      */
+    @ApiOperation("上传文件")
     @PostMapping("/createWithFolders")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "上传类型,可以是file和folder", required = true, dataType = "String", defaultValue = "file"),
+            @ApiImplicitParam(name = "name", value = "filename", required = true),
+            @ApiImplicitParam(name = "disk_id", value = "云盘id", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "parent_file_id", value = "父文件夹id", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "check_name_mode", value = "名称检查模式,分别是auto_rename（自动重命名）,overwrite(覆盖),refuse(丢弃此次上传)", required = true, dataType = "String")
+    })
     public ApiResult createWithFolders1(@RequestBody RequestParams params) {
         String type = params.getStringValue("type");
         Assert.isBlank(type, "创建类型不能为空");
@@ -370,6 +371,7 @@ public class FileController {
         String checkNameMode = params.getStringValue("check_name_mode");
 
         String diskFileId = RandomUtil.randomString(fileIdSize);
+
 
 
         DiskFile diskFile = new DiskFile();
@@ -610,57 +612,57 @@ public class FileController {
 
 
     /**
-      {
-      "share_id": "SoUvRnD5HLm",
-      "parent_file_id": "627fb51e4ee16e1110bd44fa9497bb5aa1a71c62",
-      "limit": 20,
-      "image_thumbnail_process": "image/resize,w_256/format,jpeg",
-      "image_url_process": "image/resize,w_1920/format,jpeg/interlace,1",
-      "video_thumbnail_process": "video/snapshot,t_1000,f_jpg,ar_auto,w_256",
-      "order_by": "name",
-      "order_direction": "DESC"
-      }
-
-
-
-     [
-         {
-         "drive_id": "358565",
-         "domain_id": "bj29",
-         "file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838",
-         "share_id": "xSX2h1D5RHL",
-         "name": "余胜军java",
-         "type": "folder",
-         "created_at": "2022-08-14T14:49:14.589Z",
-         "updated_at": "2022-11-20T14:12:47.466Z",
-         "parent_file_id": "root"
-         }
-     ]
-
-     [
-         {
-         "drive_id": "358565",
-         "domain_id": "bj29",
-         "file_id": "62f9ac458f827b6828d947fb985f0d0783924f63",
-         "share_id": "xSX2h1D5RHL",
-         "name": "每特教育&蚂蚁课堂JavaWeb开发基础2022版本",
-         "type": "folder",
-         "created_at": "2022-08-15T02:15:33.549Z",
-         "updated_at": "2022-08-15T02:15:33.549Z",
-         "parent_file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838"
-         },
-         {
-         "drive_id": "358565",
-
-         "file_id": "62f9ac1deb190306e1414e4c9fe043823fbeb6b4",
-         "share_id": "xSX2h1D5RHL",
-         "name": "java基础",
-         "type": "folder",
-         "created_at": "2022-08-15T02:14:53.893Z",
-         "updated_at": "2022-08-15T02:14:53.893Z",
-         "parent_file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838"
-         }
-     ]
+     * {
+     * "share_id": "SoUvRnD5HLm",
+     * "parent_file_id": "627fb51e4ee16e1110bd44fa9497bb5aa1a71c62",
+     * "limit": 20,
+     * "image_thumbnail_process": "image/resize,w_256/format,jpeg",
+     * "image_url_process": "image/resize,w_1920/format,jpeg/interlace,1",
+     * "video_thumbnail_process": "video/snapshot,t_1000,f_jpg,ar_auto,w_256",
+     * "order_by": "name",
+     * "order_direction": "DESC"
+     * }
+     * <p>
+     * <p>
+     * <p>
+     * [
+     * {
+     * "drive_id": "358565",
+     * "domain_id": "bj29",
+     * "file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838",
+     * "share_id": "xSX2h1D5RHL",
+     * "name": "余胜军java",
+     * "type": "folder",
+     * "created_at": "2022-08-14T14:49:14.589Z",
+     * "updated_at": "2022-11-20T14:12:47.466Z",
+     * "parent_file_id": "root"
+     * }
+     * ]
+     * <p>
+     * [
+     * {
+     * "drive_id": "358565",
+     * "domain_id": "bj29",
+     * "file_id": "62f9ac458f827b6828d947fb985f0d0783924f63",
+     * "share_id": "xSX2h1D5RHL",
+     * "name": "每特教育&蚂蚁课堂JavaWeb开发基础2022版本",
+     * "type": "folder",
+     * "created_at": "2022-08-15T02:15:33.549Z",
+     * "updated_at": "2022-08-15T02:15:33.549Z",
+     * "parent_file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838"
+     * },
+     * {
+     * "drive_id": "358565",
+     * <p>
+     * "file_id": "62f9ac1deb190306e1414e4c9fe043823fbeb6b4",
+     * "share_id": "xSX2h1D5RHL",
+     * "name": "java基础",
+     * "type": "folder",
+     * "created_at": "2022-08-15T02:14:53.893Z",
+     * "updated_at": "2022-08-15T02:14:53.893Z",
+     * "parent_file_id": "62f90b6a2173e426e8ad40a081de4c54b179c838"
+     * }
+     * ]
      **/
 
 
@@ -672,15 +674,16 @@ public class FileController {
      *
      * @param shareId
      * @param parentFileId
-     * @param limit
+     * @param pageNum
+     * @param pageSize
      * @return
      */
     @GetMapping("/list_by_share")
     public ApiResult listByShare(@RequestParam("share_id") String shareId,
-                                 @RequestParam(name= "parent_file_id",defaultValue = "root") String parentFileId,
-                                 @RequestParam(name = "pageCount", defaultValue = "0") Integer pageCount,@RequestParam(name = "pageSize", defaultValue = "0")Integer pageSize) {
+                                 @RequestParam(name = "parent_file_id", defaultValue = "root") String parentFileId,
+                                 @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
 
-        List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId,pageCount,pageSize);
+        List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, pageNum, pageSize);
 
         return ResultUtil.success(diskFiles);
 

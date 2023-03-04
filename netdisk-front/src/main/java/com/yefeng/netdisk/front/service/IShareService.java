@@ -20,6 +20,6 @@ public interface IShareService extends IService<Share> {
 
     ShareVo create(ShareBo shareBo);
 
-    List<DiskFile> getFilesByShareId(String shareId, String parentFileId,Integer pageCount, Integer pageSize);
+    List<DiskFile> getFilesByShareId(String shareId, String parentFileId,Integer pageNum, Integer pageSize);
 
 }

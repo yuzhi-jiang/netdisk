@@ -3,6 +3,7 @@ package com.yefeng.netdisk.front.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageHelper;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.front.bo.ShareBo;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.List;
 
 /**
  *
@@ -35,17 +37,17 @@ public class ShareController {
      * 查看我的分享文件
      *
      * @param diskId
-     * @param pageCount
+     * @param pageNum
      * @param pageSize
      * @return List
      */
     @GetMapping("/list")
-    public ApiResult listShare(@RequestParam("disk_id") String diskId,@RequestParam(defaultValue = "0") Integer pageCount,
-                               @RequestParam(defaultValue = "20",name = "pagesize") Integer pageSize) {
-        Page<Share> page = new Page<>(pageCount, pageSize);
-        Page<Share> sharePage = shareService.page(page, new QueryWrapper<Share>()
+    public ApiResult listShare(@RequestParam("disk_id") String diskId,@RequestParam(defaultValue = "0") Integer pageNum,
+                               @RequestParam(defaultValue = "20",name = "pageSize") Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        List<Share> shareList = shareService.list(new QueryWrapper<Share>()
                 .eq("disk_id", diskId));
-        return ResultUtil.success(sharePage.getRecords());
+        return ResultUtil.success(shareList);
     }
 
 

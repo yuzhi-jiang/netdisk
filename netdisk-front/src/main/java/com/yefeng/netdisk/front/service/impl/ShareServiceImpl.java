@@ -3,6 +3,7 @@ package com.yefeng.netdisk.front.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.ShareBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
@@ -96,12 +97,15 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
     @Resource
     DiskFileMapper diskFileMapper;
 
-    public List<DiskFile> getFilesByShareId(String shareId, String parentFileId, @Min(0) @RequestParam(name = "pagecount", defaultValue = "0") Integer pageCount, @RequestParam(defaultValue = "20", name = "page_size") @Range(min = 1, max = 40) Integer pageSize) {
+    public List<DiskFile> getFilesByShareId(String shareId, String parentFileId, Integer pageNum, Integer pageSize) {
         QueryWrapper<ShareItem> queryWrapper = new QueryWrapper<ShareItem>().eq("share_id", shareId);
 
-        Page<ShareItem> shareItemPage = shareItemMapper.selectPage(new Page<>(pageCount, pageSize), queryWrapper);
+//        Page<ShareItem> shareItemPage = shareItemMapper.selectPage(new Page<>(pageNum, pageSize), queryWrapper);
+//
+//        List<ShareItem> shareItems = shareItemPage.getRecords();
 
-        List<ShareItem> shareItems = shareItemPage.getRecords();
+        PageHelper.startPage(pageNum,pageSize);
+        List<ShareItem> shareItems=  shareItemMapper.selectList(queryWrapper);
 
 
         Long diskId = shareItems.get(0).getDiskId();

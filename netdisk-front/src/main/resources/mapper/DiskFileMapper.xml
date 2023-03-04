@@ -20,8 +20,7 @@
         on tf.id = tdf.file_id
     </sql>
 
-    <select id="getFileList" resultType="com.yefeng.netdisk.front.bo.FileBo"
-    >
+    <select id="getFileList" resultType="com.yefeng.netdisk.front.bo.FileBo">
         <include refid="selectFileBo"/>
         where tdf.disk_id = #{diskId}
         and tdf.parent_file_id = #{parentFileId}
