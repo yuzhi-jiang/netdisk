@@ -146,7 +146,11 @@ public class UserController {
     @ApiOperation(value = "用户登录,使用用户名/邮箱，或是手机号")
     @PostMapping("/login")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type",value = "登陆类型,")
+            @ApiImplicitParam(name = "type",value = "登陆类型,"),
+            @ApiImplicitParam(name = "account",value = "用户"),
+            @ApiImplicitParam(name = "mobile",value = "电话"),
+            @ApiImplicitParam(name = "password",value = "密码"),
+            @ApiImplicitParam(name = "captcha",value = "验证码")
     })
     public ApiResult login(@RequestBody RequestParams params) {
 
@@ -194,7 +198,7 @@ public class UserController {
                 throw new BizException("验证码错误请重试！");
             }
 
-            QueryWrapper<User> query = new QueryWrapper<User>();
+            QueryWrapper<User> query = new QueryWrapper<>();
 
             query.eq("mobile", mobile);
             User user = userService.getOne(query);
