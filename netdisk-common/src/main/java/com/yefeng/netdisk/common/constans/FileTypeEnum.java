@@ -11,7 +11,7 @@ public enum FileTypeEnum {
     /**
      * 文件夹
      */
-    FOLDER(0,"folder"),
+    FOLDER(2,"folder"),
     /**
      * 文件
      */
@@ -47,5 +47,14 @@ public enum FileTypeEnum {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public static FileTypeEnum fromCode(byte code) {
+        for (FileTypeEnum status : FileTypeEnum.values()) {
+            if (status.getCode() == code) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Invalid status code: " + code);
     }
 }

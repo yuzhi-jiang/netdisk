@@ -1,6 +1,8 @@
 package com.yefeng.netdisk.common.result;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.io.Serializable;
 
@@ -10,6 +12,7 @@ import java.io.Serializable;
  * @author zealon
  */
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ApiResult<T>  implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -73,11 +76,11 @@ public class ApiResult<T>  implements Serializable {
 //
 //        return jsonObject;
 //    }
-    @Override
-    public String toString() {
-
-        return getJsonString();
-    }
+//    @Override
+//    public String toString() {
+//
+//        return getJsonString();
+//    }
     /**
      * 构建消息内容
      * @param msg

@@ -1,8 +1,6 @@
 package com.yefeng.netdisk.front.util;
 
 
-import io.swagger.annotations.ApiModelProperty;
-
 /**
  * This class is for
  *
@@ -10,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @version 2023-02-08 21:45
  */
 public enum FileStatusEnum {
-    @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
+//    @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
 
     /**
      * 创建，等待上传
@@ -56,4 +54,14 @@ public enum FileStatusEnum {
 
     byte code;
     String name;
+
+    public static FileStatusEnum fromCode(byte code) {
+        for (FileStatusEnum status : FileStatusEnum.values()) {
+            if (status.getCode() == code) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Invalid status code: " + code);
+    }
+
 }

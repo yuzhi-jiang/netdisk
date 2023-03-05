@@ -16,14 +16,14 @@
                tf.type,
                tf.status
         from tb_disk_file as tdf
-        join tb_file as tf
-        on tf.id = tdf.file_id
+                 join tb_file as tf
+                      on tf.id = tdf.file_id
     </sql>
 
-    <select id="getFileList" resultType="com.yefeng.netdisk.front.bo.FileBo">
-        <include refid="selectFileBo"/>
+    <select id="getFileList" resultType="com.yefeng.netdisk.front.entity.DiskFile">
+        select *
+        from tb_disk_file as tdf
         where tdf.disk_id = #{diskId}
-        and tdf.parent_file_id = #{parentFileId}
     </select>
 
     <sql id="fileVo">
@@ -32,7 +32,33 @@
             `hash`,
             `path`,
             `status`,
-        ${tdf}.file_name as `name`
+        ${tdf}
+        .
+        file_name
+        as
+        `name`
     </sql>
+    <select id="selectFilePathByDiskIDAndFileId" resultType="com.yefeng.netdisk.front.entity.DiskFile">
+        SELECT df.*
+        FROM (SELECT @r                                                                      AS disk_file_id,
+                     (SELECT @r := parent_file_id FROM tb_disk_file WHERE disk_file_id = @r) AS parent_file_id
+              FROM (SELECT @r := #{disk_file_id}) vars,
+                   tb_disk_file
+              WHERE @r IS NOT NULL) T
+                 JOIN tb_disk_file df ON T.disk_file_id = df.disk_file_id
+        where disk_id = #{diskId}
+    </select>
 
+    <update id="deleteFile">
+        update tb_disk_file tdf
+        set tdf.status=3
+        where
+        tdf.disk_file_id in
+        <foreach collection="fileIds" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+        and
+        tdf.disk_id=#{diskId}
+
+    </update>
 </mapper>

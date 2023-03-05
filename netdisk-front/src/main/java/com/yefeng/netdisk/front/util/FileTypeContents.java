@@ -44,4 +44,13 @@ public enum FileTypeContents {
 
     byte code;
     String name;
+
+    public static FileTypeContents fromCode(byte code) {
+        for (FileTypeContents status : FileTypeContents.values()) {
+            if (status.getCode() == code) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Invalid status code: " + code);
+    }
 }

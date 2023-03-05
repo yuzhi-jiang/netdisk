@@ -7,13 +7,13 @@ import com.github.pagehelper.PageHelper;
 import com.qcloud.cos.utils.Md5Utils;
 import com.yefeng.hdfs.feign.client.HdfsClient;
 import com.yefeng.netdisk.common.constans.FileTypeEnum;
-import com.yefeng.netdisk.common.request.RequestParams;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.HttpCodeEnum;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
-import com.yefeng.netdisk.front.bo.FileBo;
+import com.yefeng.netdisk.front.bo.BatchBo;
+import com.yefeng.netdisk.front.bo.BatchRequestBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.mapper.DiskMapper;
@@ -21,21 +21,25 @@ import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
 import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.CapacityContents;
+import com.yefeng.netdisk.front.vo.DiskFileVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Min;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -50,6 +54,7 @@ import java.util.concurrent.ExecutorService;
 @RestController
 @RequestMapping("/diskFile")
 @RefreshScope
+@Validated
 public class DiskFileController {
 
 
@@ -75,21 +80,31 @@ public class DiskFileController {
     public ApiResult list(@PathVariable("disk_id") String diskId,
                           @RequestParam(name = "parent_file_id", defaultValue = "root")
                           String parentFileId,
-                          @RequestParam(name = "pageNum")
-                          Integer pageNum,
+                          @RequestParam(name = "pageNum",defaultValue = "1")
+                              @Min(value = 1,message = "分页最小从1开始") Integer pageNum,
                           @RequestParam(name = "pageSize", defaultValue = "20") Integer pageSize
 
     ) {
         PageHelper.startPage(pageNum, pageSize);
-        List<FileBo> fileBoList = diskFileService.getFileList(diskId, parentFileId);
+        List<DiskFileVo> fileBoList = diskFileService.getFileList(diskId, parentFileId);
 
         log.info("Disk file list:{}", fileBoList);
 
         return ResultUtil.success(fileBoList.toArray());
 
     }
-
-
+    /**
+     * 获取文件夹路径
+     * @param deskId
+     * @param fileId
+     * @return
+     */
+    @ApiOperation("获取文件夹路径")
+    @GetMapping("/get_path")
+    public List<DiskFileVo> getPath(@RequestParam("disk_id") String deskId,@RequestParam("file_id") String fileId){
+            List<DiskFileVo> paths= diskFileService.getPath(deskId,fileId);
+            return paths;
+    }
     @Resource
     DiskMapper diskMapper;
 
@@ -176,23 +191,63 @@ public class DiskFileController {
         return ResultUtil.fail();
     }
 
-    /**
-     * 我的删除文件  列表
-     */
 
-    @PostMapping("delete")
+    @ApiOperation("删除文件,未测试")
+    /**
+     * 删除文件  列表
+     * {
+     *   "requests": [
+     *     {
+     *       "body": {
+     *         "drive_id": "358565",
+     *         "file_id": "637a1dcd08f610bb4bb64fbab5eb5f789c77e2e7"
+     *       },
+     *       "headers": {
+     *         "Content-Type": "application/json"
+     *       },
+     *       "id": "637a1dcd08f610bb4bb64fbab5eb5f789c77e2e7",
+     *       "method": "POST",
+     *       "url": "/recyclebin/trash"
+     *     },
+     *     {
+     *       "body": {
+     *         "drive_id": "358565",
+     *         "file_id": "637a1dcd7940c7a1bfa745bbb7fabb2c64ba4f35"
+     *       },
+     *       "headers": {
+     *         "Content-Type": "application/json"
+     *       },
+     *       "id": "637a1dcd7940c7a1bfa745bbb7fabb2c64ba4f35",
+     *       "method": "POST",
+     *       "url": "/recyclebin/trash"
+     *     },
+     *     {
+     *       "body": {
+     *         "drive_id": "358565",
+     *         "file_id": "637a1dcd0f24ea18c7f54a64a6c55964fec6c36e"
+     *       },
+     *       "headers": {
+     *         "Content-Type": "application/json"
+     *       },
+     *       "id": "637a1dcd0f24ea18c7f54a64a6c55964fec6c36e",
+     *       "method": "POST",
+     *       "url": "/recyclebin/trash"
+     *     }
+     *   ],
+     *   "resource": "file"
+     * }
+     */
+    @PostMapping("/delete")
     public ApiResult deleteFile(
-            @RequestBody
-            RequestParams[] requestParams
+            BatchBo batchBo
     ) {
-        List<String> idLists = new ArrayList<String>(requestParams.length);
-        for (int i = 0; i < requestParams.length; i++) {
-            System.out.println(requestParams[i]);
-            idLists.add(requestParams[i].getStringValue("file_id"));
-        }
-//        diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_id",))
+
+        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getId).collect(Collectors.toList());
+
         //todo 删除文件，/回收站
-        return ResultUtil.success(requestParams);
+        String diskId=batchBo.getDiskId();
+        diskFileService.deleteFile(diskId,fileIds);
+        return ResultUtil.success();
     }
 
 

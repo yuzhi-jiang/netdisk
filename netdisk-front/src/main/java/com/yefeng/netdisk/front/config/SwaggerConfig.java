@@ -31,6 +31,6 @@ public class SwaggerConfig {
     }
  
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder().title("swagger api document").description("Api文档").termsOfServiceUrl("http://www.xxx.com").version("1.0").build();
+        return new ApiInfoBuilder().title("swagger api document").description("Api文档").termsOfServiceUrl("http://localhost:8082/front/doc.html").version("1.0").build();
     }
 }

@@ -1,8 +1,8 @@
 package com.yefeng.netdisk.front.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yefeng.netdisk.front.bo.FileBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
+import com.yefeng.netdisk.front.vo.DiskFileVo;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * @since 2023-01-15
  */
 public interface IDiskFileService extends IService<DiskFile> {
-    List<FileBo> getFileList(String diskId, String parentFileId);
+    List<DiskFileVo> getFileList(String diskId, String parentFileId);
 
     boolean saveWithFileId(String diskId, String diskFileId, Long fileId);
 
@@ -27,4 +27,8 @@ public interface IDiskFileService extends IService<DiskFile> {
     Object creatFolder(DiskFile diskFile, String checkNameMode);
 
     DiskFile createFile(DiskFile diskFile, String checkNameMode);
+
+    List<DiskFileVo> getPath(String diskId, String fileId);
+
+    void deleteFile(String diskId, List<String> fileIds);
 }

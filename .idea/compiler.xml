@@ -9,10 +9,20 @@
         <outputRelativeToContentRoot value="true" />
         <module name="netdisk-front-feign-client" />
         <module name="netdisk-gateway" />
-        <module name="netdisk-front" />
         <module name="netdisk-hdfs-feign-client" />
         <module name="netdisk-common" />
         <module name="cloud-hadoop" />
+      </profile>
+      <profile name="Annotation profile for netdisk" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../../../sdks/maven/repository/org/mapstruct/mapstruct-processor/1.4.2.Final/mapstruct-processor-1.4.2.Final.jar" />
+          <entry name="$PROJECT_DIR$/../../../sdks/maven/repository/org/mapstruct/mapstruct/1.4.2.Final/mapstruct-1.4.2.Final.jar" />
+          <entry name="$PROJECT_DIR$/../../../sdks/maven/repository/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar" />
+        </processorPath>
+        <module name="netdisk-front" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />

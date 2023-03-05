@@ -4,20 +4,22 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yefeng.netdisk.front.bo.FileBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
+import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskFileMapper;
 import com.yefeng.netdisk.front.mapper.FileMapper;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.util.CheckNameModeEnum;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.util.FileTypeContents;
+import com.yefeng.netdisk.front.vo.DiskFileVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -29,6 +31,10 @@ import java.util.List;
  */
 @Service
 public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> implements IDiskFileService {
+
+
+    @Resource
+    DiskFileMapper diskFileMapper;
 
     @Override
     public Object creatFolder(DiskFile diskFile, String checkNameMode) {
@@ -99,12 +105,25 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
 
     }
 
+    @Override
+    public List<DiskFileVo> getPath(String diskId, String fileId) {
+        List<DiskFile> diskFiles = baseMapper.selectFilePathByDiskIDAndFileId(Long.valueOf(diskId), fileId);
+        List<DiskFileVo> fileVos = diskFiles.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
+
+        return fileVos;
+    }
+
+    @Override
+    public void deleteFile(String diskId, List<String> fileIds) {
+        baseMapper.deleteFile(diskId, fileIds);
+    }
+
     @Resource
     FileMapper fileMapper;
 
     @Override
-    public List<FileBo> getFileList(String diskId, String parentFileId) {
-        return baseMapper.getFileList(diskId, parentFileId);
+    public List<DiskFileVo> getFileList(String diskId, String parentFileId) {
+        return baseMapper.getFileList(diskId, parentFileId).stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
     }
 
 

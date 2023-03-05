@@ -1,5 +1,6 @@
 package com.yefeng.netdisk.front.bo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -53,6 +54,7 @@ public class ShareBo {
      */
 
 
+
     /**
      * {
      *   "expiration": "2023-03-27T03:30:06.400Z",
@@ -103,12 +105,19 @@ public class ShareBo {
      *   "display_name": "双十一.js 等 2 个文件"
      * }
      */
+
+    @ApiModelProperty(value = "文件id列表",dataType = "Stinrg[]")
     String[] fileIdList;
+    @ApiModelProperty("分享密码")
     String sharePwd;
+    @ApiModelProperty("云盘id")
     String diskId;
 
 
+    @ApiModelProperty("过期时间,格式为: yyyy-MM-dd'T'HH:mm:ss'Z'")
+
     String expiration;
     //分享文件的类型 1，文件，2，文件夹，3.txt,4.doc,5.other
+    @ApiModelProperty(value = "分享文件的类型 1，文件，2，文件夹，3.txt,4.doc,5.other",dataType = "Byte")
     Byte type;
 }

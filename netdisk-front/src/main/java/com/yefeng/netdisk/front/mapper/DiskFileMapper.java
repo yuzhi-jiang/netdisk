@@ -1,7 +1,6 @@
 package com.yefeng.netdisk.front.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.yefeng.netdisk.front.bo.FileBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,6 +16,8 @@ import java.util.List;
  */
 public interface DiskFileMapper extends BaseMapper<DiskFile> {
 
-    List<FileBo> getFileList(@Param("diskId") String diskId,@Param("parentFileId") String parentFileId);
+    List<DiskFile> getFileList(@Param("diskId") String diskId,@Param("parentFileId") String parentFileId);
+    List<DiskFile> selectFilePathByDiskIDAndFileId(@Param("diskId") Long diskId,@Param("disk_file_id") String fileId);
 
+    void deleteFile(String diskId, List<String> fileIds);
 }

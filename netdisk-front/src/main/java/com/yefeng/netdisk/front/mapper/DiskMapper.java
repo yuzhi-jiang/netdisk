@@ -1,8 +1,11 @@
 package com.yefeng.netdisk.front.mapper;
 
-import com.yefeng.netdisk.front.entity.Disk;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yefeng.netdisk.front.entity.Disk;
+import com.yefeng.netdisk.front.entity.DiskFile;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -22,4 +25,5 @@ public interface DiskMapper extends BaseMapper<Disk> {
      * @return
      */
     boolean updateCapacity(@Param("diskId") Long diskId,@Param("type") Integer type,@Param("capacity") Long capacity);
+
 }

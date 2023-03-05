@@ -3,6 +3,7 @@ package com.yefeng.netdisk.common.result;
 /**
  * @author 夜枫
  */
+
 public class Result<T> {
     private String message;
     private int retCode;
@@ -100,7 +101,7 @@ public class Result<T> {
     public String getMessage() {
         return message;
     }
- 
+
     public int getRetCode() {
         return retCode;
     }
