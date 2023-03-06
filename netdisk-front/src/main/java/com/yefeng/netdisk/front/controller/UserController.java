@@ -24,10 +24,7 @@ import com.yefeng.netdisk.front.util.RedisUtil;
 import com.yefeng.netdisk.front.vo.DiskVo;
 import com.yefeng.netdisk.front.vo.UserDiskVo;
 import com.yefeng.netdisk.front.vo.UserVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,8 +71,13 @@ public class UserController {
     @Autowired
     private RedisUtil redisUtil;
 
-
-    //获取captcha
+    /**
+     * 获取captcha
+     * @param mobile
+     * @param isForgetType 是否是忘记密码
+     * @return
+     */
+    @ApiOperation("获取手机验证码,还未实现手机验证码发生,但提供了测试接口")
     @GetMapping("/captcha")
     public ApiResult getcaptcha(@RequestParam("mobile") String mobile, @RequestParam(value = "isForgetType", required = false) Boolean isForgetType) {
         CheckUtil.checkPhone(mobile);
@@ -124,22 +126,6 @@ public class UserController {
             log.info("io异常 exception:{}", e.getMessage());
         }
 
-    }
-
-
-    @GetMapping("checkcaptcha")
-    ApiResult checkImageCaptcha(@RequestParam("code") String code, HttpServletRequest request) {
-//        String captchaCode =(String) request.getAttribute("captchaCode");
-
-        HttpSession session = request.getSession();
-        String captchaCode = session.getAttribute("captchaCode").toString();
-
-        log.info("captchaCode:{},,code:{}", captchaCode, code);
-
-        if (code.equals(captchaCode)) {
-            return ResultUtil.success();
-        }
-        return new ApiResult(HttpCodeEnum.FAIL.getCode(), "验证码不匹配");
     }
 
 
@@ -229,8 +215,20 @@ public class UserController {
         throw new BizException("登录方式不正确");
     }
 
-    //todo 注册
+    /**
+     * 注册
+     * @param params
+     * @return
+     */
     @PostMapping("/register")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type",value = "注册类型,类型枚举"),
+            @ApiImplicitParam(name = "email",value = "邮箱"),
+            @ApiImplicitParam(name = "mobile",value = "电话"),
+            @ApiImplicitParam(name = "password",value = "密码"),
+            @ApiImplicitParam(name = "captcha",value = "验证码"),
+            @ApiImplicitParam(name = "username",value = "用户名")
+    })
     public ApiResult register(@RequestBody RequestParams params) {
         Integer type = params.getIntValue("type");
         Assert.isNull(type, "注册类型不能为空");
@@ -285,10 +283,42 @@ public class UserController {
         return new ApiResult(HttpCodeEnum.FAIL.getCode(), "请根据参数请求");
     }
 
+    /**
+     * 校验验证码
+     * @param code
+     * @param request
+     * @return
+     */
+    @ApiOperation("验证码校验")
+    @GetMapping("checkcaptcha")
+    ApiResult checkImageCaptcha(@RequestParam("code") String code, HttpServletRequest request) {
+//        String captchaCode =(String) request.getAttribute("captchaCode");
+
+        HttpSession session = request.getSession();
+        String captchaCode = session.getAttribute("captchaCode").toString();
+
+        log.info("captchaCode:{},,code:{}", captchaCode, code);
+
+        if (code.equals(captchaCode)) {
+            return ResultUtil.success();
+        }
+        return new ApiResult(HttpCodeEnum.FAIL.getCode(), "验证码不匹配");
+    }
+
+
+    //todo 注册
+
 
     //todo 退出
+
+    /**
+     * 退出
+     * @param token
+     * @return
+     */
+    @ApiOperation("用户登出")
     @GetMapping("/logout")
-    public ApiResult logout(@RequestHeader("Authorization") String token) {
+    public ApiResult logout(@RequestHeader("Authorization")@ApiParam("token 从header中获取") String token) {
         redisUtil.delete(token);
         return ResultUtil.success();
     }
@@ -296,9 +326,12 @@ public class UserController {
 
     /**
      * 获取用户信息
+     * @param subject
+     * @return
      */
+    @ApiOperation("获取用户信息")
     @GetMapping("/userinfo")
-    public ApiResult getUser(@RequestHeader("subject") String subject) {
+    public ApiResult getUser(@RequestHeader("subject")@ApiParam("用户id") String subject) {
         //todo 是否查看用户状态
         User user = userService.getById(Long.parseLong(subject));
         Assert.isNull(user, "用户不存在");

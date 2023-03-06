@@ -11,12 +11,16 @@ import com.yefeng.netdisk.front.entity.Share;
 import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.util.DateUtil;
 import com.yefeng.netdisk.front.vo.ShareVo;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Min;
 import java.text.ParseException;
 import java.util.List;
+
 
 /**
  *
@@ -41,8 +45,9 @@ public class ShareController {
      * @param pageSize
      * @return List
      */
+    @ApiOperation("查看我的分享文件")
     @GetMapping("/list")
-    public ApiResult listShare(@RequestParam("disk_id") String diskId,@RequestParam(defaultValue = "0") Integer pageNum,
+    public ApiResult listShare(@RequestParam("disk_id") String diskId,@RequestParam(defaultValue = "0")@Min(value = 1,message = "分页最小从1开始") Integer pageNum,
                                @RequestParam(defaultValue = "20",name = "pageSize") Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);
         List<Share> shareList = shareService.list(new QueryWrapper<Share>()
@@ -60,9 +65,10 @@ public class ShareController {
      *
      * @throws ParseException
      */
+    @ApiOperation("更改失效时间")
     @PatchMapping("/updateExpire")
     public ApiResult updateExpired(@RequestParam("disk_id")String diskId,@RequestParam("share_id") String shareId
-            ,@RequestParam("expiration") String expiration) {
+            ,@RequestParam("expiration")@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")  String expiration) {
         if (StringUtils.isBlank(expiration)) {
             expiration="9999-12-31T23:59:59Z";
             //永久
@@ -84,6 +90,7 @@ public class ShareController {
      * @param shareBo
      * @return
      */
+    @ApiOperation("创建分享")
     @PostMapping("/create")
     public ApiResult create(@RequestBody ShareBo shareBo) {
 
@@ -101,6 +108,7 @@ public class ShareController {
      * @param shareId
      * @return
      */
+    @ApiOperation("取消分享")
     @PatchMapping("/cancel")
     public ApiResult cancel(@RequestParam("disk_id") String diskId,
                             @RequestParam("share_id") String shareId) {
