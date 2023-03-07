@@ -6,4 +6,7 @@
 *.log
 /hgatewayLogs/
 **/test/**
-/.idea/
+
+
+*.iml
+.idea/**
