@@ -1,4 +1,9 @@
 
+verification-code:
+  sender:
+    types:
+      sms: com.example.SmsVerificationCodeSender
+      email: com.example.EmailVerificationCodeSender
 
 
 #jwt: data :这个路径是根据JWTUtil中的

@@ -14,6 +14,7 @@ import com.yefeng.netdisk.common.util.CheckUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.common.validator.ValidatorUtils;
+import com.yefeng.netdisk.common.verificationservice.VerificationCodeSenderLocator;
 import com.yefeng.netdisk.front.dto.BUser;
 import com.yefeng.netdisk.front.entity.User;
 import com.yefeng.netdisk.front.service.IDiskService;
@@ -21,6 +22,7 @@ import com.yefeng.netdisk.front.service.impl.UserServiceImpl;
 import com.yefeng.netdisk.front.util.CaptchaUtil;
 import com.yefeng.netdisk.front.util.RedisKeys;
 import com.yefeng.netdisk.front.util.RedisUtil;
+import com.yefeng.netdisk.front.util.SendUtils;
 import com.yefeng.netdisk.front.vo.DiskVo;
 import com.yefeng.netdisk.front.vo.UserDiskVo;
 import com.yefeng.netdisk.front.vo.UserVo;
@@ -71,6 +73,10 @@ public class UserController {
     @Autowired
     private RedisUtil redisUtil;
 
+
+
+
+
     /**
      * 获取captcha
      * @param mobile
@@ -89,8 +95,11 @@ public class UserController {
 
         String captcha = captchaUtil.createCaptcha(mobile);
 
-        // todo 异步发短信验证码
+        // todo 异步发 验证码
         log.info("the mobile:{} captcha is {}", mobile, captcha);
+
+        SendUtils.send(mobile,captcha);
+
         //直接返回
         return ResultUtil.success(captcha);//此次为了测试直接返回
     }
