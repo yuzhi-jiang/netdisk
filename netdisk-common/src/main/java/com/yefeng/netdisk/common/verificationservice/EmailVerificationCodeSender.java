@@ -2,9 +2,8 @@ package com.yefeng.netdisk.common.verificationservice;
 
 import cn.hutool.core.lang.Validator;
 import cn.hutool.extra.mail.MailUtil;
-import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class EmailVerificationCodeSender implements VerificationCodeSender {
     @Override
     public void send(String target, String code) {

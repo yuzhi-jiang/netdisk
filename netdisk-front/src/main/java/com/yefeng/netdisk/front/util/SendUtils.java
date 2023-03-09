@@ -10,11 +10,24 @@ import org.springframework.stereotype.Component;
 @Component
 @RefreshScope
 public class SendUtils {
-    @Autowired
-    private static VerificationCodeSenderLocator senderLocator;
 
     @Value("${verification-code.sender.type}")
+    public void setType(String type) {
+        SendUtils.type =type;
+    }
+
+
+
+    private static VerificationCodeSenderLocator senderLocator;
+
+
+    @Autowired
+    public  void setSenderLocator(VerificationCodeSenderLocator senderLocator) {
+        SendUtils.senderLocator = senderLocator;
+    }
+
     private static String type;
+
 
     public static void send(String target, String code){
         Assert.isBlank(type,"发送方式没有设定");

@@ -1,11 +1,11 @@
 package com.yefeng.netdisk.front.aspect;
 
 import com.google.gson.Gson;
-import com.yefeng.netdisk.front.entity.SysLog;
-import com.yefeng.netdisk.front.service.ISysLogService;
 import com.yefeng.netdisk.common.annotation.SysSaveLog;
 import com.yefeng.netdisk.common.util.HttpContextUtils;
 import com.yefeng.netdisk.common.util.IPUtils;
+import com.yefeng.netdisk.front.entity.SysLog;
+import com.yefeng.netdisk.front.service.impl.SysLogServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 @Component
 public class SysLogAspect {
     @Autowired
-    private ISysLogService sysLogService;
+    private SysLogServiceImpl sysLogService;
 
     @Pointcut("@annotation(com.yefeng.netdisk.common.annotation.SysSaveLog)")
     public void logPointCut() {

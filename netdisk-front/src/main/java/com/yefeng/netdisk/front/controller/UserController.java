@@ -14,7 +14,6 @@ import com.yefeng.netdisk.common.util.CheckUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.common.validator.ValidatorUtils;
-import com.yefeng.netdisk.common.verificationservice.VerificationCodeSenderLocator;
 import com.yefeng.netdisk.front.dto.BUser;
 import com.yefeng.netdisk.front.entity.User;
 import com.yefeng.netdisk.front.service.IDiskService;
@@ -86,7 +85,7 @@ public class UserController {
     @ApiOperation("获取手机验证码,还未实现手机验证码发生,但提供了测试接口")
     @GetMapping("/captcha")
     public ApiResult getcaptcha(@RequestParam("mobile") String mobile, @RequestParam(value = "isForgetType", required = false) Boolean isForgetType) {
-        CheckUtil.checkPhone(mobile);
+//        CheckUtil.checkPhone(mobile);
 
         if (isForgetType != null && isForgetType) {
             User user = userService.getOne(new QueryWrapper<User>().eq("mobile", mobile));
@@ -101,7 +100,7 @@ public class UserController {
         SendUtils.send(mobile,captcha);
 
         //直接返回
-        return ResultUtil.success(captcha);//此次为了测试直接返回
+        return ResultUtil.success();//此次为了测试直接返回
     }
 
     //    @GetMapping("/imageCaptcha")

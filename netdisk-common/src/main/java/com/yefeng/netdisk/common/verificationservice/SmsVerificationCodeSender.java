@@ -1,8 +1,6 @@
 package com.yefeng.netdisk.common.verificationservice;
 
-import org.springframework.stereotype.Service;
-
-@Service
+//@Service
 public class SmsVerificationCodeSender implements VerificationCodeSender {
     @Override
     public void send(String target, String code) {
