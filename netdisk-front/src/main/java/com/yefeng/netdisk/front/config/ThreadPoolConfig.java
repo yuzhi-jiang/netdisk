@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.*;
 
 @Configuration
-@ConfigurationProperties(prefix = "spring.thread-pool.common")
+@ConfigurationProperties(prefix = "mycloud.thread-pool.common")
 public class ThreadPoolConfig {
 
     /** 核心线程数 */

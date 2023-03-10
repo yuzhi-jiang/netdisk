@@ -20,14 +20,6 @@ mycloud:
 
 
 spring:
-  # 线程池配置
-  thread-pool:
-    # 公用线程池
-    common:
-      corePoolSize: 1
-      maximumPoolSize: 5
-      keepAliveTime: 0
-      queueCapacity: 20480
   servlet:
     multipart:
       max-request-size: 10240MB
@@ -36,11 +28,11 @@ spring:
     #    driver-class-name: com.mysql.cj.jdbc.Driver
     driver-class-name: com.mysql.cj.jdbc.Driver
     #    url: jdbc:mysql://localhost:3306/netdisk?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
-    url: jdbc:mysql://127.0.0.1:3306/netdisk?serverTimezone=UTC
-#    url: jdbc:mysql://146.56.116.51:3306/netdisk?serverTimezone=UTC
+#    url: jdbc:mysql://127.0.0.1:3306/netdisk?serverTimezone=UTC
+    url: jdbc:mysql://146.56.96.241:3306/netdisk?serverTimezone=UTC  #24g
     username: root
-    password: xxxx
-#    password: xxxxxx
+#    password: xxxx
+    password: xxxxxx
     # 指定类型为我们自己的
     type: com.alibaba.druid.pool.DruidDataSource
     #   数据源其他配置

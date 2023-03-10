@@ -8,14 +8,14 @@ logging:
     com.baomidou.mybatisplus: debug
   config:
     console-show-sql: true
-mycloud:
-  register:
-    registerByMobileLogin: true #未注册手机 通过登录直接注册
-    baseCapacity: 524288000 #基础容量 500G 单位为Byte
-  redis:
-    open: true
-  hdfsBasePath: /yefeng
-  fileIdSize: 40
+#mycloud:
+#  register:
+#    registerByMobileLogin: true #未注册手机 通过登录直接注册
+#    baseCapacity: 524288000 #基础容量 500G 单位为Byte
+#  redis:
+#    open: true
+#  hdfsBasePath: /yefeng
+#  fileIdSize: 40
 
   upload:
     idSize: 32

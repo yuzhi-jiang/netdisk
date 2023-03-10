@@ -30,8 +30,8 @@ public class CaptchaUtil {
     }
 
     public String createCaptcha(String mobile) {
-        //默认10分钟有效期
-        return createCaptcha(mobile, 600);
+        //默认5分钟有效期
+        return createCaptcha(mobile, 300);
     }
 
 

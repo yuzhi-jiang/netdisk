@@ -72,37 +72,29 @@ public class UserController {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private SendUtils sendUtils;
 
-
-
-
-    /**
-     * 获取captcha
-     * @param mobile
-     * @param isForgetType 是否是忘记密码
-     * @return
-     */
-    @ApiOperation("获取手机验证码,还未实现手机验证码发生,但提供了测试接口")
+    @ApiOperation("获取邮箱验证码,,")
     @GetMapping("/captcha")
-    public ApiResult getcaptcha(@RequestParam("mobile") String mobile, @RequestParam(value = "isForgetType", required = false) Boolean isForgetType) {
-//        CheckUtil.checkPhone(mobile);
+    public ApiResult getEmailcaptcha(@RequestParam("email") String email, @RequestParam(value = "isForgetType", required = false) Boolean isForgetType) {
+        CheckUtil.checkEmail(email);
 
         if (isForgetType != null && isForgetType) {
-            User user = userService.getOne(new QueryWrapper<User>().eq("mobile", mobile));
+            User user = userService.getOne(new QueryWrapper<User>().eq("email", email));
             Assert.isNull(user, "用户不存在，请先注册！");
         }
 
-        String captcha = captchaUtil.createCaptcha(mobile);
+        String captcha = captchaUtil.createCaptcha(email);
 
         // todo 异步发 验证码
-        log.info("the mobile:{} captcha is {}", mobile, captcha);
+        log.info("the captcha:{}  is {}", email, captcha);
 
-        SendUtils.send(mobile,captcha);
+        sendUtils.send(email,captcha);
 
         //直接返回
-        return ResultUtil.success();//此次为了测试直接返回
+        return ResultUtil.success();
     }
-
     //    @GetMapping("/imageCaptcha")
     //得解决分布式下解决方式 项目采用无状态，不能用redis sessions
     public void getImageCaptcha(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -232,7 +224,7 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type",value = "注册类型,类型枚举"),
             @ApiImplicitParam(name = "email",value = "邮箱"),
-            @ApiImplicitParam(name = "mobile",value = "电话"),
+            @ApiImplicitParam(name = "mobile",value = "电话",required = false),
             @ApiImplicitParam(name = "password",value = "密码"),
             @ApiImplicitParam(name = "captcha",value = "验证码"),
             @ApiImplicitParam(name = "username",value = "用户名")

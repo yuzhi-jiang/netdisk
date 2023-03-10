@@ -21,6 +21,14 @@ mycloud:
     open: true
   hdfsBasePath: /yefeng
   fileIdSize: 40
+  # 线程池配置
+  thread-pool:
+    # 公用线程池
+    common:
+      corePoolSize: 1
+      maximumPoolSize: 5
+      keepAliveTime: 0
+      queueCapacity: 20480
 
   upload:
     idSize: 32

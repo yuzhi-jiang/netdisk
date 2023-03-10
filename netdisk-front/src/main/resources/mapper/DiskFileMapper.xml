@@ -49,6 +49,17 @@
         where disk_id = #{diskId}
     </select>
 
+    <update id="updateDiskFileStatus">
+        update tb_disk_file tdf
+        set tdf.status=#{}
+        where
+        tdf.disk_file_id in
+        <foreach collection="fileIds" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+        and
+        tdf.disk_id=#{diskId}
+    </update>
     <update id="deleteFile">
         update tb_disk_file tdf
         set tdf.status=3
@@ -59,6 +70,5 @@
         </foreach>
         and
         tdf.disk_id=#{diskId}
-
     </update>
 </mapper>
