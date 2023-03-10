@@ -13,6 +13,9 @@ import com.yefeng.netdisk.front.util.CheckNameModeEnum;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.util.FileTypeContents;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.defaults.DefaultSqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,6 +119,24 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     @Override
     public void deleteFile(String diskId, List<String> fileIds) {
         baseMapper.deleteFile(diskId, fileIds);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean updateStatus(String diskId, List<String> fileIds, FileStatusEnum status) {
+
+       int count= baseMapper.updateStatus(diskId,fileIds,status.getCode());
+
+
+       return count>0;
+
+    }
+
+    @Override
+    public boolean moveFile(List<DiskFile> diskFiles) {
+
+        int count=baseMapper.moveFileBatch(diskFiles);
+        return count>0;
     }
 
     @Resource

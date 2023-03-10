@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class BatchRequestBo {
-    private BatchBo body;
+    private BatchBodyBo body;
 
     private String headers;
     private String id;

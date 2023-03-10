@@ -13,6 +13,7 @@ import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.BatchBo;
+import com.yefeng.netdisk.front.bo.BatchBodyBo;
 import com.yefeng.netdisk.front.bo.BatchRequestBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
@@ -21,6 +22,7 @@ import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
 import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.CapacityContents;
+import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -192,7 +194,6 @@ public class DiskFileController {
     }
 
 
-    @ApiOperation("删除文件,未测试")
     /**
      * 删除文件  列表
      * {
@@ -237,6 +238,7 @@ public class DiskFileController {
      *   "resource": "file"
      * }
      */
+    @ApiOperation("从云盘删除文件，应该是在回收站调用")
     @PostMapping("/delete")
     public ApiResult deleteFile(
             BatchBo batchBo
@@ -244,15 +246,48 @@ public class DiskFileController {
 
         List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getId).collect(Collectors.toList());
 
-        //todo 删除文件，/回收站
+        //todo
         String diskId=batchBo.getDiskId();
         diskFileService.deleteFile(diskId,fileIds);
         return ResultUtil.success();
     }
 
 
+    @ApiOperation("放到回收站")
+    @PostMapping("/recycle")
+    public ApiResult recycle(BatchBo batchBo){
+        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getId).collect(Collectors.toList());
+        String diskId=batchBo.getDiskId();
+        boolean flag=diskFileService.updateStatus(diskId,fileIds, FileStatusEnum.invalid);
+        if(flag){
+            return ResultUtil.success();
+        }
+        return ResultUtil.fail();
+    }
+
+    @ApiOperation("文件移动")
+    @PutMapping("/move")
+    public ApiResult move(BatchBo batchBo){
+        List<DiskFile> bodyBos = Arrays.stream(batchBo.getRequests()).map(request->{
+            BatchBodyBo body = request.getBody();
+            DiskFile diskFile = new DiskFile();
+            diskFile.setDiskFileId(body.getFileID());
+            diskFile.setParentFileId(body.getToParentFileId());
+           diskFile.setDiskId(Long.valueOf(body.getDriveID()));
+           return diskFile;
+        }).collect(Collectors.toList());
+
+        boolean flag = diskFileService.moveFile(bodyBos);
+        if(flag)
+            return ResultUtil.success();
+
+        return ResultUtil.fail();
+
+    }
+
     //修改文件名称
-    @PutMapping("/update")
+    @ApiOperation("修改文件名")
+    @PutMapping("/filename")
     public ApiResult updateFileName(
             @RequestParam("disk_id")
             String diskId,

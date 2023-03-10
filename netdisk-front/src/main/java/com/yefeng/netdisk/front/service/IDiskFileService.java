@@ -2,6 +2,7 @@ package com.yefeng.netdisk.front.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yefeng.netdisk.front.entity.DiskFile;
+import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
 
 import java.util.List;
@@ -31,4 +32,8 @@ public interface IDiskFileService extends IService<DiskFile> {
     List<DiskFileVo> getPath(String diskId, String fileId);
 
     void deleteFile(String diskId, List<String> fileIds);
+
+    boolean updateStatus(String diskId, List<String> fileIds, FileStatusEnum status);
+
+    boolean moveFile(List<DiskFile> diskFiles);
 }
