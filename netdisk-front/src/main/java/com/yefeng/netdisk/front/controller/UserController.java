@@ -40,17 +40,17 @@ import java.util.concurrent.ExecutorService;
 
 
 /**
- * <p>
- * 用户控制器
- * </p>
+ * 用户模块
  *
  * @author yefeng
  * @since 2023-01-15
  */
+
+@Api(tags = "用户模块")
 @Slf4j
 @RestController
 @RequestMapping("/user")
-@Api(tags = "用户")
+
 public class UserController extends BaseController {
 
     @Resource

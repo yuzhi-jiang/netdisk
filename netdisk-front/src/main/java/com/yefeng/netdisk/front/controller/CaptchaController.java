@@ -26,7 +26,7 @@ import java.io.IOException;
 
 /**
  *
- * This class is for
+ *
  * 验证码
  * @author 夜枫
  * @version 2023-03-11 17:32

@@ -10,6 +10,7 @@ import com.yefeng.netdisk.front.entity.Share;
 import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.util.DateUtil;
 import com.yefeng.netdisk.front.vo.ShareVo;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ import java.util.List;
  * @author yefeng
  * @since 2023-01-15
  */
+@Api(tags = "分享文件")
 @RestController
 @RequestMapping("/share")
 public class ShareController {
