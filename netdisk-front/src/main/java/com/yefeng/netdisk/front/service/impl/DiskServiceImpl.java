@@ -79,7 +79,7 @@ public class DiskServiceImpl extends ServiceImpl<DiskMapper, Disk> implements ID
     @Transactional(rollbackForClassName = {"RuntimeException", "Exception"})
     Disk createBaseCapacity(Long userId) {
         Disk disk = new Disk();
-        disk.setUseCapacity(new BigDecimal(0));
+        disk.setUseCapacity(BigDecimal.valueOf(0L));
         disk.setTotalCapacity(new BigDecimal(baseCapacity));
         disk.setUserId(userId);
         diskMapper.insert(disk);
@@ -105,6 +105,7 @@ public class DiskServiceImpl extends ServiceImpl<DiskMapper, Disk> implements ID
      * @return
      */
     private List<DiskItem> getDiskItems(Long diskId){
-        return diskItemMapper.selectList(new QueryWrapper<DiskItem>().eq("disk_id", diskId));
+        List<DiskItem> diskItem = diskItemMapper.selectList(new QueryWrapper<DiskItem>().eq("disk_id", diskId));
+        return diskItem;
     }
 }

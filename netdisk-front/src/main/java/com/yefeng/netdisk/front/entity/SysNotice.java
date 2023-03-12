@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author yefeng
- * @since 2023-01-15
+ * @since 2023-03-11
  */
 @TableName("sys_notice")
 @ApiModel(value = "SysNotice对象", description = "通知公告表")
@@ -37,23 +38,23 @@ public class SysNotice implements Serializable {
     @ApiModelProperty("公告状态（0正常 1关闭）")
     private Boolean status;
 
-    @ApiModelProperty("登录者")
-    private String createUser;
-
-    @ApiModelProperty("登录时间")
-    private Long createTime;
-
-    @ApiModelProperty("更新者")
-    private String opUser;
-
-    @ApiModelProperty("更新时间")
-    private Long opTime;
-
     @ApiModelProperty("版本号")
     private Short lastVer;
 
     @ApiModelProperty("备注")
     private String remark;
+
+    @ApiModelProperty("创建人")
+    private Long createUser;
+
+    @ApiModelProperty("创建时间")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("修改人")
+    private Long modifyUser;
+
+    @ApiModelProperty("修改时间")
+    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -95,38 +96,6 @@ public class SysNotice implements Serializable {
         this.status = status;
     }
 
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getOpUser() {
-        return opUser;
-    }
-
-    public void setOpUser(String opUser) {
-        this.opUser = opUser;
-    }
-
-    public Long getOpTime() {
-        return opTime;
-    }
-
-    public void setOpTime(Long opTime) {
-        this.opTime = opTime;
-    }
-
     public Short getLastVer() {
         return lastVer;
     }
@@ -143,6 +112,38 @@ public class SysNotice implements Serializable {
         this.remark = remark;
     }
 
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(Long modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDateTime modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
     @Override
     public String toString() {
         return "SysNotice{" +
@@ -151,12 +152,12 @@ public class SysNotice implements Serializable {
             ", noticeType = " + noticeType +
             ", noticeContent = " + noticeContent +
             ", status = " + status +
-            ", createUser = " + createUser +
-            ", createTime = " + createTime +
-            ", opUser = " + opUser +
-            ", opTime = " + opTime +
             ", lastVer = " + lastVer +
             ", remark = " + remark +
+            ", createUser = " + createUser +
+            ", createTime = " + createTime +
+            ", modifyUser = " + modifyUser +
+            ", modifyTime = " + modifyTime +
         "}";
     }
 }

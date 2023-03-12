@@ -1,7 +1,6 @@
 package com.yefeng.netdisk.front.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.yefeng.netdisk.common.validator.Assert;
@@ -14,14 +13,11 @@ import com.yefeng.netdisk.front.mapper.ShareItemMapper;
 import com.yefeng.netdisk.front.mapper.ShareMapper;
 import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.vo.ShareVo;
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,7 +67,7 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
         for (int i = 0; i < shareSize; i++) {
             ShareItem shareItem = new ShareItem();
 
-            shareItem.setFileId(Long.valueOf(shareBo.getFileIdList()[i]));
+            shareItem.setFileId(shareBo.getFileIdList()[i]);
             shareItem.setType(shareBo.getType());
             shareItem.setDiskId(Long.valueOf(shareBo.getDiskId()));
             shareItem.setShareId(share.getId());
@@ -110,7 +106,7 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
 
         Long diskId = shareItems.get(0).getDiskId();
 
-        List<Long> fileIds = shareItems.stream().map(ShareItem::getFileId).collect(Collectors.toList());
+        List<String> fileIds = shareItems.stream().map(ShareItem::getFileId).collect(Collectors.toList());
 
 
         List<DiskFile> diskFiles = diskFileMapper.selectList(new QueryWrapper<DiskFile>().eq("disk_id", diskId)
@@ -119,7 +115,7 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
 
         //todo  可能过滤后少于需要的，也就是正确的没有查到，查到的不够，是需要结果limit，不是过滤前的limit
         List<DiskFile> resFiles = diskFiles.stream()
-                .filter(df -> fileIds.contains(df.getFileId()))
+                .filter(df -> fileIds.contains(df.getDiskFileId()))
                 .collect(Collectors.toList());
 
         return resFiles;

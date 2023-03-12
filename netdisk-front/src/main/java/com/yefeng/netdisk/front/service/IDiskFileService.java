@@ -1,6 +1,7 @@
 package com.yefeng.netdisk.front.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
@@ -25,13 +26,13 @@ public interface IDiskFileService extends IService<DiskFile> {
 
     DiskFile createFile(String diskId, String parentFileId, String fileName, String file_id, String checkNameMode);
 
-    Object creatFolder(DiskFile diskFile, String checkNameMode);
+    CreateFileDto creatFolder(DiskFile diskFile, String checkNameMode);
 
     DiskFile createFile(DiskFile diskFile, String checkNameMode);
 
     List<DiskFileVo> getPath(String diskId, String fileId);
 
-    void deleteFile(String diskId, List<String> fileIds);
+    boolean deleteFile(String diskId, List<String> fileIds);
 
     boolean updateStatus(String diskId, List<String> fileIds, FileStatusEnum status);
 

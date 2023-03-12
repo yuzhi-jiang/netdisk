@@ -22,7 +22,7 @@ public enum FileStatusEnum {
     /**
      * 激活可用
      */
-    Valid((byte) 2,"Valid"),
+    valid((byte) 2,"valid"),
 
     /**
      * 失效

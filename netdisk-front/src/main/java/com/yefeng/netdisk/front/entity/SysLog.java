@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author yefeng
- * @since 2023-01-15
+ * @since 2023-03-11
  */
 @TableName("sys_log")
 @ApiModel(value = "SysLog对象", description = "系统日志")
@@ -43,8 +43,17 @@ public class SysLog implements Serializable {
     @ApiModelProperty("IP地址")
     private String ip;
 
+    @ApiModelProperty("创建人")
+    private Long createUser;
+
     @ApiModelProperty("创建时间")
-    private LocalDateTime createDate;
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("修改人")
+    private Long modifyUser;
+
+    @ApiModelProperty("修改时间")
+    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -102,12 +111,36 @@ public class SysLog implements Serializable {
         this.ip = ip;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public Long getCreateUser() {
+        return createUser;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(Long modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDateTime modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     @Override
@@ -120,7 +153,10 @@ public class SysLog implements Serializable {
             ", params = " + params +
             ", time = " + time +
             ", ip = " + ip +
-            ", createDate = " + createDate +
+            ", createUser = " + createUser +
+            ", createTime = " + createTime +
+            ", modifyUser = " + modifyUser +
+            ", modifyTime = " + modifyTime +
         "}";
     }
 }

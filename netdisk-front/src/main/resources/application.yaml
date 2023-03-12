@@ -1,6 +1,12 @@
+server:
+  servlet:
+    context-path: /front
 spring:
   profiles:
-    active: dev
+    active: local
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
   devtools:
     restart:
       enabled: true  #设置开启热部署
@@ -35,6 +41,8 @@ mycloud:
     tokenExpire: 600 #600 sec  is 10 minutes
   download:
     urlExpireTime: 3600 #downloadUrltoken失效时间 默认10分钟600秒
+  useractive:
+    tokenExpire: 7200 #7200 sec  is 2 hours
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

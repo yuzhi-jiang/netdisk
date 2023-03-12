@@ -106,23 +106,26 @@ public class ApiResult<T>  implements Serializable {
         return code;
     }
 
-    public void setCode(int code) {
+    public ApiResult setCode(int code) {
         this.code = code;
+        return this;
     }
 
     public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public ApiResult setMsg(String msg) {
         this.msg = msg;
+        return this;
     }
 
     public T getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public ApiResult setData(T data) {
         this.data = data;
+        return this;
     }
 }

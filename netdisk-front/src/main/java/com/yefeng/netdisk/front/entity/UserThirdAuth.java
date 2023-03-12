@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author yefeng
- * @since 2023-01-15
+ * @since 2023-03-11
  */
 @TableName("user_third_auth")
 @ApiModel(value = "UserThirdAuth对象", description = "")
@@ -34,6 +35,18 @@ public class UserThirdAuth implements Serializable {
 
     @ApiModelProperty("第三方获取的access_token,校验使用	")
     private String accessToken;
+
+    @ApiModelProperty("创建人")
+    private Long createUser;
+
+    @ApiModelProperty("创建时间")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("修改人")
+    private Long modifyUser;
+
+    @ApiModelProperty("修改时间")
+    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -75,6 +88,38 @@ public class UserThirdAuth implements Serializable {
         this.accessToken = accessToken;
     }
 
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(Long modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDateTime modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
     @Override
     public String toString() {
         return "UserThirdAuth{" +
@@ -83,6 +128,10 @@ public class UserThirdAuth implements Serializable {
             ", openid = " + openid +
             ", loginType = " + loginType +
             ", accessToken = " + accessToken +
+            ", createUser = " + createUser +
+            ", createTime = " + createTime +
+            ", modifyUser = " + modifyUser +
+            ", modifyTime = " + modifyTime +
         "}";
     }
 }

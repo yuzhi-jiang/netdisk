@@ -52,9 +52,9 @@ import java.util.stream.Collectors;
  * @since 2023-01-15
  */
 @Slf4j
-@Api(tags = "用户网盘")
+@Api(tags = "文件模块2")
 @RestController
-@RequestMapping("/diskFile")
+@RequestMapping("/file")
 @RefreshScope
 @Validated
 public class DiskFileController {
@@ -79,7 +79,7 @@ public class DiskFileController {
     //todo 根据路径获取文件列表
     @ApiOperation("获取云盘列表")
     @GetMapping("/list/{disk_id}")
-    public ApiResult list(@PathVariable("disk_id") String diskId,
+    public ApiResult<List<DiskFileVo>> list(@PathVariable("disk_id") String diskId,
                           @RequestParam(name = "parent_file_id", defaultValue = "root")
                           String parentFileId,
                           @RequestParam(name = "pageNum",defaultValue = "1")
@@ -88,11 +88,11 @@ public class DiskFileController {
 
     ) {
         PageHelper.startPage(pageNum, pageSize);
-        List<DiskFileVo> fileBoList = diskFileService.getFileList(diskId, parentFileId);
+        List<DiskFileVo> fileVoList = diskFileService.getFileList(diskId, parentFileId);
 
-        log.info("Disk file list:{}", fileBoList);
+        log.info("Disk file list:{}", fileVoList);
 
-        return ResultUtil.success(fileBoList.toArray());
+        return ResultUtil.success(fileVoList);
 
     }
     /**
@@ -248,8 +248,11 @@ public class DiskFileController {
 
         //todo
         String diskId=batchBo.getDiskId();
-        diskFileService.deleteFile(diskId,fileIds);
-        return ResultUtil.success();
+        boolean flag = diskFileService.deleteFile(diskId, fileIds);
+        if(flag){
+            return ResultUtil.success();
+        }
+        return ResultUtil.fail().setMsg("删除失败,请查看文件是否在回收站");
     }
 
 
@@ -267,7 +270,7 @@ public class DiskFileController {
 
     @ApiOperation("文件移动")
     @PutMapping("/move")
-    public ApiResult move(BatchBo batchBo){
+    public ApiResult<List<DiskFile>> move(@RequestBody BatchBo batchBo){
         List<DiskFile> bodyBos = Arrays.stream(batchBo.getRequests()).map(request->{
             BatchBodyBo body = request.getBody();
             DiskFile diskFile = new DiskFile();
@@ -279,7 +282,7 @@ public class DiskFileController {
 
         boolean flag = diskFileService.moveFile(bodyBos);
         if(flag)
-            return ResultUtil.success();
+            return ResultUtil.success(bodyBos);
 
         return ResultUtil.fail();
 
@@ -287,7 +290,7 @@ public class DiskFileController {
 
     //修改文件名称
     @ApiOperation("修改文件名")
-    @PutMapping("/filename")
+    @PostMapping("/filename")
     public ApiResult updateFileName(
             @RequestParam("disk_id")
             String diskId,
@@ -301,7 +304,7 @@ public class DiskFileController {
         //todo 校验
 
         //todo 修改文件（夹）名称
-        boolean flag = fileService.update(new UpdateWrapper<File>().eq("disk", diskId).eq("file_id", fileId).set("file_name", name));
+        boolean flag = diskFileService.update(new UpdateWrapper<DiskFile>().eq("disk_id", diskId).eq("disk_file_id", fileId).set("file_name", name));
         return ResultUtil.success(flag);
     }
 

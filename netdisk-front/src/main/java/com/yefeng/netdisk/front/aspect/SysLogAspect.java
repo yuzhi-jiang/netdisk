@@ -102,7 +102,7 @@ public class SysLogAspect {
         sysLog.setTime(time);
 //        ZoneId zoneId = ZoneId.systemDefault();
 //        sysLog.setCreateDate(new Date().toInstant().atZone(zoneId).toLocalDateTime());
-        sysLog.setCreateDate(LocalDateTime.now());
+        sysLog.setCreateTime(LocalDateTime.now());
         //保存系统日志
         sysLogService.insert(sysLog);
 

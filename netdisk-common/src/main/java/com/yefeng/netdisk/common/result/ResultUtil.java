@@ -10,16 +10,16 @@ public class ResultUtil {
      * 请求成功
      * @return
      */
-    public static ApiResult success() {
-        return new ApiResult(HttpCodeEnum.OK.getCode(),HttpCodeEnum.OK.getMessage());
+    public static <T> ApiResult<T> success() {
+        return new ApiResult<T>(HttpCodeEnum.OK.getCode(),HttpCodeEnum.OK.getMessage());
     }
 
     /**
      * 请求成功（无消息）
      * @return
      */
-    public static ApiResult successAndNoMsg() {
-        return new ApiResult(HttpCodeEnum.OK.getCode(),"");
+    public static <T> ApiResult<T> successAndNoMsg() {
+        return new ApiResult<T>(HttpCodeEnum.OK.getCode(),"");
     }
 
     /**
@@ -28,8 +28,8 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static   ApiResult  success(Object data) {
-        return new ApiResult(HttpCodeEnum.OK.getCode(), HttpCodeEnum.OK.getMessage() , data);
+    public static <T>  ApiResult<T>  success(T data) {
+        return new ApiResult<T>(HttpCodeEnum.OK.getCode(), HttpCodeEnum.OK.getMessage() , data);
     }
 
     /**
@@ -38,34 +38,34 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult successAndNoMsg(Object data) {
-        return new ApiResult(HttpCodeEnum.OK.getCode(), "", data);
+    public static <T>  ApiResult<T> successAndNoMsg(T data) {
+        return new ApiResult<T>(HttpCodeEnum.OK.getCode(), "", data);
     }
 
     /**
      * 操作失败
      * @return
      */
-    public static ApiResult fail() {
-        return new ApiResult(HttpCodeEnum.FAIL.getCode(), HttpCodeEnum.FAIL.getMessage());
+    public static <T> ApiResult<T> fail() {
+        return new ApiResult<T>(HttpCodeEnum.FAIL.getCode(), HttpCodeEnum.FAIL.getMessage());
     }
-    public static ApiResult failMsg(String msg) {
-        return new ApiResult(HttpCodeEnum.FAIL.getCode(), msg);
+    public static <T> ApiResult<T> failMsg(String msg) {
+        return new ApiResult<T>(HttpCodeEnum.FAIL.getCode(), msg);
     }
     /**
      * 操作失败
      * @return
      */
-    public static ApiResult fail(Object data) {
-        return new ApiResult(HttpCodeEnum.FAIL.getCode(), HttpCodeEnum.FAIL.getMessage() ,data);
+    public static <T> ApiResult<T> fail(T data) {
+        return new ApiResult<T>(HttpCodeEnum.FAIL.getCode(), HttpCodeEnum.FAIL.getMessage() ,data);
     }
     
     /**
      * 服务器错误
      * @return
      */
-    public static ApiResult error() {
-        return new ApiResult(HttpCodeEnum.INTERNAL_SERVER_ERROR.getCode(),HttpCodeEnum.INTERNAL_SERVER_ERROR.getMessage());
+    public static <T> ApiResult<T> error() {
+        return new ApiResult<T>(HttpCodeEnum.INTERNAL_SERVER_ERROR.getCode(),HttpCodeEnum.INTERNAL_SERVER_ERROR.getMessage());
     }
 
 
@@ -74,15 +74,15 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult error(Object data) {
-        return new ApiResult(HttpCodeEnum.INTERNAL_SERVER_ERROR.getCode(),HttpCodeEnum.INTERNAL_SERVER_ERROR.getMessage(), data);
+    public static <T> ApiResult<T> error(T data) {
+        return new ApiResult<T>(HttpCodeEnum.INTERNAL_SERVER_ERROR.getCode(),HttpCodeEnum.INTERNAL_SERVER_ERROR.getMessage(), data);
     }
     /**
      * 参数错误
      * @return
      */
-    public static ApiResult paramError() {
-        return new ApiResult(HttpCodeEnum.INVALID_REQUEST.getCode(), HttpCodeEnum.INVALID_REQUEST.getMessage());
+    public static <T> ApiResult<T> paramError() {
+        return new ApiResult<T>(HttpCodeEnum.INVALID_REQUEST.getCode(), HttpCodeEnum.INVALID_REQUEST.getMessage());
     }
 
     /**
@@ -90,24 +90,24 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult paramError(Object data) {
-        return new ApiResult(HttpCodeEnum.INVALID_REQUEST.getCode(), HttpCodeEnum.INVALID_REQUEST.getMessage(), data);
+    public static <T> ApiResult<T> paramError(T data) {
+        return new ApiResult<T>(HttpCodeEnum.INVALID_REQUEST.getCode(), HttpCodeEnum.INVALID_REQUEST.getMessage(), data);
     }
 
     /**
      * 认证到期
      * @return
      */
-    public static ApiResult authExpired() {
-        return new ApiResult(HttpCodeEnum.AUTH_EXPIRED.getCode(), HttpCodeEnum.AUTH_EXPIRED.getMessage());
+    public static <T> ApiResult<T> authExpired() {
+        return new ApiResult<T>(HttpCodeEnum.AUTH_EXPIRED.getCode(), HttpCodeEnum.AUTH_EXPIRED.getMessage());
     }
 
     /**
      * 没有权限
      * @return
      */
-    public static ApiResult unAuthorized() {
-        return new ApiResult(HttpCodeEnum.UNAUTHORIZED.getCode(), HttpCodeEnum.UNAUTHORIZED.getMessage());
+    public static <T> ApiResult<T> unAuthorized() {
+        return new ApiResult<T>(HttpCodeEnum.UNAUTHORIZED.getCode(), HttpCodeEnum.UNAUTHORIZED.getMessage());
     }
 
     /**
@@ -115,8 +115,8 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult unAuthorized(Object data) {
-        return new ApiResult(HttpCodeEnum.UNAUTHORIZED.getCode(),HttpCodeEnum.UNAUTHORIZED.getMessage(),data);
+    public static <T> ApiResult<T> unAuthorized(T data) {
+        return new ApiResult<T>(HttpCodeEnum.UNAUTHORIZED.getCode(),HttpCodeEnum.UNAUTHORIZED.getMessage(),data);
     }
 
 
@@ -124,8 +124,8 @@ public class ResultUtil {
      *  禁止访问
      * @return
      */
-    public static ApiResult forbidden() {
-        return new ApiResult(HttpCodeEnum.FORBIDDEN.getCode(),HttpCodeEnum.FORBIDDEN.getMessage());
+    public static <T> ApiResult<T> forbidden() {
+        return new ApiResult<T>(HttpCodeEnum.FORBIDDEN.getCode(),HttpCodeEnum.FORBIDDEN.getMessage());
     }
 
     /**
@@ -133,8 +133,8 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult forbidden(Object data) {
-        return new ApiResult(HttpCodeEnum.FORBIDDEN.getCode(),HttpCodeEnum.FORBIDDEN.getMessage(), data);
+    public static <T> ApiResult<T> forbidden(T data) {
+        return new ApiResult<T>(HttpCodeEnum.FORBIDDEN.getCode(),HttpCodeEnum.FORBIDDEN.getMessage(), data);
     }
 
 
@@ -142,8 +142,8 @@ public class ResultUtil {
      * 资源不存在
      * @return
      */
-    public static ApiResult notFound() {
-        return new ApiResult(HttpCodeEnum.NOT_FOUND.getCode(),HttpCodeEnum.NOT_FOUND.getMessage());
+    public static <T> ApiResult<T> notFound() {
+        return new ApiResult<T>(HttpCodeEnum.NOT_FOUND.getCode(),HttpCodeEnum.NOT_FOUND.getMessage());
     }
 
 
@@ -152,8 +152,8 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult notFound(Object data) {
-        return new ApiResult(HttpCodeEnum.NOT_FOUND.getCode(),HttpCodeEnum.NOT_FOUND.getMessage(), data);
+    public static <T> ApiResult<T> notFound(T data) {
+        return new ApiResult<T>(HttpCodeEnum.NOT_FOUND.getCode(),HttpCodeEnum.NOT_FOUND.getMessage(), data);
     }
 
 
@@ -161,8 +161,8 @@ public class ResultUtil {
      * 请求的格式不正确
      * @return
      */
-    public static ApiResult notAcceptable() {
-        return new ApiResult(HttpCodeEnum.NOT_ACCEPTABLE.getCode(),HttpCodeEnum.NOT_ACCEPTABLE.getMessage());
+    public static <T> ApiResult<T> notAcceptable() {
+        return new ApiResult<T>(HttpCodeEnum.NOT_ACCEPTABLE.getCode(),HttpCodeEnum.NOT_ACCEPTABLE.getMessage());
     }
 
 
@@ -171,8 +171,8 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult notAcceptable(Object data) {
-        return new ApiResult(HttpCodeEnum.NOT_ACCEPTABLE.getCode(),HttpCodeEnum.NOT_ACCEPTABLE.getMessage(), data);
+    public static <T> ApiResult<T> notAcceptable(T data) {
+        return new ApiResult<T>(HttpCodeEnum.NOT_ACCEPTABLE.getCode(),HttpCodeEnum.NOT_ACCEPTABLE.getMessage(), data);
     }
 
 
@@ -180,8 +180,8 @@ public class ResultUtil {
      * 数据已经被删除
      * @return
      */
-    public static ApiResult gone() {
-        return new ApiResult(HttpCodeEnum.GONE.getCode(),HttpCodeEnum.GONE.getMessage());
+    public static <T> ApiResult<T> gone() {
+        return new ApiResult<T>(HttpCodeEnum.GONE.getCode(),HttpCodeEnum.GONE.getMessage());
     }
 
 
@@ -190,16 +190,16 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult gone(Object data) {
-        return new ApiResult(HttpCodeEnum.GONE.getCode(),HttpCodeEnum.GONE.getMessage(), data);
+    public static <T> ApiResult<T> gone(T data) {
+        return new ApiResult<T>(HttpCodeEnum.GONE.getCode(),HttpCodeEnum.GONE.getMessage(), data);
     }
 
     /**
      * 实体参数校验错误
      * @return
      */
-    public static ApiResult unprocesableEntity() {
-        return new ApiResult(HttpCodeEnum.UNPROCESABLE_ENTITY.getCode(),HttpCodeEnum.UNPROCESABLE_ENTITY.getMessage());
+    public static <T> ApiResult<T> unprocesableEntity() {
+        return new ApiResult<T>(HttpCodeEnum.UNPROCESABLE_ENTITY.getCode(),HttpCodeEnum.UNPROCESABLE_ENTITY.getMessage());
     }
 
     /**
@@ -207,16 +207,16 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult unprocesableEntity(Object data) {
-        return new ApiResult(HttpCodeEnum.UNPROCESABLE_ENTITY.getCode(),HttpCodeEnum.UNPROCESABLE_ENTITY.getMessage(), data);
+    public static <T> ApiResult<T> unprocesableEntity(T data) {
+        return new ApiResult<T>(HttpCodeEnum.UNPROCESABLE_ENTITY.getCode(),HttpCodeEnum.UNPROCESABLE_ENTITY.getMessage(), data);
     }
 
     /**
      * 未知错误
      * @return
      */
-    public static ApiResult unKnowError() {
-        return new ApiResult(HttpCodeEnum.UN_KNOW_ERROR.getCode(),HttpCodeEnum.UN_KNOW_ERROR.getMessage());
+    public static <T> ApiResult<T> unKnowError() {
+        return new ApiResult<T>(HttpCodeEnum.UN_KNOW_ERROR.getCode(),HttpCodeEnum.UN_KNOW_ERROR.getMessage());
     }
 
     /**
@@ -224,16 +224,16 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult unKnowError(Object data) {
-        return new ApiResult(HttpCodeEnum.UN_KNOW_ERROR.getCode(),HttpCodeEnum.UN_KNOW_ERROR.getMessage(), data);
+    public static <T> ApiResult<T> unKnowError(T data) {
+        return new ApiResult<T>(HttpCodeEnum.UN_KNOW_ERROR.getCode(),HttpCodeEnum.UN_KNOW_ERROR.getMessage(), data);
     }
 
     /**
      * 业务逻辑验证未通过
      * @return
      */
-    public static ApiResult verificationFailed() {
-        return new ApiResult(HttpCodeEnum.VERIFICATION_FAILED.getCode(),HttpCodeEnum.VERIFICATION_FAILED.getMessage());
+    public static <T> ApiResult<T> verificationFailed() {
+        return new ApiResult<T>(HttpCodeEnum.VERIFICATION_FAILED.getCode(),HttpCodeEnum.VERIFICATION_FAILED.getMessage());
     }
 
     /**
@@ -241,8 +241,8 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult verificationFailed(Object data) {
-        return new ApiResult(HttpCodeEnum.VERIFICATION_FAILED.getCode(),HttpCodeEnum.VERIFICATION_FAILED.getMessage(), data);
+    public static <T> ApiResult<T> verificationFailed(T data) {
+        return new ApiResult<T>(HttpCodeEnum.VERIFICATION_FAILED.getCode(),HttpCodeEnum.VERIFICATION_FAILED.getMessage(), data);
     }
 
     /**
@@ -250,16 +250,16 @@ public class ResultUtil {
      * @param e
      * @return
      */
-    public static ApiResult custom(HttpCodeEnum e) {
-        return new ApiResult(e.getCode(),e.getMessage());
+    public static <T> ApiResult<T> custom(HttpCodeEnum e) {
+        return new ApiResult<T>(e.getCode(),e.getMessage());
     }
     /**
      * 自定义返回
      * @param error
      * @return
      */
-    public static ApiResult custom(int code, String error) {
-        return new ApiResult(code,error);
+    public static <T> ApiResult<T> custom(int code, String error) {
+        return new ApiResult<T>(code,error);
     }
 
     /**
@@ -268,8 +268,8 @@ public class ResultUtil {
      * @param data
      * @return
      */
-    public static ApiResult custom(int code, String error, Object data) {
-        return new ApiResult(code,error,data);
+    public static <T> ApiResult<T> custom(int code, String error, T data) {
+        return new ApiResult<T>(code,error,data);
     }
 
 }

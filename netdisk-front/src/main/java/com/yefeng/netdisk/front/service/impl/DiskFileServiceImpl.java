@@ -4,6 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskFileMapper;
@@ -13,9 +14,6 @@ import com.yefeng.netdisk.front.util.CheckNameModeEnum;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.util.FileTypeContents;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.defaults.DefaultSqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +38,7 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     DiskFileMapper diskFileMapper;
 
     @Override
-    public Object creatFolder(DiskFile diskFile, String checkNameMode) {
+    public CreateFileDto creatFolder(DiskFile diskFile, String checkNameMode) {
         DiskFile one = baseMapper.selectOne(new QueryWrapper<DiskFile>().allEq(new HashMap<>() {
             {
                 put("disk_id", diskFile.getDiskId());
@@ -53,18 +51,20 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
 
         //有相同的，提示换名字
         if (one != null) {
-            JSONObject jsonObject = new JSONObject(one);
-            jsonObject.putOnce("exist", true);
-            return jsonObject;
+
+            CreateFileDto createFile = DiskFileMapperStruct.INSTANCE.toCreateFile(one);
+            createFile.setExist(true);
+
+            return createFile;
         }
 
 
 
         int count = baseMapper.insert(diskFile);
 
-        JSONObject jsonObject = new JSONObject(diskFile);
+        CreateFileDto createFile = DiskFileMapperStruct.INSTANCE.toCreateFile(diskFile);
 
-        return jsonObject;
+        return createFile;
     }
 
     @Override
@@ -117,8 +117,9 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     }
 
     @Override
-    public void deleteFile(String diskId, List<String> fileIds) {
-        baseMapper.deleteFile(diskId, fileIds);
+    public boolean deleteFile(String diskId, List<String> fileIds) {
+       int count= baseMapper.deleteFile(diskId, fileIds);
+       return count>0;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -152,7 +153,7 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     public boolean saveWithFileId(String diskId, String diskFileId, Long fileId) {
 
         DiskFile diskFile = new DiskFile();
-        diskFile.setStatus(FileStatusEnum.Valid.getCode());
+        diskFile.setStatus(FileStatusEnum.valid.getCode());
         diskFile.setFileId(fileId);
 
         int update = baseMapper.update(diskFile, new QueryWrapper<DiskFile>().eq("disk_id", diskId).eq("disk_file_id", diskFileId));

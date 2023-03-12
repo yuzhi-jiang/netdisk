@@ -1,12 +1,11 @@
 package com.yefeng.netdisk.front.controller;
 
 
-import cn.hutool.captcha.ShearCaptcha;
 import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yefeng.netdisk.common.constans.LoginEnum;
 import com.yefeng.netdisk.common.exception.BizException;
-import com.yefeng.netdisk.common.request.RequestParams;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.HttpCodeEnum;
 import com.yefeng.netdisk.common.result.ResultUtil;
@@ -14,14 +13,16 @@ import com.yefeng.netdisk.common.util.CheckUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.common.validator.ValidatorUtils;
+import com.yefeng.netdisk.front.bo.LoginBo;
+import com.yefeng.netdisk.front.bo.RegisterBo;
+import com.yefeng.netdisk.front.bo.ResetPasswordBo;
 import com.yefeng.netdisk.front.dto.BUser;
 import com.yefeng.netdisk.front.entity.User;
+import com.yefeng.netdisk.front.mapStruct.mapper.UserMapperStruct;
 import com.yefeng.netdisk.front.service.IDiskService;
 import com.yefeng.netdisk.front.service.impl.UserServiceImpl;
-import com.yefeng.netdisk.front.util.CaptchaUtil;
-import com.yefeng.netdisk.front.util.RedisKeys;
-import com.yefeng.netdisk.front.util.RedisUtil;
-import com.yefeng.netdisk.front.util.SendUtils;
+import com.yefeng.netdisk.front.task.SendEmailByRegisterTask;
+import com.yefeng.netdisk.front.util.*;
 import com.yefeng.netdisk.front.vo.DiskVo;
 import com.yefeng.netdisk.front.vo.UserDiskVo;
 import com.yefeng.netdisk.front.vo.UserVo;
@@ -34,11 +35,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 
 
 /**
@@ -53,104 +51,39 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/user")
 @Api(tags = "用户")
-public class UserController {
-
+public class UserController extends BaseController {
 
     @Resource
     UserServiceImpl userService;
-
-
     @Resource
     IDiskService diskService;
-
     @Resource
     CaptchaUtil captchaUtil;
-
-
     @Value("${mycloud.register.registerByMobileLogin}")
     boolean registerByMobileLogin;
     @Autowired
     private RedisUtil redisUtil;
-
     @Autowired
     private SendUtils sendUtils;
-
-    @ApiOperation("获取邮箱验证码,,")
-    @GetMapping("/captcha")
-    public ApiResult getEmailcaptcha(@RequestParam("email") String email, @RequestParam(value = "isForgetType", required = false) Boolean isForgetType) {
-        CheckUtil.checkEmail(email);
-
-        if (isForgetType != null && isForgetType) {
-            User user = userService.getOne(new QueryWrapper<User>().eq("email", email));
-            Assert.isNull(user, "用户不存在，请先注册！");
-        }
-
-        String captcha = captchaUtil.createCaptcha(email);
-
-        // todo 异步发 验证码
-        log.info("the captcha:{}  is {}", email, captcha);
-
-        sendUtils.send(email,captcha);
-
-        //直接返回
-        return ResultUtil.success();
-    }
-    //    @GetMapping("/imageCaptcha")
-    //得解决分布式下解决方式 项目采用无状态，不能用redis sessions
-    public void getImageCaptcha(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-
-
-        httpServletResponse.setHeader("Pragma", "no-cache");
-        httpServletResponse.setHeader("Cache-Control", "no-cache");
-        httpServletResponse.setDateHeader("Expires", 0);
-        httpServletResponse.setContentType("image/jpeg");
-
-
-        ShearCaptcha captcha = cn.hutool.captcha.CaptchaUtil.createShearCaptcha(200, 100, 4, 4);
-
-        String code = captcha.getCode();
-
-
-//        httpServletRequest.setAttribute("captchaCode", code);
-
-
-        HttpSession session = httpServletRequest.getSession();
-        session.removeAttribute("captchaCode");
-        session.setAttribute("captchaCode", code);
-
-        try {
-            ServletOutputStream outputStream = httpServletResponse.getOutputStream();
-            captcha.write(outputStream);
-            outputStream.close();
-        } catch (IOException e) {
-            log.info("io异常 exception:{}", e.getMessage());
-        }
-
-    }
+    @Resource(name = "commonQueueThreadPool")
+    ExecutorService commonQueueThreadPool;
 
 
     @ApiOperation(value = "用户登录,使用用户名/邮箱，或是手机号")
     @PostMapping("/login")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "type",value = "登陆类型,"),
-            @ApiImplicitParam(name = "account",value = "用户"),
-            @ApiImplicitParam(name = "mobile",value = "电话"),
-            @ApiImplicitParam(name = "password",value = "密码"),
-            @ApiImplicitParam(name = "captcha",value = "验证码")
-    })
-    public ApiResult login(@RequestBody RequestParams params) {
+    public ApiResult<UserVo> login(@RequestBody LoginBo loginBo,Integer type) {
 
-        int type = params.getIntValue("type");
+
 
 
         //用户/邮箱密码
-        if (type == LoginEnum.ACCOUNT.getType() || type == LoginEnum.MOBILE_PASS.getType()) {
+        if (type == LoginEnum.ACCOUNT.getCode() || type == LoginEnum.MOBILE_PASS.getCode()) {
 
-            String account = (String) params.get("account");
+            String account = loginBo.getAccount();
             QueryWrapper<User> query = new QueryWrapper<User>();
 
-            if (type == LoginEnum.MOBILE_PASS.getType()) {
-                account = (String) params.get("mobile");
+            if (type == LoginEnum.MOBILE_PASS.getCode()) {
+                account = loginBo.getAccount();
                 query.eq("mobile", account);
             } else {
                 query.eq("username", account).or().eq("email", account);
@@ -160,7 +93,7 @@ public class UserController {
 
             Assert.isNull(user, "用户不存在");
 
-            String password = (String) params.get("password");
+            String password = loginBo.getPassword();
             String password1 = user.getPassword();
             log.info("加密密文为：{}", password1);
             if (!BCrypt.checkpw(password, user.getPassword())) {
@@ -168,16 +101,17 @@ public class UserController {
             }
 
 
-            UserVo userVo = new UserVo();
-            BeanUtils.copyProperties(user, userVo);
-            String token = JWTUtil.createToken(userVo.getId());
+            UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
+
+
+            String token = CreateUserToken(user);
 
             userVo.setToken(token);
             return ResultUtil.success(userVo);
         }
-        else if (type == LoginEnum.MOBILE_CAPTCHA.getType()) {
-            String mobile = (String) params.get("mobile");
-            String captcha = (String) params.get("captcha");
+        else if (type == LoginEnum.MOBILE_CAPTCHA.getCode()) {
+            String mobile =loginBo.getMobile();
+            String captcha =loginBo.getCaptcha();
 
             // todo 检查 验证码
             if (!captchaUtil.checkCaptcha(mobile, captcha)) {
@@ -194,86 +128,98 @@ public class UserController {
                 user = new User();
                 user.setMobile(mobile);
                 user.setSalt(BCrypt.gensalt());//获取盐
-                userService.save(user);
-                diskService.initDisk(user.getId());
+                boolean flag = userService.registerUserAndInitDisk(user);
+                if (!flag) {
+                    throw new BizException("注册失败");
+                }
             }
 
             user = userService.getOne(query);
             Assert.isNull(user, "用户不存在");
 
 
-            UserVo userVo = new UserVo();
-            BeanUtils.copyProperties(user, userVo);
+            UserVo userVo =UserMapperStruct.INSTANCE.toDto(user);
 
-            String token = JWTUtil.createToken(userVo.getId());
-
+            String token = CreateUserToken(user);
             userVo.setToken(token);
             return ResultUtil.success(userVo);
         }
 
-        log.info("params is {}", params.toString());
+        log.info("params is {}", loginBo);
         throw new BizException("登录方式不正确");
     }
 
+
+
+    @Value("${mycloud.useractive.tokenExpire:7200}")
+    Long userActiveTime;
     /**
      * 注册
-     * @param params
+     * @param registerBo
      * @return
      */
+
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "type",value = "注册类型,类型枚举",required = true),
+//            @ApiImplicitParam(name = "email",value = "邮箱",required = false),
+//            @ApiImplicitParam(name = "mobile",value = "电话",required = false),
+//            @ApiImplicitParam(name = "password",value = "密码",required = false),
+//            @ApiImplicitParam(name = "captcha",value = "验证码",required = false),
+//            @ApiImplicitParam(name = "username",value = "用户名",required = false)
+//    })
     @PostMapping("/register")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "type",value = "注册类型,类型枚举"),
-            @ApiImplicitParam(name = "email",value = "邮箱"),
-            @ApiImplicitParam(name = "mobile",value = "电话",required = false),
-            @ApiImplicitParam(name = "password",value = "密码"),
-            @ApiImplicitParam(name = "captcha",value = "验证码"),
-            @ApiImplicitParam(name = "username",value = "用户名")
-    })
-    public ApiResult register(@RequestBody RequestParams params) {
-        Integer type = params.getIntValue("type");
+    public ApiResult<String> register(@RequestBody RegisterBo registerBo) {
+        String type = registerBo.getType();
         Assert.isNull(type, "注册类型不能为空");
 
         // 1. 通过用户名称密码邮箱的表单
-        if (LoginEnum.ACCOUNT.getType() == type) {
+        if (Objects.equals(LoginEnum.ACCOUNT.getValue(), type)) {
 
             BUser buser = new BUser();
 
-            buser.setEmail(params.getStringValue("email"));
-            buser.setPassword(params.getStringValue("password"));
-            buser.setUsername(params.getStringValue("username"));
-
+            buser.setEmail(registerBo.getEmail());
+            buser.setPassword(registerBo.getPassword());
+            buser.setUsername(registerBo.getUsername());
 
             ValidatorUtils.validateEntity(buser);
 
             User user = new User();
             BeanUtils.copyProperties(buser, user);
+
+            user.setStatus(UserStatusEnum.DISABLE);
             user.setSalt(BCrypt.gensalt());//获取盐
             user.setPassword(BCrypt.hashpw(user.getPassword(), user.getSalt()));
 
-            boolean flag = userService.save(user);
+
+            boolean flag = userService.registerUserAndInitDisk(user);
             if (flag) {
-                diskService.initDisk(user.getId());
-                return new ApiResult(HttpCodeEnum.OK.getCode(), "注册成功");
+
+                //邮箱注册需要发送一个邮箱验
+                commonQueueThreadPool.execute(new SendEmailByRegisterTask(user.getId(), user.getEmail(), userActiveTime));
+
+                return new ApiResult(HttpCodeEnum.OK.getCode(), "注册成功,请激活邮箱");
             }
             return new ApiResult(HttpCodeEnum.FAIL.getCode(), "当前请求过大，请稍后再试");
         }
         // 2. 通过手机验证码注册
-        else if (LoginEnum.MOBILE_CAPTCHA.getType() == type) {
+        else if (Objects.equals(LoginEnum.MOBILE_CAPTCHA.getValue(), type)) {
 
-            String captcha = params.getStringValue("captcha");
-            String mobile = params.getStringValue("mobile");
+            String captcha = registerBo.getCaptcha();
+            String mobile = registerBo.getMobile();
             CheckUtil.checkPhone(mobile);
 
-            captchaUtil.checkCaptcha(mobile, captcha);
+            if(captchaUtil.checkCaptcha(mobile, captcha)){
+                throw new BizException("验证码错误请重试！");
+            }
 
             User user = new User();
             user.setMobile(mobile);
-
+            user.setStatus(UserStatusEnum.NORMAL);
             user.setSalt(BCrypt.gensalt());//获取盐
 
-            boolean flag = userService.save(user);
+            boolean flag = userService.registerUserAndInitDisk(user);
             if (flag) {
-                diskService.initDisk(user.getId());
+
                 return new ApiResult(HttpCodeEnum.OK.getCode(), "注册成功");
             }
             return new ApiResult(HttpCodeEnum.FAIL.getCode(), "当前请求过大，请稍后再试");
@@ -283,31 +229,56 @@ public class UserController {
         return new ApiResult(HttpCodeEnum.FAIL.getCode(), "请根据参数请求");
     }
 
-    /**
-     * 校验验证码
-     * @param code
-     * @param request
-     * @return
-     */
-    @ApiOperation("验证码校验")
-    @GetMapping("checkcaptcha")
-    ApiResult checkImageCaptcha(@RequestParam("code") String code, HttpServletRequest request) {
-//        String captchaCode =(String) request.getAttribute("captchaCode");
 
-        HttpSession session = request.getSession();
-        String captchaCode = session.getAttribute("captchaCode").toString();
+    //todo 激活
 
-        log.info("captchaCode:{},,code:{}", captchaCode, code);
+    @ApiOperation("激活用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId",value = "用户id",required = true),
+            @ApiImplicitParam(name = "token" ,value = "token",required = true)
+    })
+    @GetMapping("/{userId}/active")
+    public void active(@PathVariable String userId,@RequestParam("token") String token) {
 
-        if (code.equals(captchaCode)) {
-            return ResultUtil.success();
+
+        JWTUtil.validateToken(token);
+        Object[] payload = JWTUtil.getPayloadFromToken(token, "user_id", "email");
+        String userId1 = (String) payload[0];
+        String email = (String) payload[1];
+
+        if(!userId.equals(userId1)){
+            log.error("激活失败，用户id不匹配 userid={} ,token={}",userId,token);
+            throw new BizException("激活失败，请重新激活");
         }
-        return new ApiResult(HttpCodeEnum.FAIL.getCode(), "验证码不匹配");
+
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<User>().set("status", UserStatusEnum.NORMAL).eq("id", userId).eq("email", email);
+
+        boolean flag = userService.update(updateWrapper);
+        if(!flag){
+            throw new BizException("激活失败，请重新激活");
+        }
     }
 
 
-    //todo 注册
+    //绑定手机号码
+    @ApiOperation("绑定手机号码")
+    @PostMapping("/bindMobile")
+    public ApiResult<String> bindMobile(@RequestParam("mobile") String mobile,
+                                        @RequestParam("captcha") String captcha,
+                                        @RequestParam("user_id") String userId) {
 
+        CheckUtil.checkPhone(mobile);
+
+        captchaUtil.checkCaptcha(mobile, captcha);
+
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<User>().set("mobile", mobile).eq("id", userId);
+
+        boolean flag = userService.update(updateWrapper);
+        if(!flag){
+            throw new BizException("绑定失败，请重新绑定");
+        }
+        return ResultUtil.success("绑定成功");
+    }
 
     //todo 退出
 
@@ -331,21 +302,17 @@ public class UserController {
      */
     @ApiOperation("获取用户信息")
     @GetMapping("/userinfo")
-    public ApiResult getUser(@RequestHeader("subject")@ApiParam("用户id") String subject) {
+    public ApiResult<UserVo> getUser(@RequestHeader("subject")@ApiParam("用户id") String subject) {
         //todo 是否查看用户状态
         User user = userService.getById(Long.parseLong(subject));
         Assert.isNull(user, "用户不存在");
 
 
-        UserVo userVo = new UserVo();
-
-        BeanUtils.copyProperties(user, userVo);
-
-        return ResultUtil.success(userVo);
+        return ResultUtil.success(UserMapperStruct.INSTANCE.toDto(user));
     }
 
     @GetMapping("/userDisk")
-    public ApiResult getUserDisk(@RequestHeader("subject") String subject) {
+    public ApiResult<UserDiskVo> getUserDisk(@RequestHeader("subject") String subject) {
         //todo 是否查看用户状态
         User user = userService.getById(Long.parseLong(subject));
         Assert.isNull(user, "用户不存在");
@@ -379,34 +346,52 @@ public class UserController {
             return ResultUtil.success();
         }
         return ResultUtil.fail();
-
     }
 
-    //todo 修改/上传头像
+
+
+    //根据用户的 username or email or mobile  获取用户信息
+    @ApiOperation("根据用户的 username or email or mobile  获取用户信息,判断用户是否存在")
+    @GetMapping("/exist")
+    public UserVo existUser(String account) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<User>().eq("username", account).or().eq("email", account).or().eq("mobile", account);
+        User user = userService.getOne(queryWrapper);
+        if (user == null) {
+            throw new BizException("用户不存在");
+        }
+        return UserMapperStruct.INSTANCE.toDto(user);
+    }
 
 
     //在普通用户了绑定了电话的情况下可以用，否则是本来就是没有密码的
     // todo 忘记密码
-    @ApiOperation("忘记密码")
-    @PostMapping("/forget")
-    public ApiResult forget(@RequestBody RequestParams params) {
-        String mobile = params.getStringValue("mobile");
-        String captcha = params.getStringValue("captcha");
-        String password = params.getStringValue("password");
+    @ApiOperation("重置密码")
+    @PostMapping("/resetPassword")
+    public ApiResult forget(@RequestBody ResetPasswordBo params) {
+        String account = params.getAccount();
+        String captcha = params.getCaptcha();
+        String password = params.getPassword();
+        String confirmPassword = params.getConfirmPassword();
+
+        if(!password.equals(confirmPassword)){
+            throw new BizException("两次密码不一致");
+        }
 
         //检查密码格式
         CheckUtil.checkPassword(password);
 
+
         //验证次数加一
-        redisUtil.incr(RedisKeys.getForgetCapatchaKey(mobile), 1);
+        redisUtil.incr(RedisKeys.getForgetCapatchaKey(account), 1);
 
         //验证次数超过5次则冻结30分钟不准发验证码，冻结3次则今天不准/冻结用户
 
-        if (!captchaUtil.checkCaptcha(mobile, captcha, true)) {
+        if (!captchaUtil.checkCaptcha(account, captcha, true)) {
             throw new BizException("验证码错误请重试!");
         }
-        User user = getUserByMobile(mobile);
+        User user = userService.getOne(new QueryWrapper<User>().eq("mobile", account).or().eq("email", account).or().eq("username", account));
 
+        Assert.isNull(user, "用户不存在");
 
         user.setPassword(BCrypt.hashpw(password, user.getSalt()));
 
@@ -418,7 +403,7 @@ public class UserController {
         return getResultByFlag(flag);
     }
 
-    public User getUserByMobile(String mobile) {
+    private User getUserByMobile(String mobile) {
         return userService.getOne(new QueryWrapper<User>().eq("mobile", mobile));
     }
 
@@ -451,16 +436,4 @@ public class UserController {
     }
 
 
-    public ApiResult getResultByFlag(Boolean flag) {
-        try {
-            if (flag) {
-                return ResultUtil.success();
-            } else {
-                return ResultUtil.fail();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BizException(e.getMessage());
-        }
-    }
 }

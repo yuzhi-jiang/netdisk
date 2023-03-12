@@ -3,10 +3,10 @@ package com.yefeng.netdisk.front.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.Serializable;
 
 /**
  * <p>
@@ -14,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author yefeng
- * @since 2023-01-15
+ * @since 2023-03-11
  */
 @TableName("tb_file")
 @ApiModel(value = "File对象", description = "")
@@ -25,7 +25,7 @@ public class File implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty("父文件夹id")
+    @ApiModelProperty("文件id")
     private String fileId;
 
     @ApiModelProperty("源文件名")
@@ -40,17 +40,6 @@ public class File implements Serializable {
     @ApiModelProperty("文件长度/大小")
     private String length;
 
-    @ApiModelProperty("上传id")
-    private String upload_id;
-
-    public String getUpload_id() {
-        return upload_id;
-    }
-
-    public void setUpload_id(String upload_id) {
-        this.upload_id = upload_id;
-    }
-
     @ApiModelProperty("文件类型  0：目录  1：文件")
     private Byte type;
 
@@ -60,8 +49,27 @@ public class File implements Serializable {
     @ApiModelProperty("是否有效,可用于敏感文件排除")
     private Byte status;
 
+    @ApiModelProperty("上传id")
+    private String uploadId;
+
+    @ApiModelProperty("创建人")
+    private Long createUser;
+
+    @ApiModelProperty("创建时间")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("修改人")
+    private Long modifyUser;
+
+    @ApiModelProperty("修改时间")
+    private LocalDateTime modifyTime;
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFileId() {
@@ -71,11 +79,6 @@ public class File implements Serializable {
     public void setFileId(String fileId) {
         this.fileId = fileId;
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
 
     public String getOriginalName() {
         return originalName;
@@ -113,7 +116,7 @@ public class File implements Serializable {
         return type;
     }
 
-    public void setType(byte type) {
+    public void setType(Byte type) {
         this.type = type;
     }
 
@@ -125,11 +128,6 @@ public class File implements Serializable {
         this.hash = hash;
     }
 
-
-    public void setType(Byte type) {
-        this.type = type;
-    }
-
     public Byte getStatus() {
         return status;
     }
@@ -138,20 +136,63 @@ public class File implements Serializable {
         this.status = status;
     }
 
+    public String getUploadId() {
+        return uploadId;
+    }
+
+    public void setUploadId(String uploadId) {
+        this.uploadId = uploadId;
+    }
+
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(Long modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDateTime modifyTime) {
+        this.modifyTime = modifyTime;
+    }
 
     @Override
     public String toString() {
         return "File{" +
-                "id=" + id +
-                ", fileId='" + fileId + '\'' +
-                ", originalName='" + originalName + '\'' +
-                ", name='" + name + '\'' +
-                ", path='" + path + '\'' +
-                ", length='" + length + '\'' +
-                ", upload_id='" + upload_id + '\'' +
-                ", type=" + type +
-                ", hash='" + hash + '\'' +
-                ", status=" + status +
-                '}';
+            "id = " + id +
+            ", fileId = " + fileId +
+            ", originalName = " + originalName +
+            ", name = " + name +
+            ", path = " + path +
+            ", length = " + length +
+            ", type = " + type +
+            ", hash = " + hash +
+            ", status = " + status +
+            ", uploadId = " + uploadId +
+            ", createUser = " + createUser +
+            ", createTime = " + createTime +
+            ", modifyUser = " + modifyUser +
+            ", modifyTime = " + modifyTime +
+        "}";
     }
 }

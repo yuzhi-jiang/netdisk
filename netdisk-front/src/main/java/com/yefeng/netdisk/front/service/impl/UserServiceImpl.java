@@ -7,7 +7,9 @@ import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.HttpCodeEnum;
 import com.yefeng.netdisk.front.entity.User;
 import com.yefeng.netdisk.front.mapper.UserMapper;
+import com.yefeng.netdisk.front.service.IDiskService;
 import com.yefeng.netdisk.front.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +43,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return baseMapper.updateById(user)>0;
         }
         return  false;
+    }
+
+    @Autowired
+    IDiskService diskService;
+    
+    @Transactional(rollbackFor = Exception.class)
+    public boolean registerUserAndInitDisk(User user) {
+        baseMapper.insert(user);
+        diskService.initDisk(user.getId());
+        return true;
     }
 }

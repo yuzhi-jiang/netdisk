@@ -90,7 +90,7 @@ public class SqlGenerator {
 
 
         ArrayList<String> tableLists = new ArrayList<>();
-        tableLists.add("tb_disk_item"); // 设置需要生成的表名;
+        tableLists.add("tb_share_item"); // 设置需要生成的表名;
 //        tableLists.add("sys_dict");
 //        tableLists.add("sys_log");
 //        tableLists.add("sys_notice");

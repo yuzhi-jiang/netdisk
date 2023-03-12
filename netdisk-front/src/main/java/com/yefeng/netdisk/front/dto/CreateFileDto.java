@@ -1,31 +1,35 @@
-package com.yefeng.netdisk.front.entity;
+package com.yefeng.netdisk.front.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 
- * </p>
+ * This class is for
  *
- * @author yefeng
- * @since 2023-03-11
+ * @author 夜枫
+ * @version 2023-03-12 10:21
  */
-@TableName("tb_disk_file")
-@ApiModel(value = "DiskFile对象", description = "")
-public class DiskFile implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+public class CreateFileDto {
 
-    @TableId(value = "id", type = IdType.AUTO)
+    @ApiModelProperty("文件是否已经存在")
+    Boolean exist;
+    @ApiModelProperty("是否快速上传")
+    Boolean rapidUpload;
+
+    @ApiModelProperty("上传id")
+    String uploadId;
+
+    @ApiModelProperty("文件内容hash")
+    String contentHash;
+    @ApiModelProperty("上传token")
+    String token;
+
+    @ApiModelProperty("id")
     private Long id;
 
+    @ApiModelProperty("云盘id")
     private Long diskId;
 
     @ApiModelProperty("云盘文件/文件夹id")
@@ -37,11 +41,11 @@ public class DiskFile implements Serializable {
     @ApiModelProperty("用户文件的父文件夹名称（同样的文件每个人文件有不同的路径）")
     private String parentFileId;
 
-    @ApiModelProperty("文件类型1文件2文件夹")
-    private Byte type;
+    @ApiModelProperty("文件类型  1：文件  2：文件夹")
+    private String type;
 
     @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
-    private Byte status;
+    private String status;
 
     @ApiModelProperty("数据库文件id")
     private Long fileId;
@@ -57,6 +61,47 @@ public class DiskFile implements Serializable {
 
     @ApiModelProperty("修改时间")
     private LocalDateTime modifyTime;
+
+
+    public Boolean getExist() {
+        return exist;
+    }
+
+    public void setExist(Boolean exist) {
+        this.exist = exist;
+    }
+
+    public Boolean getRapidUpload() {
+        return rapidUpload;
+    }
+
+    public void setRapidUpload(Boolean rapidUpload) {
+        this.rapidUpload = rapidUpload;
+    }
+
+    public String getUploadId() {
+        return uploadId;
+    }
+
+    public void setUploadId(String uploadId) {
+        this.uploadId = uploadId;
+    }
+
+    public String getContentHash() {
+        return contentHash;
+    }
+
+    public void setContentHash(String contentHash) {
+        this.contentHash = contentHash;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public Long getId() {
         return id;
@@ -98,19 +143,19 @@ public class DiskFile implements Serializable {
         this.parentFileId = parentFileId;
     }
 
-    public Byte getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Byte type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public Byte getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -152,23 +197,5 @@ public class DiskFile implements Serializable {
 
     public void setModifyTime(LocalDateTime modifyTime) {
         this.modifyTime = modifyTime;
-    }
-
-    @Override
-    public String toString() {
-        return "DiskFile{" +
-            "id = " + id +
-            ", diskId = " + diskId +
-            ", diskFileId = " + diskFileId +
-            ", fileName = " + fileName +
-            ", parentFileId = " + parentFileId +
-            ", type = " + type +
-            ", status = " + status +
-            ", fileId = " + fileId +
-            ", createUser = " + createUser +
-            ", createTime = " + createTime +
-            ", modifyUser = " + modifyUser +
-            ", modifyTime = " + modifyTime +
-        "}";
     }
 }

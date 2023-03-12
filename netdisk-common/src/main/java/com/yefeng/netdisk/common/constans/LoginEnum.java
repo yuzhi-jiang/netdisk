@@ -1,5 +1,7 @@
 package com.yefeng.netdisk.common.constans;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * This class is for
  *
@@ -9,7 +11,6 @@ package com.yefeng.netdisk.common.constans;
 public enum LoginEnum {
 
     /**
-     *
      * 账号/邮箱 密码登录
      */
     ACCOUNT(1, "username"),
@@ -20,29 +21,32 @@ public enum LoginEnum {
 
     MOBILE_PASS(3, "mobile_pass"),
 
-
     /**
      * 第三方登录
      */
     THIRD(4, "loginByThird"),
     ;
-    private int type;
+
+
+
+    private int code;
 
     private String value;
 
-
-    LoginEnum(int type, String value) {
-        this.type = type;
+    LoginEnum(int code, String value) {
+        this.code = code;
         this.value = value;
     }
 
-    public int getType() {
-        return type;
+    @JsonValue
+    public int getCode() {
+        return code;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setCode(int code) {
+        this.code = code;
     }
+
 
     public String getValue() {
         return value;

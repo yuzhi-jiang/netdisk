@@ -109,6 +109,7 @@ public class JWTUtil {
         } catch (Exception e) {
             payloads = null;
             log.info("error:{}", "payload未能获取 from token");
+            throw new RuntimeException("payload未能获取"+payloadKeys+" from token");
         }
         return payloads;
     }

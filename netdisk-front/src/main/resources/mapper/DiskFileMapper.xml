@@ -41,7 +41,7 @@
     <select id="selectFilePathByDiskIDAndFileId" resultType="com.yefeng.netdisk.front.entity.DiskFile">
         SELECT df.*
         FROM (SELECT @r                                                                      AS disk_file_id,
-                     (SELECT @r := parent_file_id FROM tb_disk_file WHERE disk_file_id = @r) AS parent_file_id
+                     (SELECT @r := parent_file_id FROM tb_disk_file WHERE disk_file_id = @r LIMIT 1) AS parent_file_id
               FROM (SELECT @r := #{disk_file_id}) vars,
                    tb_disk_file
               WHERE @r IS NOT NULL) T
@@ -49,26 +49,15 @@
         where disk_id = #{diskId}
     </select>
 
-    <update id="updateDiskFileStatus">
-        update tb_disk_file tdf
-        set tdf.status=#{}
-        where
-        tdf.disk_file_id in
-        <foreach collection="fileIds" separator="," open="(" close=")" item="item">
-            #{item}
-        </foreach>
-        and
-        tdf.disk_id=#{diskId}
-    </update>
     <update id="deleteFile">
-        delete tb_disk_file tdf
+        delete tdf from tb_disk_file as tdf
         where
         tdf.disk_file_id in
         <foreach collection="fileIds" separator="," open="(" close=")" item="item">
             #{item}
         </foreach>
-        and
-        tdf.disk_id=#{diskId}
+        and tdf.status=3
+        and tdf.disk_id=#{diskId}
     </update>
 
     <update id="updateStatus">

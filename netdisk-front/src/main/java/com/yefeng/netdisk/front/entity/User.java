@@ -3,10 +3,10 @@ package com.yefeng.netdisk.front.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.Serializable;
 
 /**
  * <p>
@@ -14,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author yefeng
- * @since 2023-01-15
+ * @since 2023-03-11
  */
 @TableName("tb_user")
 @ApiModel(value = "User对象", description = "")
@@ -37,37 +37,26 @@ public class User implements Serializable {
     @ApiModelProperty("邮箱")
     private String email;
 
-    @ApiModelProperty("头像")
-    private String imgPath;
-
     @ApiModelProperty("手机号")
     private String mobile;
 
     @ApiModelProperty("状态：1正常0禁用")
     private Byte status;
 
+    @ApiModelProperty("头像")
+    private String imgPath;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", salt='" + salt + '\'' +
-                ", email='" + email + '\'' +
-                ", imgPath='" + imgPath + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", status=" + status +
-                '}';
-    }
+    @ApiModelProperty("创建人")
+    private Long createUser;
 
-    public String getImgPath() {
-        return imgPath;
-    }
+    @ApiModelProperty("创建时间")
+    private LocalDateTime createTime;
 
-    public void setImgPath(String imgPath) {
-        this.imgPath = imgPath;
-    }
+    @ApiModelProperty("修改人")
+    private Long modifyUser;
+
+    @ApiModelProperty("修改时间")
+    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -125,5 +114,61 @@ public class User implements Serializable {
         this.status = status;
     }
 
+    public String getImgPath() {
+        return imgPath;
+    }
 
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+    }
+
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(Long modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDateTime modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+            "id = " + id +
+            ", username = " + username +
+            ", password = " + password +
+            ", salt = " + salt +
+            ", email = " + email +
+            ", mobile = " + mobile +
+            ", status = " + status +
+            ", imgPath = " + imgPath +
+            ", createUser = " + createUser +
+            ", createTime = " + createTime +
+            ", modifyUser = " + modifyUser +
+            ", modifyTime = " + modifyTime +
+        "}";
+    }
 }

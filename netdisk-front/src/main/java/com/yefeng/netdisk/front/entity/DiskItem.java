@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -15,7 +16,7 @@ import java.math.BigDecimal;
  * </p>
  *
  * @author yefeng
- * @since 2023-01-20
+ * @since 2023-03-11
  */
 @TableName("tb_disk_item")
 @ApiModel(value = "DiskItem对象", description = "")
@@ -35,8 +36,9 @@ public class DiskItem implements Serializable {
     @ApiModelProperty("容量大小")
     private BigDecimal capaticyValue;
 
-    @ApiModelProperty("过期时间 -1为不过期，最低单位为天")
-    private Integer expireTime;
+
+    public DiskItem() {
+    }
 
     public DiskItem(Long diskId, String capaticyName, BigDecimal capaticyValue, Integer expireTime) {
         this.diskId = diskId;
@@ -45,8 +47,20 @@ public class DiskItem implements Serializable {
         this.expireTime = expireTime;
     }
 
-    public DiskItem() {
-    }
+    @ApiModelProperty("过期时间 -1为不过期，最低单位为天")
+    private Integer expireTime;
+
+    @ApiModelProperty("创建人")
+    private Long createUser;
+
+    @ApiModelProperty("创建时间")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("修改人")
+    private Long modifyUser;
+
+    @ApiModelProperty("修改时间")
+    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -72,7 +86,6 @@ public class DiskItem implements Serializable {
         this.capaticyName = capaticyName;
     }
 
-
     public BigDecimal getCapaticyValue() {
         return capaticyValue;
     }
@@ -89,6 +102,38 @@ public class DiskItem implements Serializable {
         this.expireTime = expireTime;
     }
 
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(Long modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDateTime modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
     @Override
     public String toString() {
         return "DiskItem{" +
@@ -97,6 +142,10 @@ public class DiskItem implements Serializable {
             ", capaticyName = " + capaticyName +
             ", capaticyValue = " + capaticyValue +
             ", expireTime = " + expireTime +
+            ", createUser = " + createUser +
+            ", createTime = " + createTime +
+            ", modifyUser = " + modifyUser +
+            ", modifyTime = " + modifyTime +
         "}";
     }
 }

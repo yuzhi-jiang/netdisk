@@ -1,5 +1,8 @@
 package com.yefeng.netdisk.front.util;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * This class is for
  *
@@ -48,6 +51,8 @@ public enum CheckNameModeEnum {
         this.name = name;
     }
 
+    @EnumValue
+    @JsonValue
     byte code;
     String name;
 

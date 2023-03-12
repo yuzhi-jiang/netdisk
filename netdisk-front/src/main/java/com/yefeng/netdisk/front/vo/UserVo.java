@@ -12,8 +12,7 @@ import java.io.Serializable;
  * @version 2023-01-18 19:26
  */
 public class UserVo implements Serializable {
-    private Long id;
-
+    private static final long serialVersionUID = 1234234343423L;
     @ApiModelProperty("用户名")
     private String username;
 
@@ -50,13 +49,7 @@ public class UserVo implements Serializable {
         this.token = token;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
@@ -88,5 +81,17 @@ public class UserVo implements Serializable {
 
     public void setStatus(Byte status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "UserVo{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", imgPath='" + imgPath + '\'' +
+                ", status=" + status +
+                ", token='" + token + '\'' +
+                '}';
     }
 }

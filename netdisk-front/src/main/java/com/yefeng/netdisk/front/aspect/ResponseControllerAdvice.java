@@ -1,5 +1,6 @@
 package com.yefeng.netdisk.front.aspect;
 
+import cn.hutool.json.JSONConfig;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -17,7 +19,6 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import java.io.IOException;
 import java.io.StringWriter;
 
 /**
@@ -46,25 +47,14 @@ public class ResponseControllerAdvice implements ResponseBodyAdvice<Object> {
      * 进行接口返回值包装
      */
     @Override
-    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
+    public  Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   ServerHttpRequest request, ServerHttpResponse response) {
         log.info("进行返回值包装");
-        ApiResult<Object> objectApiResult = new ApiResult<>();
+
 
         if (returnType.getParameterType().equals(ApiResult.class)){
-            JsonFactory factory = objectMapper.getFactory();
-            JsonGenerator generator = null;
-            try {
-                String jsonString =   objectMapper.writeValueAsString(body);
-                generator = factory.createGenerator(new StringWriter());
-                generator.writeRawValue(jsonString);
-                generator.flush();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            String unescapedJsonString = generator.getOutputTarget().toString();
-            return JSONUtil.parseObj(unescapedJsonString);
+            return getObject(body);
         }
 
         //String 类型不能直接包装，需要进行特殊处理
@@ -79,14 +69,23 @@ public class ResponseControllerAdvice implements ResponseBodyAdvice<Object> {
                 throw new RuntimeException("String类型返回值包装异常");
             }
         }
+        return getObject(ResultUtil.success(body));
+    }
+
+    @NotNull
+    private Object getObject(Object body) {
         try {
-            String jsonString = objectMapper.writeValueAsString(ResultUtil.success(body));
+            String jsonString = objectMapper.writeValueAsString(body);
             JsonFactory factory = objectMapper.getFactory();
             JsonGenerator generator = factory.createGenerator(new StringWriter());
             generator.writeRawValue(jsonString);
             generator.flush();
             String unescapedJsonString = generator.getOutputTarget().toString();
-            return JSONUtil.parseObj(unescapedJsonString);
+
+            JSONConfig jsonConfig = new JSONConfig();
+            jsonConfig.setIgnoreNullValue(true);
+
+            return JSONUtil.parseObj(unescapedJsonString,jsonConfig);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

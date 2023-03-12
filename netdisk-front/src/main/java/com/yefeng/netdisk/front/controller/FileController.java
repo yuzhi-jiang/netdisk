@@ -15,13 +15,20 @@ import com.yefeng.netdisk.common.result.HttpCodeEnum;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
+import com.yefeng.netdisk.front.bo.FileBo;
+import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
+import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
+import com.yefeng.netdisk.front.mapper.DiskMapper;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
 import com.yefeng.netdisk.front.service.IShareService;
+import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.*;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +40,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 
 /**
  * <p>
@@ -47,6 +55,21 @@ import java.util.Objects;
 @RequestMapping("/file")
 @Slf4j
 public class FileController {
+
+
+    @Value("${mycloud.hdfsBasePath}")
+    String hdfsBasePath;
+
+    @Value("${mycloud.upload.idSize}")
+    Integer uploadIdSize;
+    @Value("${mycloud.fileIdSize}")
+    Integer fileIdSize;
+
+    @Value("${mycloud.upload.tokenExpire}")
+    Long uploadTokenExpire;
+    @Autowired
+    private RedisUtil redisUtil;
+
     /*
 
 {
@@ -69,7 +92,7 @@ public class FileController {
 
     @ApiOperation(value = "获取文件hash,方式为sha1，仅做测试使用", notes = "仅做测试使用")
     @PostMapping("/hash")
-    public ApiResult getFileHash(@ApiParam(name = "file", required = true) @RequestPart("file")
+    public ApiResult<String> getFileHash(@ApiParam(name = "file", required = true) @RequestPart("file")
                                  MultipartFile file) {
         try {
             String contentHash = DigestUtil.sha1Hex(file.getBytes());
@@ -92,7 +115,7 @@ public class FileController {
      */
     @ApiOperation("查找文件")
     @PostMapping("/search")
-    public ApiResult search(@RequestParam("disk_id") String disk_id,
+    public ApiResult<List<DiskFile>> search(@RequestParam("disk_id") String disk_id,
                             @RequestParam("query") String query,
                             @RequestParam(value = "order_by", required = false) String order_by,
                             @RequestParam(value = "limit", defaultValue = "20") Integer limit
@@ -176,7 +199,7 @@ public class FileController {
     HdfsClient hdfsClient;
 
 
-    public ApiResult createWithFolders(@RequestBody RequestParams params) {
+    public ApiResult<Object> createWithFolders(@RequestBody RequestParams params) {
         String type = params.getStringValue("type");
         Assert.isBlank(type, "创建类型不能为空");
         String name = params.getStringValue("name");
@@ -352,25 +375,18 @@ public class FileController {
      * 数控没有，不覆盖，创建file，并上传
      * 没有，覆盖，删除原file，并上传
      *
-     * @param params
+     * @param fileBo
      * @return
      */
     @ApiOperation("上传文件")
     @PostMapping("/createWithFolders")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "上传类型,可以是file和folder", required = true, dataType = "String", defaultValue = "file"),
-            @ApiImplicitParam(name = "name", value = "filename", required = true),
-            @ApiImplicitParam(name = "disk_id", value = "云盘id", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "parent_file_id", value = "父文件夹id", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "check_name_mode", value = "名称检查模式,分别是auto_rename（自动重命名）,overwrite(覆盖),refuse(丢弃此次上传)", required = true, dataType = "String")
-    })
-    public ApiResult createWithFolders1(@RequestBody RequestParams params) {
-        String type = params.getStringValue("type");
-        Assert.isBlank(type, "创建类型不能为空");
-        String name = params.getStringValue("name");
-        String diskId = params.getStringValue("disk_id");
-        String parentFileId = params.getStringValue("parent_file_id");
-        String checkNameMode = params.getStringValue("check_name_mode");
+    public ApiResult<CreateFileDto> createWithFolders1(@RequestBody FileBo fileBo) {
+        String type = fileBo.getType();
+        Assert.isNull(type, "创建类型不能为空");
+        String name = fileBo.getFileName();
+        String diskId = fileBo.getDiskId();
+        String parentFileId = fileBo.getParentFileId();
+        String checkNameMode = fileBo.getCheckNameMode();
 
         String diskFileId = RandomUtil.randomString(fileIdSize);
 
@@ -387,10 +403,10 @@ public class FileController {
         if (type.equals(FileTypeContents.FOLDER.getName())) {
 
             diskFile.setType(FileTypeContents.FOLDER.getCode());
-            diskFile.setStatus(FileStatusEnum.invalid.getCode());
+            diskFile.setStatus(FileStatusEnum.valid.getCode());
 
-            JSONObject jsonObject = (JSONObject) diskFileService.creatFolder(diskFile, checkNameMode);
-            return ResultUtil.success(jsonObject);
+            CreateFileDto creatFolder = diskFileService.creatFolder(diskFile, checkNameMode);
+            return ResultUtil.success(creatFolder);
         }
         //创建(上传)文件
         else if (type.equals(FileTypeContents.FILE.getName())) {
@@ -398,7 +414,7 @@ public class FileController {
             diskFile.setStatus(FileStatusEnum.create.getCode());//创建等待上传
 
 
-            String contentHash = params.getStringValue("content_hash");
+            String contentHash = fileBo.getHash();
             //如果数据库有文件则获取文件信息，并标注快速上传
             File hasFile = fileService.getOne(new QueryWrapper<File>().eq("hash", contentHash));
             if (hasFile != null) {
@@ -409,11 +425,14 @@ public class FileController {
 
             //创建文件
             DiskFile file = diskFileService.createFile(diskFile, checkNameMode);
-            JSONObject jsonObject = new JSONObject(file);
+
+            CreateFileDto createFile = DiskFileMapperStruct.INSTANCE.toCreateFile(file);
+
+
             if (hasFile != null) {
-                jsonObject.putOnce("rapid_upload", true);
+                createFile.setRapidUpload(true);
             } else {
-                jsonObject.putOnce("rapid_upload", false);
+                createFile.setRapidUpload(false);
 
                 String uploadId = RandomUtil.randomString(uploadIdSize);
 //                String finalFileId = RandomUtil.randomString(40);
@@ -428,27 +447,15 @@ public class FileController {
                 };
                 //生产token 和 uploadId
                 String token = JWTUtil.createToken(hashMap, uploadTokenExpire);
-                jsonObject.putOnce("token", token);
-                jsonObject.putOnce("upload_id", uploadId);
+                createFile.setToken(token);
+                createFile.setUploadId(uploadId);
+
             }
 
-            return ResultUtil.success(jsonObject);
+            return ResultUtil.success(createFile);
         }
         return ResultUtil.fail();
     }
-
-    @Value("${mycloud.hdfsBasePath}")
-    String hdfsBasePath;
-
-    @Value("${mycloud.upload.idSize}")
-    Integer uploadIdSize;
-    @Value("${mycloud.fileIdSize}")
-    Integer fileIdSize;
-
-    @Value("${mycloud.upload.tokenExpire}")
-    Long uploadTokenExpire;
-    @Autowired
-    private RedisUtil redisUtil;
 
     /**
      * 上传文件块
@@ -492,8 +499,16 @@ public class FileController {
                 }
             }
 
+            ApiResult apiResult= null;
+            try {
 
-            ApiResult apiResult = hdfsClient.uploadFile(hdfsBasePath, file);
+                apiResult  = hdfsClient.uploadFile(hdfsBasePath, file);
+            }catch (Exception e){
+                //上传失败，删除,重新上传
+                String diskFileId = (String) payload[2];
+                diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_file_id",diskFileId));
+            }
+
             if (apiResult.getCode() != HttpCodeEnum.OK.getCode()) {
                 return ResultUtil.failMsg("upload failed");
             }
@@ -512,7 +527,7 @@ public class FileController {
             file1.setStatus(FileStatusEnum.upload.getCode());//文件上传了
 
 
-            file1.setUpload_id(uploadId);
+            file1.setUploadId(uploadId);
 
             boolean saved = fileService.save(file1);
 
@@ -535,7 +550,11 @@ public class FileController {
 
     @Value("${mycloud.redis.open}")
     private boolean openRedis;
+    @Resource(name = "commonQueueThreadPool")
+    ExecutorService commonQueueThreadPool;
 
+    @Resource
+    DiskMapper diskMapper;
     /**
      * 上传完成，请求合并
      *
@@ -548,6 +567,7 @@ public class FileController {
     public ApiResult complete(@RequestParam("disk_id") String diskId, @RequestParam("file_id") String diskFileId, @RequestParam("upload_id") String uploadId) {
         Boolean flag = false;
         Long fileId = null;
+        Long fileSize=0L;
         if (openRedis) {
             try {
                 String uploadKey = RedisKeys.getUploadKey(uploadId);
@@ -562,6 +582,7 @@ public class FileController {
             File file = fileService.getOne(new QueryWrapper<File>().eq("upload_id", uploadId));
             if (file.getStatus() == FileStatusEnum.upload.getCode()) {
                 fileId = file.getId();
+                fileSize= Long.valueOf(file.getLength());
             }
         }
 
@@ -569,6 +590,8 @@ public class FileController {
 
         if (fileId != null) {
             boolean saveFlag = diskFileService.saveWithFileId(diskId, diskFileId, fileId);
+            commonQueueThreadPool.execute(new DiskCapacityTask(Long.valueOf(diskId), CapacityContents.ADD_USE_CAPACITY, fileSize, this.diskMapper));
+
             return ResultUtil.success();
         }
         return ResultUtil.failMsg("Could not upload");
@@ -681,7 +704,7 @@ public class FileController {
      * @return
      */
     @GetMapping("/list_by_share")
-    public ApiResult listByShare(@RequestParam("share_id") String shareId,
+    public ApiResult<List<DiskFile>> listByShare(@RequestParam("share_id") String shareId,
                                  @RequestParam(name = "parent_file_id", defaultValue = "root") String parentFileId,
                                  @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
 

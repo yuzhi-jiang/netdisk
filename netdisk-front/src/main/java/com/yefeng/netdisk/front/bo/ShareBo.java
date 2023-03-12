@@ -114,7 +114,7 @@ public class ShareBo {
     String diskId;
 
 
-    @ApiModelProperty("过期时间,格式为: yyyy-MM-dd'T'HH:mm:ss'Z'")
+    @ApiModelProperty("过期时间,格式为: yyyy-MM-dd HH:mm:ss")
 
     String expiration;
     //分享文件的类型 1，文件，2，文件夹，3.txt,4.doc,5.other

@@ -19,11 +19,11 @@ public interface DiskFileMapper extends BaseMapper<DiskFile> {
     List<DiskFile> getFileList(@Param("diskId") String diskId,@Param("parentFileId") String parentFileId);
     List<DiskFile> selectFilePathByDiskIDAndFileId(@Param("diskId") Long diskId,@Param("disk_file_id") String fileId);
 
-    void deleteFile(String diskId, List<String> fileIds);
+    int deleteFile(String diskId, List<String> fileIds);
 
     int updateStatus(String diskId, List<String> fileIds, byte statusCode);
 
 
-    int moveFileBatch(List<DiskFile> diskFiles);
+    int moveFileBatch(@Param("diskFiles") List<DiskFile> diskFiles);
 
 }

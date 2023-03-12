@@ -68,7 +68,7 @@ public class CaptchaUtil {
         String key = RedisKeys.getCapatchaKey(mobile);
         Object result = redisUtil.get(key);
         if (result == null) {
-            return false;
+            throw new RuntimeException("验证码已过期或者已过期");
         }
         return result.toString().equals(captcha);
     }
