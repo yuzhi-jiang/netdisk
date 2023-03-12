@@ -39,8 +39,8 @@ public class RecycleController {
      * @return
      */
     @ApiOperation("根据disk_file_id查看文件信息")
-    @GetMapping("/info/{disk_file_id}")
-    public ApiResult<DiskFileVo> info(@PathVariable("disk_file_id") String diskFileId) {
+    @GetMapping("/info/{file_id}")
+    public ApiResult<DiskFileVo> info(@PathVariable("file_id") String diskFileId) {
         DiskFile diskFile = diskFileService.getOne(
                 new QueryWrapper<DiskFile>()
                         .eq("disk_file_id", diskFileId)
