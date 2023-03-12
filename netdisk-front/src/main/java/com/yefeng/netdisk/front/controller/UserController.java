@@ -159,14 +159,6 @@ public class UserController extends BaseController {
      * @return
      */
 
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "type",value = "注册类型,类型枚举",required = true),
-//            @ApiImplicitParam(name = "email",value = "邮箱",required = false),
-//            @ApiImplicitParam(name = "mobile",value = "电话",required = false),
-//            @ApiImplicitParam(name = "password",value = "密码",required = false),
-//            @ApiImplicitParam(name = "captcha",value = "验证码",required = false),
-//            @ApiImplicitParam(name = "username",value = "用户名",required = false)
-//    })
     @PostMapping("/register")
     public ApiResult<String> register(@RequestBody RegisterBo registerBo) {
         String type = registerBo.getType();

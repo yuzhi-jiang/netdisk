@@ -14,7 +14,6 @@ import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.BatchBo;
 import com.yefeng.netdisk.front.bo.BatchBodyBo;
-import com.yefeng.netdisk.front.bo.BatchRequestBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.mapper.DiskMapper;
@@ -22,7 +21,6 @@ import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
 import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.CapacityContents;
-import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -194,79 +192,7 @@ public class DiskFileController {
     }
 
 
-    /**
-     * 删除文件  列表
-     * {
-     *   "requests": [
-     *     {
-     *       "body": {
-     *         "drive_id": "358565",
-     *         "file_id": "637a1dcd08f610bb4bb64fbab5eb5f789c77e2e7"
-     *       },
-     *       "headers": {
-     *         "Content-Type": "application/json"
-     *       },
-     *       "id": "637a1dcd08f610bb4bb64fbab5eb5f789c77e2e7",
-     *       "method": "POST",
-     *       "url": "/recyclebin/trash"
-     *     },
-     *     {
-     *       "body": {
-     *         "drive_id": "358565",
-     *         "file_id": "637a1dcd7940c7a1bfa745bbb7fabb2c64ba4f35"
-     *       },
-     *       "headers": {
-     *         "Content-Type": "application/json"
-     *       },
-     *       "id": "637a1dcd7940c7a1bfa745bbb7fabb2c64ba4f35",
-     *       "method": "POST",
-     *       "url": "/recyclebin/trash"
-     *     },
-     *     {
-     *       "body": {
-     *         "drive_id": "358565",
-     *         "file_id": "637a1dcd0f24ea18c7f54a64a6c55964fec6c36e"
-     *       },
-     *       "headers": {
-     *         "Content-Type": "application/json"
-     *       },
-     *       "id": "637a1dcd0f24ea18c7f54a64a6c55964fec6c36e",
-     *       "method": "POST",
-     *       "url": "/recyclebin/trash"
-     *     }
-     *   ],
-     *   "resource": "file"
-     * }
-     */
-    @ApiOperation("从云盘删除文件，应该是在回收站调用")
-    @PostMapping("/delete")
-    public ApiResult deleteFile(
-            BatchBo batchBo
-    ) {
 
-        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getId).collect(Collectors.toList());
-
-        //todo
-        String diskId=batchBo.getDiskId();
-        boolean flag = diskFileService.deleteFile(diskId, fileIds);
-        if(flag){
-            return ResultUtil.success();
-        }
-        return ResultUtil.fail().setMsg("删除失败,请查看文件是否在回收站");
-    }
-
-
-    @ApiOperation("放到回收站")
-    @PostMapping("/recycle")
-    public ApiResult recycle(BatchBo batchBo){
-        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getId).collect(Collectors.toList());
-        String diskId=batchBo.getDiskId();
-        boolean flag=diskFileService.updateStatus(diskId,fileIds, FileStatusEnum.invalid);
-        if(flag){
-            return ResultUtil.success();
-        }
-        return ResultUtil.fail();
-    }
 
     @ApiOperation("文件移动")
     @PutMapping("/move")
