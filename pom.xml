@@ -37,6 +37,7 @@
 
         <mybatis.version>3.5.2</mybatis.version>
         <nacos.version>2.1.4.RELEASE</nacos.version>
+        <justAuth.version>1.16.5</justAuth.version>
     </properties>
 
 
@@ -212,6 +213,16 @@
                 <artifactId>spring-boot-starter-validation</artifactId>
                 <version>2.6.4</version>
             </dependency>
+
+
+
+<!--            第三方登陆-->
+            <dependency>
+                <groupId>me.zhyd.oauth</groupId>
+                <artifactId>JustAuth</artifactId>
+                <version>${justAuth.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

@@ -3,7 +3,7 @@ server:
     context-path: /front
 spring:
   profiles:
-    active: local
+    active: dev
   jackson:
     serialization:
       fail-on-empty-beans: false
@@ -54,3 +54,12 @@ pagehelper:
 verification-code:
   sender:
     type: email
+justauth:
+  enabled: true
+  type:
+    GITHUB:
+      client-id: xxxxxx
+      client-secret: xxxxxx
+      redirect-uri: http://127.0.0.1:8082/front/oauth/github/callback
+  cache:
+    type: default
