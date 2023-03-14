@@ -1,6 +1,6 @@
 server:
   port: 9527  #端口号
-
+  address: 0.0.0.0
 
 
 spring:

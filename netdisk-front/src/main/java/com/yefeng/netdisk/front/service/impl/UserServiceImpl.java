@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author yefeng
@@ -32,22 +32,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Resource
     HdfsClient hdfsClient;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean uploadAvatar(MultipartFile avatarFile, String userId) {
         ApiResult apiResult = hdfsClient.uploadFile(hdfsBasePath, avatarFile);
         User user = new User();
         user.setId(Long.valueOf(userId));
-        user.setImgPath(hdfsBasePath+'/'+avatarFile.getOriginalFilename());
-        if (apiResult.getCode()== HttpCodeEnum.OK.getCode()) {
-            return baseMapper.updateById(user)>0;
+        user.setImgPath(hdfsBasePath + '/' + avatarFile.getOriginalFilename());
+        if (apiResult.getCode() == HttpCodeEnum.OK.getCode()) {
+            return baseMapper.updateById(user) > 0;
         }
-        return  false;
+        return false;
+    }
+
+    public User getUserByThirdAuth(String uuid, User user) {
+
+        User resUser = baseMapper.selectUserByInfo(uuid, user);
+
+        return resUser;
+
     }
 
     @Autowired
     IDiskService diskService;
-    
+
     @Transactional(rollbackFor = Exception.class)
     public boolean registerUserAndInitDisk(User user) {
         baseMapper.insert(user);

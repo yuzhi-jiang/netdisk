@@ -1,6 +1,7 @@
 server:
   servlet:
     context-path: /front
+  address: 0.0.0.0
 spring:
   profiles:
     active: dev

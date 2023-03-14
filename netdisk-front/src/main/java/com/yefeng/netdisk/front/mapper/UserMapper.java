@@ -2,6 +2,7 @@ package com.yefeng.netdisk.front.mapper;
 
 import com.yefeng.netdisk.front.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface UserMapper extends BaseMapper<User> {
 
+    User selectUserByInfo(@Param("uuid") String uuid, @Param("user") User user);
 }
