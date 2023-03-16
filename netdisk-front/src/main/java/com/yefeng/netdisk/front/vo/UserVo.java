@@ -26,8 +26,8 @@ public class UserVo implements Serializable {
     @ApiModelProperty("头像")
     private String imgPath;
 
-    @ApiModelProperty("状态：1正常0禁用")
-    private Byte status;
+//    @ApiModelProperty("状态：1正常0禁用")
+//    private Byte status;
 
     @ApiModelProperty("登录成功的token")
     public String token;
@@ -75,23 +75,5 @@ public class UserVo implements Serializable {
         this.mobile = mobile;
     }
 
-    public Byte getStatus() {
-        return status;
-    }
 
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "UserVo{" +
-                "username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", imgPath='" + imgPath + '\'' +
-                ", status=" + status +
-                ", token='" + token + '\'' +
-                '}';
-    }
 }

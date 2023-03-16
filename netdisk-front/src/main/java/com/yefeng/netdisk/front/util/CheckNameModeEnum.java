@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * This class is for
+ * 文件命名模式
  *
  * @author 夜枫
  * @version 2023-02-09 11:38

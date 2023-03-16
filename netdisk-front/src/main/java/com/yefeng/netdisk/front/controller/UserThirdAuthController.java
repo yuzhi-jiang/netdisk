@@ -56,11 +56,12 @@ public class UserThirdAuthController extends BaseController {
     }
 
     @GetMapping("/login/{type}")
-    public void login(@PathVariable String type, HttpServletResponse response) throws IOException {
+    public String login(@PathVariable String type, HttpServletResponse response) throws IOException {
         AuthRequest authRequest = factory.get(type);
         String authorize = authRequest.authorize(AuthStateUtils.createState());
         log.info("response={}", authorize);
-        response.sendRedirect(authorize);
+        return authorize;
+//        response.sendRedirect(authorize);
     }
 
     @Resource
@@ -70,6 +71,7 @@ public class UserThirdAuthController extends BaseController {
     public ApiResult<UserVo> login(@PathVariable String type, AuthCallback callback) {
         AuthRequest authRequest = factory.get(type);
         AuthResponse response = authRequest.login(callback);
+
         log.info("【response】= {}", JSONUtil.toJsonStr(response));
 
         JSONObject data = JSONUtil.parseObj(response.getData());

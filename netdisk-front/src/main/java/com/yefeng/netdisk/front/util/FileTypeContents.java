@@ -2,7 +2,7 @@ package com.yefeng.netdisk.front.util;
 
 
 /**
- * This class is for
+ * 文件类型
  *
  * @author 夜枫
  * @version 2023-02-08 21:45
