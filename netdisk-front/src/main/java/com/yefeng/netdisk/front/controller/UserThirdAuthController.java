@@ -21,10 +21,7 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +40,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/oauth")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@CrossOrigin
 public class UserThirdAuthController extends BaseController {
 
     @Resource
@@ -56,11 +54,11 @@ public class UserThirdAuthController extends BaseController {
     }
 
     @GetMapping("/login/{type}")
-    public String login(@PathVariable String type, HttpServletResponse response) throws IOException {
+    public ApiResult<String > login(@PathVariable String type, HttpServletResponse response) throws IOException {
         AuthRequest authRequest = factory.get(type);
         String authorize = authRequest.authorize(AuthStateUtils.createState());
         log.info("response={}", authorize);
-        return authorize;
+        return ResultUtil.success(authorize);
 //        response.sendRedirect(authorize);
     }
 

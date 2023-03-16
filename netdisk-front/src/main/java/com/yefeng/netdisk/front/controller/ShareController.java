@@ -31,6 +31,7 @@ import java.util.List;
  */
 @Api(tags = "分享文件")
 @RestController
+@CrossOrigin
 @RequestMapping("/share")
 public class ShareController {
 
