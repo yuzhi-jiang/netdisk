@@ -76,8 +76,7 @@ public class UserThirdAuthController extends BaseController {
         log.info("【data】= {}", data);
         if (response.getCode() == 2000) {
             String uuid = data.getStr("uuid");
-            UserThirdAuth one = userThirdAuthService.getOne(new QueryWrapper<UserThirdAuth>().eq("openid", uuid)
-                    .or().eq("unionid", uuid));
+            UserThirdAuth one = userThirdAuthService.getOne(new QueryWrapper<UserThirdAuth>().eq("openid", uuid));
 
 
 //            User user1 = new User();
