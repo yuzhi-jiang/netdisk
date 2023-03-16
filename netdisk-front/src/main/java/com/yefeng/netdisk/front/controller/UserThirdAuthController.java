@@ -54,7 +54,7 @@ public class UserThirdAuthController extends BaseController {
     }
 
     @GetMapping("/login/{type}")
-    public ApiResult<String > login(@PathVariable String type, HttpServletResponse response) throws IOException {
+    public ApiResult<String> login(@PathVariable String type, HttpServletResponse response) throws IOException {
         AuthRequest authRequest = factory.get(type);
         String authorize = authRequest.authorize(AuthStateUtils.createState());
         log.info("response={}", authorize);
@@ -66,7 +66,12 @@ public class UserThirdAuthController extends BaseController {
     UserServiceImpl userService;
 
     @RequestMapping("/{type}/callback")
-    public ApiResult<UserVo> login(@PathVariable String type, AuthCallback callback) {
+    public void login(@PathVariable String type, AuthCallback callback, HttpServletResponse hresponse) throws IOException {
+
+//        UserVo userVo1 = new UserVo();
+//        userVo1.setToken("234");
+//        writeHtml(userVo1, hresponse);
+//        return;
         AuthRequest authRequest = factory.get(type);
         AuthResponse response = authRequest.login(callback);
 
@@ -90,7 +95,12 @@ public class UserThirdAuthController extends BaseController {
                 UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
                 String token = CreateUserToken(user);
                 userVo.setToken(token);
-                return ResultUtil.success(userVo);
+//                return ResultUtil.success(userVo);
+                try {
+                    writeHtml(userVo, hresponse);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 // 没有绑定过,需要绑定
                 String username = data.getStr("username");
@@ -118,14 +128,98 @@ public class UserThirdAuthController extends BaseController {
                         UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
                         String userToken = CreateUserToken(user);
                         userVo.setToken(userToken);
-                        return ResultUtil.success(userVo);
+
+
+                        try {
+                            writeHtml(userVo, hresponse);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+
                     }
                 }
                 throw new RuntimeException("授权失败,请重试");
 
             }
         }
-        throw new RuntimeException("授权失败"+response.getCode());
+        throw new RuntimeException("授权失败" + response.getCode());
+    }
+
+
+    private void writeHtml(UserVo userVo, HttpServletResponse httpServletResponse) throws IOException {
+        String html = "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "  <head>\n" +
+                "    <meta charset=\"UTF-8\" />\n" +
+                "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n" +
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n" +
+                "    <title>Netdisk登录页</title>\n" +
+                "    <style>\n" +
+                "      .loadingSeven {\n" +
+                "        position: fixed;\n" +
+                "        width: 160px;\n" +
+                "        height: 60px;\n" +
+                "        left: calc(50% - 40px);\n" +
+                "        top: calc(50% - 40px);\n" +
+                "      }\n" +
+                "      .loadingSeven span {\n" +
+                "        display: inline-block;\n" +
+                "        width: 8px;\n" +
+                "        height: 100%;\n" +
+                "        border-radius: 4px;\n" +
+                "        background: lightgreen;\n" +
+                "        animation: loadsaven 1.04s ease infinite;\n" +
+                "      }\n" +
+                "      @keyframes loadsaven {\n" +
+                "        0%,\n" +
+                "        100% {\n" +
+                "          height: 40px;\n" +
+                "          background: lightgreen;\n" +
+                "        }\n" +
+                "        50% {\n" +
+                "          height: 60px;\n" +
+                "          margin-top: -20px;\n" +
+                "          background: lightblue;\n" +
+                "        }\n" +
+                "      }\n" +
+                "      .loadingSeven span:nth-child(2) {\n" +
+                "        animation-delay: 0.13s;\n" +
+                "      }\n" +
+                "      .loadingSeven span:nth-child(3) {\n" +
+                "        animation-delay: 0.26s;\n" +
+                "      }\n" +
+                "      .loadingSeven span:nth-child(4) {\n" +
+                "        animation-delay: 0.39s;\n" +
+                "      }\n" +
+                "      .loadingSeven span:nth-child(5) {\n" +
+                "        animation-delay: 0.52s;\n" +
+                "      }\n" +
+                "    </style>\n" +
+                "  </head>\n" +
+                "  <body>\n" +
+                "    <div class=\"loadingSeven\" style=\"text-align: center\">\n" +
+                "      <span></span>\n" +
+                "      <span></span>\n" +
+                "      <span></span>\n" +
+                "      <span></span>\n" +
+                "      <span></span>\n" +
+                "      <div>登录中，请稍后</div>\n" +
+                "    </div>\n" +
+                "\n" +
+                "    <script>\n" +
+                "      window.addEventListener(\"load\", () => {\n" +
+                "        console.log(\"Welcome\");\n" +
+                "        const message = " + userVo.toString() + ";\n" +
+                "        window.opener.parent.postMessage(message, \"*\");\n" +
+                "        window.parent.close();\n" +
+                "      });\n" +
+                "    </script>\n" +
+                "  </body>\n" +
+                "</html>\n";
+        httpServletResponse.setContentType("text/html;charset=utf-8");
+        httpServletResponse.setCharacterEncoding("utf-8");
+        httpServletResponse.getOutputStream().write(html.getBytes(), 0,html.length());
     }
 
     private User getUserOrRegister(AuthResponse response, String type) {

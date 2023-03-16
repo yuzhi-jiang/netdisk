@@ -61,6 +61,6 @@ justauth:
     GITHUB:
       client-id: xxxxxx
       client-secret: xxxxxx
-      redirect-uri: http://127.0.0.1:8082/front/oauth/github/callback
+      redirect-uri: http://192.168.196.80:8082/front/oauth/github/callback
   cache:
     type: default
