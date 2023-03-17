@@ -132,8 +132,9 @@ public class UserThirdAuthController extends BaseController {
 
 
                     }
+                }else{
+                    throw new RuntimeException("授权失败,请重试");
                 }
-                throw new RuntimeException("授权失败,请重试");
 
             }
         } else {
