@@ -126,11 +126,9 @@ public class UserThirdAuthController extends BaseController {
                         UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
                         String userToken = CreateUserToken(user);
                         userVo.setToken(userToken);
-
-
                         writeHtml(userVo, hresponse);
-
-
+                    }else{
+                        throw new RuntimeException("授权失败,请重试");
                     }
                 }else{
                     throw new RuntimeException("授权失败,请重试");
@@ -145,7 +143,8 @@ public class UserThirdAuthController extends BaseController {
 
 
     private void writeHtml(UserVo userVo, HttpServletResponse httpServletResponse) {
-        String html = "<!DOCTYPE html>\n" +
+        StringBuilder stringBuilder = new StringBuilder();
+       String html = "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "  <head>\n" +
                 "    <meta charset=\"UTF-8\" />\n" +
@@ -193,8 +192,9 @@ public class UserThirdAuthController extends BaseController {
                 "        animation-delay: 0.52s;\n" +
                 "      }\n" +
                 "    </style>\n" +
-                "  </head>\n" +
-                "  <body>\n" +
+                "  </head>\n";
+            stringBuilder.append(html);
+        html="  <body>\n" +
                 "    <div class=\"loadingSeven\" style=\"text-align: center\">\n" +
                 "      <span></span>\n" +
                 "      <span></span>\n" +
@@ -207,17 +207,18 @@ public class UserThirdAuthController extends BaseController {
                 "    <script>\n" +
                 "      window.addEventListener(\"load\", () => {\n" +
                 "        console.log(\"Welcome\");\n" +
-                "        const message = " + JSONUtil.toJsonStr(userVo) + ";\n" +
+                "        const message = '" + JSONUtil.toJsonStr(userVo) + "';\n" +
                 "        window.opener.parent.postMessage(message, \"*\");\n" +
                 "        window.parent.close();\n" +
                 "      });\n" +
                 "    </script>\n" +
                 "  </body>\n" +
                 "</html>\n";
+        stringBuilder.append(html);
         httpServletResponse.setContentType("text/html;charset=utf-8");
         httpServletResponse.setCharacterEncoding("utf-8");
         try {
-            httpServletResponse.getOutputStream().write(html.getBytes(), 0, html.length());
+            httpServletResponse.getOutputStream().write(stringBuilder.toString().getBytes(), 0, stringBuilder.toString().length());
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);
