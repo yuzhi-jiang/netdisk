@@ -3,7 +3,7 @@ package com.yefeng.netdisk.common.constans;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * This class is for
+ * 登陆类型
  *
  * @author 夜枫
  * @version 2023-01-18 18:17
@@ -24,7 +24,7 @@ public enum LoginEnum {
     /**
      * 第三方登录
      */
-    THIRD(4, "loginByThird"),
+    oauth(4, "oauth"),
     ;
 
 

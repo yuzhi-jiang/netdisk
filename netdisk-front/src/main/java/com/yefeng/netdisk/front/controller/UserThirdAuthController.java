@@ -66,7 +66,7 @@ public class UserThirdAuthController extends BaseController {
     UserServiceImpl userService;
 
     @RequestMapping("/{type}/callback")
-    public void login(@PathVariable String type, AuthCallback callback, HttpServletResponse hresponse) throws IOException {
+    public void login(@PathVariable String type, AuthCallback callback, HttpServletResponse hresponse) {
 
 //        UserVo userVo1 = new UserVo();
 //        userVo1.setToken("234");
@@ -96,11 +96,9 @@ public class UserThirdAuthController extends BaseController {
                 String token = CreateUserToken(user);
                 userVo.setToken(token);
 //                return ResultUtil.success(userVo);
-                try {
-                    writeHtml(userVo, hresponse);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+
+                writeHtml(userVo, hresponse);
+
             } else {
                 // 没有绑定过,需要绑定
                 String username = data.getStr("username");
@@ -130,11 +128,7 @@ public class UserThirdAuthController extends BaseController {
                         userVo.setToken(userToken);
 
 
-                        try {
-                            writeHtml(userVo, hresponse);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        writeHtml(userVo, hresponse);
 
 
                     }
@@ -142,12 +136,14 @@ public class UserThirdAuthController extends BaseController {
                 throw new RuntimeException("授权失败,请重试");
 
             }
+        } else {
+
+            throw new RuntimeException("授权失败" + response.getCode());
         }
-        throw new RuntimeException("授权失败" + response.getCode());
     }
 
 
-    private void writeHtml(UserVo userVo, HttpServletResponse httpServletResponse) throws IOException {
+    private void writeHtml(UserVo userVo, HttpServletResponse httpServletResponse) {
         String html = "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "  <head>\n" +
@@ -210,7 +206,7 @@ public class UserThirdAuthController extends BaseController {
                 "    <script>\n" +
                 "      window.addEventListener(\"load\", () => {\n" +
                 "        console.log(\"Welcome\");\n" +
-                "        const message = " + userVo.toString() + ";\n" +
+                "        const message = " + JSONUtil.toJsonStr(userVo) + ";\n" +
                 "        window.opener.parent.postMessage(message, \"*\");\n" +
                 "        window.parent.close();\n" +
                 "      });\n" +
@@ -219,7 +215,12 @@ public class UserThirdAuthController extends BaseController {
                 "</html>\n";
         httpServletResponse.setContentType("text/html;charset=utf-8");
         httpServletResponse.setCharacterEncoding("utf-8");
-        httpServletResponse.getOutputStream().write(html.getBytes(), 0,html.length());
+        try {
+            httpServletResponse.getOutputStream().write(html.getBytes(), 0, html.length());
+            return;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private User getUserOrRegister(AuthResponse response, String type) {
