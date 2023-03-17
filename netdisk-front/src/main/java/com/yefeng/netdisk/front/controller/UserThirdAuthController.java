@@ -65,8 +65,8 @@ public class UserThirdAuthController extends BaseController {
     @Resource
     UserServiceImpl userService;
 
-    @RequestMapping("/{type}/callback")
-    public void login(@PathVariable String type, AuthCallback callback, HttpServletResponse hresponse) {
+    @GetMapping("/{type}/callback")
+    public void callback(@PathVariable String type, AuthCallback callback, HttpServletResponse hresponse) {
 
 //        UserVo userVo1 = new UserVo();
 //        userVo1.setToken("234");
@@ -144,9 +144,9 @@ public class UserThirdAuthController extends BaseController {
 
     private void writeHtml(UserVo userVo, HttpServletResponse httpServletResponse) {
         StringBuilder stringBuilder = new StringBuilder();
-       String html = "<!DOCTYPE html>\n" +
-                "<html lang=\"en\">\n" +
-                "  <head>\n" +
+//       String html = "<!DOCTYPE html>\n" +
+        String html=    "<html lang=\"en\">\n" +
+            "  <head>\n" +
                 "    <meta charset=\"UTF-8\" />\n" +
                 "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n" +
                 "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n" +
@@ -218,7 +218,7 @@ public class UserThirdAuthController extends BaseController {
         httpServletResponse.setContentType("text/html;charset=utf-8");
         httpServletResponse.setCharacterEncoding("utf-8");
         try {
-            httpServletResponse.getOutputStream().write(stringBuilder.toString().getBytes(), 0, stringBuilder.toString().length());
+            httpServletResponse.getWriter().println(stringBuilder);
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);
