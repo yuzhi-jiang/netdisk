@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class LoginBo {
     //用户名
-    @ApiModelProperty("用户名")
+    @ApiModelProperty("账号(邮箱/手机号)")
     private String account;
     //密码
     @ApiModelProperty("密码")

@@ -13,6 +13,11 @@ import java.io.Serializable;
  */
 public class UserVo implements Serializable {
     private static final long serialVersionUID = 1234234343423L;
+
+
+    @ApiModelProperty("用户id")
+    private String userId;
+
     @ApiModelProperty("用户名")
     private String username;
 
@@ -75,5 +80,11 @@ public class UserVo implements Serializable {
         this.mobile = mobile;
     }
 
+    public String getUserId() {
+        return userId;
+    }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

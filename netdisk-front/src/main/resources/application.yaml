@@ -1,7 +1,6 @@
 server:
   servlet:
     context-path: /front
-  address: 0.0.0.0
 spring:
   profiles:
     active: dev
@@ -36,7 +35,6 @@ mycloud:
       maximumPoolSize: 5
       keepAliveTime: 0
       queueCapacity: 20480
-
   upload:
     idSize: 32
     tokenExpire: 600 #600 sec  is 10 minutes
@@ -65,3 +63,5 @@ justauth:
       client-secret: xxxx
       redirect-uri: http://localhost:8082/front/oauth/github/callback
 
+webclient:
+    url: http://localhost:8082/front

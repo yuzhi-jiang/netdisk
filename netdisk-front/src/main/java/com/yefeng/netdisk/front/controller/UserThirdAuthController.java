@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xkcoding.justauth.AuthRequestFactory;
+import com.yefeng.netdisk.common.exception.BizException;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.front.entity.User;
@@ -54,8 +55,13 @@ public class UserThirdAuthController extends BaseController {
     }
 
     @GetMapping("/login/{type}")
-    public ApiResult<String> login(@PathVariable String type, HttpServletResponse response) throws IOException {
-        AuthRequest authRequest = factory.get(type);
+    public ApiResult<String> login(@PathVariable String type, HttpServletResponse response){
+        AuthRequest authRequest = null;
+        try {
+            authRequest = factory.get(type);
+        } catch (Exception e) {
+            throw new BizException("暂不支持该第三方登录");
+        }
         String authorize = authRequest.authorize(AuthStateUtils.createState());
         log.info("response={}", authorize);
         return ResultUtil.success(authorize);
@@ -110,7 +116,7 @@ public class UserThirdAuthController extends BaseController {
                 user.setUsername(username);
                 user.setImgPath(avatar);
                 user.setEmail(email);
-                user.setStatus(UserStatusEnum.NORMAL);
+                user.setStatus(UserStatusEnum.NORMAL);//第三方登录的用户默认是正常状态
                 user.setSalt(BCrypt.gensalt());//获取盐
 
                 UserThirdAuth thirdAuth = new UserThirdAuth();
@@ -212,6 +218,21 @@ public class UserThirdAuthController extends BaseController {
                 "        window.parent.close();\n" +
                 "      });\n" +
                 "    </script>\n" +
+                "  <script>\n" +
+                "   const timer = setTimeout(() => {\n" +
+                "    alert(\"登录超时/错误，请返回页面重新登陆！\");\n" +
+                "    clearTimeout(timer);\n" +
+                "    window.parent.close();\n" +
+                "   }, 1 * 30 * 1000);\n" +
+                "\n" +
+                "   window.addEventListener(\"load\", () => {\n" +
+                "    console.log(\"Welcome\");\n" +
+                "    const message = result;\n" +
+                "    window.opener.parent.postMessage(message, \"*\");\n" +
+                "    clearTimeout(timer);\n" +
+                "    window.parent.close();\n" +
+                "   });\n" +
+                "  </script>"+
                 "  </body>\n" +
                 "</html>\n";
         stringBuilder.append(html);

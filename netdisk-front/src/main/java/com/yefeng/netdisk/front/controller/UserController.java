@@ -35,6 +35,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
@@ -67,6 +69,10 @@ public class UserController extends BaseController {
     private SendUtils sendUtils;
     @Resource(name = "commonQueueThreadPool")
     ExecutorService commonQueueThreadPool;
+
+
+    @Resource
+    HttpServletResponse response;
 
 
     @ApiOperation(value = "用户登录,使用用户名/邮箱，或是手机号")
@@ -107,6 +113,8 @@ public class UserController extends BaseController {
             String token = CreateUserToken(user);
 
             userVo.setToken(token);
+            //将userid设置到header中
+            response.setHeader("userid", user.getId().toString());
             return ResultUtil.success(userVo);
         }
         else if (type == LoginEnum.MOBILE_CAPTCHA.getCode()) {
@@ -128,6 +136,7 @@ public class UserController extends BaseController {
                 user = new User();
                 user.setMobile(mobile);
                 user.setSalt(BCrypt.gensalt());//获取盐
+                user.setStatus(UserStatusEnum.NORMAL);//手机号码登录直接就激活了
                 boolean flag = userService.registerUserAndInitDisk(user);
                 if (!flag) {
                     throw new BizException("注册失败");
@@ -222,6 +231,9 @@ public class UserController extends BaseController {
     }
 
 
+    @Value("${webclient.url}")
+    private String webClientUrl;
+
     //todo 激活
 
     @ApiOperation("激活用户")
@@ -230,7 +242,7 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "token" ,value = "token",required = true)
     })
     @GetMapping("/{userId}/active")
-    public void active(@PathVariable String userId,@RequestParam("token") String token) {
+    public void active(@PathVariable String userId, @RequestParam("token") String token, HttpServletResponse response) throws IOException {
 
 
         JWTUtil.validateToken(token);
@@ -249,6 +261,11 @@ public class UserController extends BaseController {
         if(!flag){
             throw new BizException("激活失败，请重新激活");
         }
+
+
+
+        //激活成功，跳转到登录页面
+        response.sendRedirect(webClientUrl);
     }
 
 
@@ -272,6 +289,29 @@ public class UserController extends BaseController {
         return ResultUtil.success("绑定成功");
     }
 
+
+    // 绑定第三方账号
+//    @ApiOperation("绑定第三方账号")
+//    @PostMapping("/bindThirdAccount")
+
+
+    //解除绑定手机号码
+    @ApiOperation("解除绑定手机号码")
+    @PostMapping("/unbindMobile")
+    public ApiResult<String> unbindMobile(@RequestParam("mobile") String mobile,
+                                          @RequestParam("user_id") String userId) {
+
+        CheckUtil.checkPhone(mobile);
+
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<User>().set("mobile", null).eq("id", userId);
+
+        boolean flag = userService.update(updateWrapper);
+        if(!flag){
+            throw new BizException("解除绑定失败，请重新解除绑定");
+        }
+        return ResultUtil.success("解除绑定成功");
+    }
+
     //todo 退出
 
     /**
@@ -289,14 +329,14 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户信息
-     * @param subject
+     * @param UserId
      * @return
      */
     @ApiOperation("获取用户信息")
     @GetMapping("/userinfo")
-    public ApiResult<UserVo> getUser(@RequestHeader("subject")@ApiParam("用户id") String subject) {
+    public ApiResult<UserVo> getUser(@RequestHeader("user_id")@ApiParam("用户id") String UserId) {
         //todo 是否查看用户状态
-        User user = userService.getById(Long.parseLong(subject));
+        User user = userService.getById(Long.parseLong(UserId));
         Assert.isNull(user, "用户不存在");
 
 
@@ -304,9 +344,9 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/userDisk")
-    public ApiResult<UserDiskVo> getUserDisk(@RequestHeader("subject") String subject) {
+    public ApiResult<UserDiskVo> getUserDisk(@RequestHeader("user_id") String UserId) {
         //todo 是否查看用户状态
-        User user = userService.getById(Long.parseLong(subject));
+        User user = userService.getById(Long.parseLong(UserId));
         Assert.isNull(user, "用户不存在");
 
 
@@ -327,11 +367,11 @@ public class UserController extends BaseController {
 
     //todo 修改用户信息 、密码，不包括头像
     @PutMapping("/userinfo")
-    public ApiResult updateUserInfo(@RequestHeader("subject") String subject, @RequestBody BUser bUser) {
+    public ApiResult updateUserInfo(@RequestHeader("user_id") String userId, @RequestBody BUser bUser) {
 
         ValidatorUtils.validateEntity(bUser);
         User user = new User();
-        user.setId(Long.valueOf(subject));
+        user.setId(Long.valueOf(userId));
         BeanUtils.copyProperties(bUser, user);
         boolean flag = userService.updateById(user);
         if (flag) {
@@ -339,6 +379,7 @@ public class UserController extends BaseController {
         }
         return ResultUtil.fail();
     }
+
 
 
 

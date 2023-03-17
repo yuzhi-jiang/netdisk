@@ -1,12 +1,10 @@
 package com.yefeng.netdisk.front.mapStruct.mapper;
 
 import com.yefeng.netdisk.front.entity.User;
-import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.util.UserStatusEnum;
 import com.yefeng.netdisk.front.vo.UserVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
@@ -24,6 +22,7 @@ public interface UserMapperStruct {
 //    @Mappings({
 //            @Mapping(source = "status", target = "status",qualifiedByName = "mapStatus")
 //    })
+    @Mapping(source = "id", target = "userid")
     UserVo toDto(User user);
 
 

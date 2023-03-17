@@ -1,6 +1,7 @@
 package com.yefeng.netdisk.front.service.impl;
 
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yefeng.hdfs.feign.client.HdfsClient;
 import com.yefeng.netdisk.common.result.ApiResult;
@@ -59,6 +60,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Transactional(rollbackFor = Exception.class)
     public boolean registerUserAndInitDisk(User user) {
+
+        //设置默认用户名和头像
+        if(user.getUsername()==null){
+            user.setUsername(RandomUtil.randomString(10));
+        }
+        if(user.getImgPath()==null){
+            user.setImgPath("https://netdisk-1254000000.cos.ap-shanghai.myqcloud.com/defaultAvatar.png");
+        }
         baseMapper.insert(user);
         diskService.initDisk(user.getId());
         return true;
