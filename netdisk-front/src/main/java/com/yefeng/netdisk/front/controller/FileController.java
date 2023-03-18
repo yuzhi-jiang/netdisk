@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/file")
 @Slf4j
+@CrossOrigin
 public class FileController {
 
 

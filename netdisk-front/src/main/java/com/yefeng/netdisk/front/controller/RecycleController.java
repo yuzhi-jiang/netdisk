@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @Api(tags = "回收站")
 @RestController
 @RequestMapping("/file/recycle")
+@CrossOrigin
 public class RecycleController {
     @Resource
     IDiskFileService diskFileService;
