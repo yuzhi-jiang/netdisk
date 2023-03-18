@@ -292,7 +292,7 @@ public class UserThirdAuthController extends BaseController {
             String avatar = data.getStr("avatar");
             String email = data.getStr("email");
             String gender = data.getStr("gender");
-            String token = data.getJSONObject("token").getStr("access_token");
+            String token = data.getJSONObject("token").getStr("accessToken");
             User user = new User();
             user.setUsername(username);
             user.setImgPath(avatar);

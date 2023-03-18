@@ -1,7 +1,5 @@
 package com.yefeng.netdisk.front.vo;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -10,14 +8,14 @@ import io.swagger.annotations.ApiModelProperty;
  * @author 夜枫
  * @version 2023-01-23 14:04
  */
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+
 public class FileVo {
     private Long id;
 
-    private Long diskId;
+    private String diskId;
 
     @ApiModelProperty("文件/文件夹id")
-    private Long fileId;
+    private String fileId;
 
     @ApiModelProperty("用户文件的名称（同样的文件每个人文件有不同的名称）")
     private String fileName;
@@ -66,19 +64,19 @@ public class FileVo {
         this.id = id;
     }
 
-    public Long getDiskId() {
+    public String getDiskId() {
         return diskId;
     }
 
-    public void setDiskId(Long diskId) {
+    public void setDiskId(String diskId) {
         this.diskId = diskId;
     }
 
-    public Long getFileId() {
+    public String getFileId() {
         return fileId;
     }
 
-    public void setFileId(Long fileId) {
+    public void setFileId(String fileId) {
         this.fileId = fileId;
     }
 

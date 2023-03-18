@@ -1,15 +1,12 @@
 package com.yefeng.netdisk.front.bo;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-
 /**
  * This class is for
  *
  * @author 夜枫
  * @version 2023-03-05 21:33
  */
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+
 public class BatchBo {
     private BatchRequestBo[] requests;
     private String resource;

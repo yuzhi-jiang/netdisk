@@ -40,8 +40,8 @@ public class RecycleController {
      * @return
      */
     @ApiOperation("根据disk_file_id查看文件信息")
-    @GetMapping("/info/{file_id}")
-    public ApiResult<DiskFileVo> info(@PathVariable("file_id") String diskFileId) {
+    @GetMapping("/info/{fileId}")
+    public ApiResult<DiskFileVo> info(@PathVariable("fileId") String diskFileId) {
         DiskFile diskFile = diskFileService.getOne(
                 new QueryWrapper<DiskFile>()
                         .eq("disk_file_id", diskFileId)
@@ -60,7 +60,7 @@ public class RecycleController {
      */
     @ApiOperation("获取回收站文件列表")
     @PostMapping("/list")
-    public ApiResult<List<DiskFileVo>> recycleList(@RequestParam("disk_id") String diskId, @RequestParam("page_num") Integer pageNum, @RequestParam("page_size") Integer pageSize) {
+    public ApiResult<List<DiskFileVo>> recycleList(@RequestParam("diskId") String diskId, @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) {
         QueryWrapper<DiskFile> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("disk_id", diskId);
         queryWrapper.eq("status", FileStatusEnum.invalid);

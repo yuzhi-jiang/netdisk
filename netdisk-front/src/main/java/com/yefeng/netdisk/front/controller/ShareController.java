@@ -50,8 +50,8 @@ public class ShareController {
      */
     @ApiOperation("查看我的分享文件")
     @GetMapping("/list")
-    public ApiResult<List<ShareVo>> listShare(@RequestParam("disk_id") String diskId,@RequestParam(defaultValue = "0",name = "page_num")@Min(value = 1,message = "分页最小从1开始") Integer pageNum,
-                               @RequestParam(defaultValue = "20",name = "page_size") Integer pageSize) {
+    public ApiResult<List<ShareVo>> listShare(@RequestParam("diskId") String diskId,@RequestParam(defaultValue = "0",name = "pageNum")@Min(value = 1,message = "分页最小从1开始") Integer pageNum,
+                               @RequestParam(defaultValue = "20",name = "pageSize") Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);
         List<Share> shareList = shareService.list(new QueryWrapper<Share>()
                 .eq("disk_id", diskId));
@@ -72,7 +72,7 @@ public class ShareController {
      */
     @ApiOperation("更改失效时间")
     @PostMapping("/updateExpire")
-    public ApiResult updateExpired(@RequestParam("disk_id") String diskId,@RequestParam("share_id") String shareId
+    public ApiResult updateExpired(@RequestParam("diskId") String diskId,@RequestParam("shareId") String shareId
             ,@RequestParam("expiration") String expiration) {
         if (StringUtils.isBlank(expiration)) {
             expiration="9999-12-31T23:59:59Z";
@@ -115,8 +115,8 @@ public class ShareController {
      */
     @ApiOperation("取消分享")
     @DeleteMapping("/cancel")
-    public ApiResult cancel(@RequestParam("disk_id") String diskId,
-                            @RequestParam("share_id") String shareId) {
+    public ApiResult cancel(@RequestParam("diskId") String diskId,
+                            @RequestParam("shareId") String shareId) {
         UpdateWrapper<Share> wrapper = new UpdateWrapper<Share>().eq("disk_id", diskId)
                 .eq("id", shareId)
                 .set("is_valid", "0");

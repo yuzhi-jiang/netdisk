@@ -1,9 +1,5 @@
 package com.yefeng.netdisk.front.vo;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.yefeng.netdisk.front.entity.DiskItem;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,17 +10,18 @@ import java.util.List;
  * @author 夜枫
  * @version 2023-01-22 13:10
  */
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+
 public class DiskVo {
 
     private Long id;
-    private Long userId;
+    private String userId;
 
     private BigDecimal totalCapacity;
 
     private BigDecimal useCapacity;
 
-    List<DiskItem> diskItems;
+
+    List<DiskItemVo> diskItems;
 
 
     public Long getId() {
@@ -46,11 +43,11 @@ public class DiskVo {
                 '}';
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -70,11 +67,11 @@ public class DiskVo {
         this.useCapacity = useCapacity;
     }
 
-    public List<DiskItem> getDiskItems() {
+    public List<DiskItemVo> getDiskItems() {
         return diskItems;
     }
 
-    public void setDiskItems(List<DiskItem> diskItems) {
+    public void setDiskItems(List<DiskItemVo> diskItems) {
         this.diskItems = diskItems;
     }
 }

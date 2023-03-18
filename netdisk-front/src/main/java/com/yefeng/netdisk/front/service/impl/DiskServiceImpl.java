@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.entity.Disk;
 import com.yefeng.netdisk.front.entity.DiskItem;
+import com.yefeng.netdisk.front.mapStruct.mapper.DiskItemMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskItemMapper;
 import com.yefeng.netdisk.front.mapper.DiskMapper;
 import com.yefeng.netdisk.front.service.IDiskService;
@@ -17,7 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -53,7 +57,8 @@ public class DiskServiceImpl extends ServiceImpl<DiskMapper, Disk> implements ID
         DiskVo diskVo = new DiskVo();
 
         BeanUtils.copyProperties(disk,diskVo);
-        diskVo.setDiskItems(diskItems);
+
+        diskVo.setDiskItems(diskItems.stream().map(DiskItemMapperStruct.INSTANCE::toVo).collect(Collectors.toList()));
         return diskVo;
     }
 
@@ -71,7 +76,7 @@ public class DiskServiceImpl extends ServiceImpl<DiskMapper, Disk> implements ID
         DiskVo diskVo = new DiskVo();
 
         BeanUtils.copyProperties(disk,diskVo);
-        diskVo.setDiskItems(diskItems);
+        diskVo.setDiskItems(diskItems.stream().map(DiskItemMapperStruct.INSTANCE::toVo).collect(Collectors.toList()));
         return diskVo;
     }
 
@@ -94,7 +99,15 @@ public class DiskServiceImpl extends ServiceImpl<DiskMapper, Disk> implements ID
 
 
     boolean createDiskItem(Long diskId) {
-        DiskItem diskItem = new DiskItem(diskId, "基础容量", new BigDecimal(baseCapacity), -1);
+        LocalDateTime eternalTime = LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0);
+
+        DiskItem diskItem = new DiskItem(diskId, "基础容量", new BigDecimal(baseCapacity), eternalTime);
+
+        return diskItemMapper.insert(diskItem) > 0;
+    }
+    boolean createDiskItem(Long diskId,LocalDateTime endTime) {
+
+        DiskItem diskItem = new DiskItem(diskId, "基础容量", new BigDecimal(baseCapacity), endTime);
 
         return diskItemMapper.insert(diskItem) > 0;
     }

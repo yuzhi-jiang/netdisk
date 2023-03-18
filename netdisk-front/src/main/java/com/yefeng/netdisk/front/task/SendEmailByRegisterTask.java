@@ -17,12 +17,16 @@ import java.util.HashMap;
 @Slf4j
 public class SendEmailByRegisterTask implements Runnable {
 
+
+    String address;
+
     Long userId;
     String email;
 
     Long expireTime;
 
-    public SendEmailByRegisterTask(Long userId, String email, Long expireTime) {
+    public SendEmailByRegisterTask(String address,Long userId, String email, Long expireTime) {
+        this.address=address;
         this.userId = userId;
         this.email = email;
         this.expireTime = expireTime;
@@ -36,13 +40,13 @@ public class SendEmailByRegisterTask implements Runnable {
         String token = JWTUtil.createToken(new HashMap<>() {
             {
                 put("email", email);
-                put("user_id", String.valueOf(userId));
+                put("userId", String.valueOf(userId));
                 put("expire", System.currentTimeMillis() + 1000 * 60 * 60 * 24);
             }
         },expireTime);
         // send email
         log.info("发送邮件成功，token:{}",token);
-        MailUtil.send(email, "网盘注册激活", "您已成功注册网盘，请点击以下链接激活账号：http://192.168.10.14:9527/front/user/"+userId+"/active?token=" + token, false);
+        MailUtil.send(email, "网盘注册激活", "您已成功注册网盘，请点击以下链接激活账号：http://"+address+"/front/user/"+userId+"/active?token=" + token, false);
     }
 
 

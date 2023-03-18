@@ -1,12 +1,11 @@
 package com.yefeng.netdisk.front.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * This class is for
@@ -14,13 +13,13 @@ import java.util.Date;
  * @author 夜枫
  * @version 2023-02-25 13:23
  */
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+
 public class ShareVo implements Serializable {
-    @JsonProperty("share_id")
+    @JsonProperty("shareId")
     private Long id;
 
     
-    private Long diskId;
+    private String diskId;
 
     
     private String shareTitle;
@@ -42,7 +41,8 @@ public class ShareVo implements Serializable {
     @ApiModelProperty("分享的文件类型1（file）.文件2文件夹（如果有多个，则有文件夹则优先文件夹）")
      String type;
 
-    Date expiration;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    LocalDateTime expiration;
 
     public Long getId() {
         return id;
@@ -52,11 +52,11 @@ public class ShareVo implements Serializable {
         this.id = id;
     }
 
-    public Long getDiskId() {
+    public String getDiskId() {
         return diskId;
     }
 
-    public void setDiskId(Long diskId) {
+    public void setDiskId(String diskId) {
         this.diskId = diskId;
     }
 
@@ -116,11 +116,11 @@ public class ShareVo implements Serializable {
         this.type = type;
     }
 
-    public Date getExpiration() {
+    public LocalDateTime getExpiration() {
         return expiration;
     }
 
-    public void setExpiration(Date expiration) {
+    public void setExpiration(LocalDateTime expiration) {
         this.expiration = expiration;
     }
 }

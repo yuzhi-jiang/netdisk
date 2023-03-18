@@ -78,13 +78,13 @@ public class DiskFileController {
 
     //todo 根据路径获取文件列表
     @ApiOperation("获取云盘列表")
-    @GetMapping("/list/{disk_id}")
-    public ApiResult<List<DiskFileVo>> list(@PathVariable("disk_id") String diskId,
-                          @RequestParam(name = "parent_file_id", defaultValue = "root")
+    @GetMapping("/list/{diskId}")
+    public ApiResult<List<DiskFileVo>> list(@PathVariable("diskId") String diskId,
+                          @RequestParam(name = "parentFileId", defaultValue = "root")
                           String parentFileId,
-                          @RequestParam(name = "page_num",defaultValue = "1")
+                          @RequestParam(name = "pageNum",defaultValue = "1")
                               @Min(value = 1,message = "分页最小从1开始") Integer pageNum,
-                          @RequestParam(name = "page_size", defaultValue = "20") Integer pageSize
+                          @RequestParam(name = "pageSize", defaultValue = "20") Integer pageSize
 
     ) {
         PageHelper.startPage(pageNum, pageSize);
@@ -102,8 +102,8 @@ public class DiskFileController {
      * @return
      */
     @ApiOperation("获取文件夹路径")
-    @GetMapping("/get_path")
-    public List<DiskFileVo> getPath(@RequestParam("disk_id") String deskId,@RequestParam("file_id") String fileId){
+    @GetMapping("/getPath")
+    public List<DiskFileVo> getPath(@RequestParam("diskId") String deskId,@RequestParam("fileId") String fileId){
             List<DiskFileVo> paths= diskFileService.getPath(deskId,fileId);
             return paths;
     }
@@ -114,11 +114,11 @@ public class DiskFileController {
 //    @ApiOperation("上传文件")
 //    @PostMapping(value = "/file")
     public ApiResult uploadFile(
-            @RequestParam("disk_id")
+            @RequestParam("diskId")
             String diskId,
 
-            @ApiParam(name = "parent_file_id", required = true)
-            @RequestParam("parent_file_id")
+            @ApiParam(name = "parentFileId", required = true)
+            @RequestParam("parentFileId")
             String parentFileId,
 
             @ApiParam(name = "file", required = true)
@@ -222,10 +222,10 @@ public class DiskFileController {
     @ApiOperation("修改文件名")
     @PostMapping("/filename")
     public ApiResult updateFileName(
-            @RequestParam("disk_id")
+            @RequestParam("diskId")
             String diskId,
-            @ApiParam(name = "file_id", required = true)
-            @RequestParam("file_id")
+            @ApiParam(name = "fileId", required = true)
+            @RequestParam("fileId")
             String fileId,
             @ApiParam(name = "name", required = true)
             @RequestParam("name")
@@ -245,12 +245,12 @@ public class DiskFileController {
     Long downloadUrlExpireTime;
 
     //下载文件
-    @GetMapping("/get_download_url")
+    @GetMapping("/getDownloadUrl")
     ApiResult getDownloadUrl(
-            @RequestParam("disk_id")
+            @RequestParam("diskId")
             String diskId,
-            @ApiParam(name = "file_id", required = true)
-            @RequestParam("file_id")
+            @ApiParam(name = "fileId", required = true)
+            @RequestParam("fileId")
             String fileId) {
         //todo 获取文件下载地址  ?拼接token,过期时间等验证参数
         File file = fileService.getFileWithDiskIdAndFileId(diskId, fileId);

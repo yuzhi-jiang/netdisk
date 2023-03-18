@@ -40,7 +40,7 @@ public class DiskItem implements Serializable {
     public DiskItem() {
     }
 
-    public DiskItem(Long diskId, String capaticyName, BigDecimal capaticyValue, Integer expireTime) {
+    public DiskItem(Long diskId, String capaticyName, BigDecimal capaticyValue, LocalDateTime expireTime) {
         this.diskId = diskId;
         this.capaticyName = capaticyName;
         this.capaticyValue = capaticyValue;
@@ -48,7 +48,7 @@ public class DiskItem implements Serializable {
     }
 
     @ApiModelProperty("过期时间 -1为不过期，最低单位为天")
-    private Integer expireTime;
+    private LocalDateTime expireTime;
 
     @ApiModelProperty("创建人")
     private Long createUser;
@@ -94,11 +94,11 @@ public class DiskItem implements Serializable {
         this.capaticyValue = capaticyValue;
     }
 
-    public Integer getExpireTime() {
+    public LocalDateTime getExpireTime() {
         return expireTime;
     }
 
-    public void setExpireTime(Integer expireTime) {
+    public void setExpireTime(LocalDateTime expireTime) {
         this.expireTime = expireTime;
     }
 

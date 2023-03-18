@@ -1,11 +1,11 @@
 package com.yefeng.netdisk.front.vo;
 
 import cn.hutool.core.util.DesensitizedUtil;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 /**
@@ -14,7 +14,7 @@ import java.io.Serializable;
  * @author 夜枫
  * @version 2023-01-18 19:26
  */
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+
 public class UserVo implements Serializable {
     private static final long serialVersionUID = 1234234343423L;
 
@@ -42,6 +42,53 @@ public class UserVo implements Serializable {
     public String token;
 
     public String DiskId;
+
+
+    @ApiModelProperty("创建人")
+    private Long createUser;
+
+    @ApiModelProperty("创建时间")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("修改人")
+    private Long modifyUser;
+
+    @ApiModelProperty("修改时间")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime modifyTime;
+
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(Long modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDateTime modifyTime) {
+        this.modifyTime = modifyTime;
+    }
 
     public String getDiskId() {
         return DiskId;

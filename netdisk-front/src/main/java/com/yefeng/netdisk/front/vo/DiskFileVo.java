@@ -1,8 +1,6 @@
 package com.yefeng.netdisk.front.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
@@ -15,17 +13,16 @@ import java.io.Serializable;
  */
 
 //蛇形命名法
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class DiskFileVo implements Serializable {
 
     private static final long serialVersionUID = 12343241234324L;
 
 //    private Long id;
 
-    private Long diskId;
+    private String diskId;
 
     @ApiModelProperty("云盘文件/文件夹id")
-    @JsonProperty("file_id")
+    @JsonProperty("fileId")
     private String diskFileId;
 
     @ApiModelProperty("用户文件的名称（同样的文件每个人文件有不同的名称）")
@@ -40,11 +37,11 @@ public class DiskFileVo implements Serializable {
     private String status;
 
 
-    public Long getDiskId() {
+    public String getDiskId() {
         return diskId;
     }
 
-    public void setDiskId(Long diskId) {
+    public void setDiskId(String diskId) {
         this.diskId = diskId;
     }
 

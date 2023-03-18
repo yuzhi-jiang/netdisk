@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class RegisterBo {
 
-   private String type;
+   private Integer type;
    private String email;
    private String mobile;
    private String password;

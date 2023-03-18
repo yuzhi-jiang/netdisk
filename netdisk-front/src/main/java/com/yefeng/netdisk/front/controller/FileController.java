@@ -110,23 +110,23 @@ public class FileController {
     /**
      * 查看云盘中是否有该文件
      *
-     * @param disk_id  云盘id
+     * @param diskId  云盘id
      * @param limit    条数
      * @param query    json格式的查询条件
-     * @param order_by json格式的排序条件
+     * @param orderBy json格式的排序条件
      * @return
      */
     @ApiOperation("查找文件")
     @PostMapping("/search")
-    public ApiResult<List<DiskFileVo>> search(@RequestParam("disk_id") String disk_id,
+    public ApiResult<List<DiskFileVo>> search(@RequestParam("diskId") String diskId,
                             @RequestParam("query") String query,
-                            @RequestParam(value = "order_by", required = false) String order_by,
+                            @RequestParam(value = "orderBy", required = false) String orderBy,
                             @RequestParam(value = "limit", defaultValue = "20") Integer limit
     ) {
 
         QueryWrapper<DiskFile> wrapper = QueryWrapperUtil.getWrapper(query);
-        wrapper.eq("disk_id", disk_id);
-        String[] s = order_by.split(" ");
+        wrapper.eq("disk_id", diskId);
+        String[] s = orderBy.split(" ");
         if (s.length > 1) {
             wrapper.orderBy(true, Objects.equals(s[1], "ASC"), s[0]);
         }
@@ -208,9 +208,9 @@ public class FileController {
         String type = params.getStringValue("type");
         Assert.isBlank(type, "创建类型不能为空");
         String name = params.getStringValue("name");
-        String diskId = params.getStringValue("disk_id");
-        String parentFileId = params.getStringValue("parent_file_id");
-        String checkNameMode = params.getStringValue("check_name_mode");
+        String diskId = params.getStringValue("diskId");
+        String parentFileId = params.getStringValue("parentFileId");
+        String checkNameMode = params.getStringValue("checkNameMode");
         String file_id = RandomUtil.randomString(fileIdSize);
         //创建文件夹
         if (type.equals(FileTypeContents.FOLDER.getName())) {
@@ -287,7 +287,7 @@ public class FileController {
 
 
             Long size = (Long) params.get("size");
-            String contentHash = params.getStringValue("content_hash");
+            String contentHash = params.getStringValue("contentHash");
             //妙传
 //            log.info("hdfs:文件{} 已经存在，直接妙传", hasFile.getName());
             DiskFile diskFile = new DiskFile();
@@ -340,7 +340,7 @@ public class FileController {
 
 
             //hdfs没有，需要真实上传
-            json.putOnce("rapid_upload", "false");
+            json.putOnce("rapidUpload", "false");
 
 
                 /*
@@ -444,10 +444,10 @@ public class FileController {
                 String finalFileId = diskFileId;
                 HashMap<String, Object> hashMap = new HashMap<>() {
                     {
-                        put("disk_id", diskId);
-                        put("upload_id", uploadId);
-                        put("content_hash", contentHash);
-                        put("file_id", finalFileId);
+                        put("diskId", diskId);
+                        put("uploadId", uploadId);
+                        put("contentHash", contentHash);
+                        put("fileId", finalFileId);
                     }
                 };
                 //生产token 和 uploadId
@@ -471,7 +471,7 @@ public class FileController {
      * @return
      */
     @PutMapping("/uploadPart")
-    public ApiResult uploadPart(@RequestParam("upload_id") String uploadId, @RequestParam("token") String token,
+    public ApiResult uploadPart(@RequestParam("uploadId") String uploadId, @RequestParam("token") String token,
                                 @ApiParam(name = "file", required = true) @RequestPart("file")
                                 MultipartFile file) {
         try {
@@ -479,7 +479,7 @@ public class FileController {
             JWTUtil.validateToken(token);
             String contentHash = DigestUtil.sha1Hex(file.getBytes());
             System.out.println(contentHash);
-            Object[] payload = JWTUtil.getPayloadFromToken(token, "upload_id", "content_hash", "file_id");
+            Object[] payload = JWTUtil.getPayloadFromToken(token, "uploadId", "contentHash", "diskId");
             if (payload == null || payload.length != 3) {
                 return ResultUtil.failMsg("token 参数校验不通过");
             }
@@ -569,7 +569,7 @@ public class FileController {
      * @return
      */
     @PostMapping("/complete")
-    public ApiResult complete(@RequestParam("disk_id") String diskId, @RequestParam("file_id") String diskFileId, @RequestParam("upload_id") String uploadId) {
+    public ApiResult complete(@RequestParam("diskId") String diskId, @RequestParam("fileId") String diskFileId, @RequestParam("uploadId") String uploadId) {
         Boolean flag = false;
         Long fileId = null;
         Long fileSize=0L;
@@ -709,9 +709,9 @@ public class FileController {
      * @return
      */
     @GetMapping("/list_by_share")
-    public ApiResult<List<DiskFileVo>> listByShare(@RequestParam("share_id") String shareId,
-                                 @RequestParam(name = "parent_file_id", defaultValue = "root") String parentFileId,
-                                 @RequestParam(name = "page_num", defaultValue = "0") Integer pageNum, @RequestParam(name = "page_size", defaultValue = "0") Integer pageSize) {
+    public ApiResult<List<DiskFileVo>> listByShare(@RequestParam("shareId") String shareId,
+                                 @RequestParam(name = "parentFileId", defaultValue = "root") String parentFileId,
+                                 @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
 
         List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, pageNum, pageSize);
         List<DiskFileVo> collect = diskFiles.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());

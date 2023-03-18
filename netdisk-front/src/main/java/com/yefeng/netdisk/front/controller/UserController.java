@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
@@ -54,6 +55,9 @@ import java.util.concurrent.ExecutorService;
 @RequestMapping("/user")
 @CrossOrigin
 public class UserController extends BaseController {
+
+    @Value("${webclient.hostname:localhost}:${webclient.port:8082}")
+    String webClientAddress;
 
     @Resource
     UserServiceImpl userService;
@@ -73,6 +77,13 @@ public class UserController extends BaseController {
 
     @Resource
     HttpServletResponse response;
+
+    @ApiOperation("获取所有用户，仅供测试使用")
+    @GetMapping("/list")
+    public ApiResult<List<User>> getUserList(){
+        List<User> list = userService.list();
+        return ResultUtil.success(list);
+    }
 
 
     @ApiOperation(value = "用户登录,使用用户名/邮箱，或是手机号")
@@ -170,11 +181,11 @@ public class UserController extends BaseController {
 
     @PostMapping("/register")
     public ApiResult<String> register(@RequestBody RegisterBo registerBo) {
-        String type = registerBo.getType();
-        Assert.isNull(type, "注册类型不能为空");
+        Integer type = registerBo.getType();
+        Assert.isNull(type, "注册类型不能为空，必须为1(username)或者2(mobile_captcha)");
 
         // 1. 通过用户名称密码邮箱的表单
-        if (Objects.equals(LoginEnum.ACCOUNT.getValue(), type)) {
+        if (Objects.equals(LoginEnum.ACCOUNT.getCode(), type)) {
 
             BUser buser = new BUser();
 
@@ -196,14 +207,14 @@ public class UserController extends BaseController {
             if (flag) {
 
                 //邮箱注册需要发送一个邮箱验
-                commonQueueThreadPool.execute(new SendEmailByRegisterTask(user.getId(), user.getEmail(), userActiveTime));
+                commonQueueThreadPool.execute(new SendEmailByRegisterTask(webClientAddress,user.getId(), user.getEmail(), userActiveTime));
 
                 return new ApiResult(HttpCodeEnum.OK.getCode(), "注册成功,请激活邮箱");
             }
             return new ApiResult(HttpCodeEnum.FAIL.getCode(), "当前请求过大，请稍后再试");
         }
         // 2. 通过手机验证码注册
-        else if (Objects.equals(LoginEnum.MOBILE_CAPTCHA.getValue(), type)) {
+        else if (Objects.equals(LoginEnum.MOBILE_CAPTCHA.getCode(), type)) {
 
             String captcha = registerBo.getCaptcha();
             String mobile = registerBo.getMobile();
@@ -246,7 +257,7 @@ public class UserController extends BaseController {
 
 
         JWTUtil.validateToken(token);
-        Object[] payload = JWTUtil.getPayloadFromToken(token, "user_id", "email");
+        Object[] payload = JWTUtil.getPayloadFromToken(token, "userId", "email");
         String userId1 = (String) payload[0];
         String email = (String) payload[1];
 
@@ -274,7 +285,7 @@ public class UserController extends BaseController {
     @PostMapping("/bindMobile")
     public ApiResult<String> bindMobile(@RequestParam("mobile") String mobile,
                                         @RequestParam("captcha") String captcha,
-                                        @RequestParam("user_id") String userId) {
+                                        @RequestParam("userId") String userId) {
 
         CheckUtil.checkPhone(mobile);
 
@@ -298,7 +309,7 @@ public class UserController extends BaseController {
     //注销用户
     @ApiOperation("注销用户")
     @PostMapping("/delete")
-    public ApiResult<String> delete(@RequestHeader("user_id") String userId) {
+    public ApiResult<String> delete(@RequestHeader("userId") String userId) {
 
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<User>().set("status", UserStatusEnum.DISABLE).eq("id", userId);
 
@@ -312,7 +323,7 @@ public class UserController extends BaseController {
     //删除用户
     @ApiOperation("删除用户")
     @PostMapping("/remove")
-    public ApiResult<String> remove(@RequestHeader("user_id") String userId) {
+    public ApiResult<String> remove(@RequestHeader("userId") String userId) {
 
         boolean flag = userService.removeById(userId);
         if(!flag){
@@ -325,7 +336,7 @@ public class UserController extends BaseController {
     @ApiOperation("解除绑定手机号码")
     @PostMapping("/unbindMobile")
     public ApiResult<String> unbindMobile(@RequestParam("mobile") String mobile,
-                                          @RequestParam("user_id") String userId) {
+                                          @RequestParam("userId") String userId) {
 
         CheckUtil.checkPhone(mobile);
 
@@ -360,7 +371,7 @@ public class UserController extends BaseController {
      */
     @ApiOperation("获取用户信息 调用这个接口需调用 userdisk接口获取用户的云盘信息")
     @GetMapping("/userinfo")
-    public ApiResult<UserVo> getUser(@RequestHeader("user_id")@ApiParam("用户id") String userId) {
+    public ApiResult<UserVo> getUser(@RequestHeader("userId")@ApiParam("用户id") String userId) {
         Assert.isBlank(userId, "用户id不能为空");
         //todo 是否查看用户状态
         User user = userService.getById(Long.parseLong(userId));
@@ -372,9 +383,9 @@ public class UserController extends BaseController {
 
     @ApiOperation("获取用户信息和云盘信息 与上面的接口不同的是，这个接口会返回用户的云盘信息")
     @GetMapping("/userdisk")
-    public ApiResult<UserDiskVo> getUserDisk(@RequestHeader("user_id") String UserId) {
+    public ApiResult<UserDiskVo> getUserDisk(@RequestHeader("userId") String userId) {
         //todo 是否查看用户状态
-        User user = userService.getById(Long.parseLong(UserId));
+        User user = userService.getById(Long.parseLong(userId));
         Assert.isNull(user, "用户不存在");
 
 
@@ -393,7 +404,7 @@ public class UserController extends BaseController {
 
     //todo 修改用户信息 、密码，不包括头像
     @PutMapping("/userinfo")
-    public ApiResult updateUserInfo(@RequestHeader("user_id") String userId, @RequestBody BUser bUser) {
+    public ApiResult updateUserInfo(@RequestHeader("userId") String userId, @RequestBody BUser bUser) {
 
         ValidatorUtils.validateEntity(bUser);
         User user = new User();
