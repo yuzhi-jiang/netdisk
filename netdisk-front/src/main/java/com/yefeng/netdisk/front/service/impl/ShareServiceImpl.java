@@ -16,6 +16,7 @@ import com.yefeng.netdisk.front.vo.ShareVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
     @Resource
     DiskFileMapper diskFileMapper;
 
-    public List<DiskFile> getFilesByShareId(String shareId, String parentFileId, Integer pageNum, Integer pageSize) {
+    public List<DiskFile> getFilesByShareId(String shareId, String parentFileId, @RequestParam("page_num") Integer pageNum, @RequestParam("page_size") Integer pageSize) {
         QueryWrapper<ShareItem> queryWrapper = new QueryWrapper<ShareItem>().eq("share_id", shareId);
 
 //        Page<ShareItem> shareItemPage = shareItemMapper.selectPage(new Page<>(pageNum, pageSize), queryWrapper);

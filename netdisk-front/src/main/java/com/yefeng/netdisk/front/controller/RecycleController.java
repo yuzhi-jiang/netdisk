@@ -53,18 +53,18 @@ public class RecycleController {
      * 获取回收站文件列表
      *
      * @param diskId
-     * @param PageSize
-     * @param PageNum
+     * @param pageSize
+     * @param pageNum
      * @return
      */
     @ApiOperation("获取回收站文件列表")
     @PostMapping("/list")
-    public ApiResult<List<DiskFileVo>> recycleList(@RequestParam("disk_id") String diskId, @RequestParam("page_num") Integer PageNum, @RequestParam("page_size") Integer PageSize) {
+    public ApiResult<List<DiskFileVo>> recycleList(@RequestParam("disk_id") String diskId, @RequestParam("page_num") Integer pageNum, @RequestParam("page_size") Integer pageSize) {
         QueryWrapper<DiskFile> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("disk_id", diskId);
         queryWrapper.eq("status", FileStatusEnum.invalid);
 
-        PageHelper.startPage(PageNum, PageSize);
+        PageHelper.startPage(pageNum, pageSize);
 
         List<DiskFile> list = diskFileService.list(queryWrapper);
         List<DiskFileVo> diskFileVos = list.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
@@ -95,8 +95,8 @@ public class RecycleController {
      */
     @ApiOperation("放到回收站")
     @PostMapping("/add")
-    public ApiResult recycle(BatchBo batchBo) {
-        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getId).collect(Collectors.toList());
+    public ApiResult recycle(@RequestBody BatchBo batchBo) {
+        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getFileId).collect(Collectors.toList());
         String diskId = batchBo.getDiskId();
         boolean flag = diskFileService.updateStatus(diskId, fileIds, FileStatusEnum.invalid);
         if (flag) {
@@ -113,8 +113,8 @@ public class RecycleController {
      */
     @ApiOperation("还原文件")
     @PostMapping("/restore")
-    public ApiResult restore(BatchBo batchBo) {
-        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getId).collect(Collectors.toList());
+    public ApiResult restore(@RequestBody BatchBo batchBo) {
+        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getFileId).collect(Collectors.toList());
         String diskId = batchBo.getDiskId();
         boolean flag = diskFileService.updateStatus(diskId, fileIds, FileStatusEnum.valid);
         if (flag) {
@@ -176,10 +176,10 @@ public class RecycleController {
     @ApiOperation("从云盘删除文件，应该是在回收站调用")
     @PostMapping("/delete")
     public ApiResult deleteFile(
-            BatchBo batchBo
+            @RequestBody  BatchBo batchBo
     ) {
 
-        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getId).collect(Collectors.toList());
+        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getFileId).collect(Collectors.toList());
 
         //todo
         String diskId = batchBo.getDiskId();

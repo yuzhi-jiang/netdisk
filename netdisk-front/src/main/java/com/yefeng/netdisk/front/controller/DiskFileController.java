@@ -16,6 +16,7 @@ import com.yefeng.netdisk.front.bo.BatchBo;
 import com.yefeng.netdisk.front.bo.BatchBodyBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
+import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskMapper;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
@@ -81,9 +82,9 @@ public class DiskFileController {
     public ApiResult<List<DiskFileVo>> list(@PathVariable("disk_id") String diskId,
                           @RequestParam(name = "parent_file_id", defaultValue = "root")
                           String parentFileId,
-                          @RequestParam(name = "pageNum",defaultValue = "1")
+                          @RequestParam(name = "page_num",defaultValue = "1")
                               @Min(value = 1,message = "分页最小从1开始") Integer pageNum,
-                          @RequestParam(name = "pageSize", defaultValue = "20") Integer pageSize
+                          @RequestParam(name = "page_size", defaultValue = "20") Integer pageSize
 
     ) {
         PageHelper.startPage(pageNum, pageSize);
@@ -197,7 +198,7 @@ public class DiskFileController {
 
     @ApiOperation("文件移动")
     @PutMapping("/move")
-    public ApiResult<List<DiskFile>> move(@RequestBody BatchBo batchBo){
+    public ApiResult<List<DiskFileVo>> move(@RequestBody BatchBo batchBo){
         List<DiskFile> bodyBos = Arrays.stream(batchBo.getRequests()).map(request->{
             BatchBodyBo body = request.getBody();
             DiskFile diskFile = new DiskFile();
@@ -208,8 +209,10 @@ public class DiskFileController {
         }).collect(Collectors.toList());
 
         boolean flag = diskFileService.moveFile(bodyBos);
-        if(flag)
-            return ResultUtil.success(bodyBos);
+        if(flag){
+            List<DiskFileVo> collect = bodyBos.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
+            return ResultUtil.success(collect);
+        }
 
         return ResultUtil.fail();
 

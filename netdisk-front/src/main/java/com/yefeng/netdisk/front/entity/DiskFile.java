@@ -40,7 +40,7 @@ public class DiskFile implements Serializable {
     @ApiModelProperty("文件类型1文件2文件夹")
     private Byte type;
 
-    @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
+        @ApiModelProperty("文件状态0(create)待上传,1(upload).已经成功上传 2(valid).激活可用 3(invalid).不可用")
     private Byte status;
 
     @ApiModelProperty("数据库文件id")

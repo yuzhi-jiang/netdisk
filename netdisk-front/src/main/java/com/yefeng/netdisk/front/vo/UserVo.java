@@ -1,9 +1,12 @@
 package com.yefeng.netdisk.front.vo;
 
 import cn.hutool.core.util.DesensitizedUtil;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+
 
 /**
  * This class is for
@@ -11,6 +14,7 @@ import java.io.Serializable;
  * @author 夜枫
  * @version 2023-01-18 19:26
  */
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserVo implements Serializable {
     private static final long serialVersionUID = 1234234343423L;
 
@@ -37,6 +41,15 @@ public class UserVo implements Serializable {
     @ApiModelProperty("登录成功的token")
     public String token;
 
+    public String DiskId;
+
+    public String getDiskId() {
+        return DiskId;
+    }
+
+    public void setDiskId(String diskId) {
+        DiskId = diskId;
+    }
 
     public String getImgPath() {
         return imgPath;

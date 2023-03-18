@@ -8,7 +8,7 @@ package com.yefeng.netdisk.front.util;
  * @version 2023-02-08 21:45
  */
 public enum FileStatusEnum {
-//    @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
+//        @ApiModelProperty("文件状态0(create)待上传,1(upload).已经成功上传 2(valid).激活可用 3(invalid).不可用")0待上传,1.已经成功上传2.激活可用3.不可用")
 
     /**
      * 创建，等待上传

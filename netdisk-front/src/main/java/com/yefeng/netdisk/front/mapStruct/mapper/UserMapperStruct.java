@@ -22,7 +22,7 @@ public interface UserMapperStruct {
 //    @Mappings({
 //            @Mapping(source = "status", target = "status",qualifiedByName = "mapStatus")
 //    })
-    @Mapping(source = "id", target = "userid")
+    @Mapping(source = "id", target = "userId")
     UserVo toDto(User user);
 
 

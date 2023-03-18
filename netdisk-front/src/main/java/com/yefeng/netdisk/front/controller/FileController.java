@@ -26,6 +26,7 @@ import com.yefeng.netdisk.front.service.IFileService;
 import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.*;
+import com.yefeng.netdisk.front.vo.DiskFileVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -41,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -115,7 +117,7 @@ public class FileController {
      */
     @ApiOperation("查找文件")
     @PostMapping("/search")
-    public ApiResult<List<DiskFile>> search(@RequestParam("disk_id") String disk_id,
+    public ApiResult<List<DiskFileVo>> search(@RequestParam("disk_id") String disk_id,
                             @RequestParam("query") String query,
                             @RequestParam(value = "order_by", required = false) String order_by,
                             @RequestParam(value = "limit", defaultValue = "20") Integer limit
@@ -130,7 +132,9 @@ public class FileController {
 
         PageHelper.startPage(0, limit);
         List<DiskFile> list = diskFileService.list(wrapper);
-        return ResultUtil.success(list);
+        List<DiskFileVo> collect = list.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
+
+        return ResultUtil.success(collect);
     }
 
 
@@ -704,13 +708,14 @@ public class FileController {
      * @return
      */
     @GetMapping("/list_by_share")
-    public ApiResult<List<DiskFile>> listByShare(@RequestParam("share_id") String shareId,
+    public ApiResult<List<DiskFileVo>> listByShare(@RequestParam("share_id") String shareId,
                                  @RequestParam(name = "parent_file_id", defaultValue = "root") String parentFileId,
-                                 @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
+                                 @RequestParam(name = "page_num", defaultValue = "0") Integer pageNum, @RequestParam(name = "page_size", defaultValue = "0") Integer pageSize) {
 
         List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, pageNum, pageSize);
+        List<DiskFileVo> collect = diskFiles.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
 
-        return ResultUtil.success(diskFiles);
+        return ResultUtil.success(collect);
 
     }
 

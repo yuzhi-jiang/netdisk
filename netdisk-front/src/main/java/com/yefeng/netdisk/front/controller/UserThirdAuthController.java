@@ -13,7 +13,6 @@ import com.yefeng.netdisk.front.entity.UserThirdAuth;
 import com.yefeng.netdisk.front.mapStruct.mapper.UserMapperStruct;
 import com.yefeng.netdisk.front.service.IUserThirdAuthService;
 import com.yefeng.netdisk.front.service.impl.UserServiceImpl;
-import com.yefeng.netdisk.front.util.UserStatusEnum;
 import com.yefeng.netdisk.front.vo.UserVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +54,7 @@ public class UserThirdAuthController extends BaseController {
     }
 
     @GetMapping("/login/{type}")
-    public ApiResult<String> login(@PathVariable String type, HttpServletResponse response){
+    public ApiResult<String> login(@PathVariable String type, HttpServletResponse response) {
         AuthRequest authRequest = null;
         try {
             authRequest = factory.get(type);
@@ -71,78 +70,111 @@ public class UserThirdAuthController extends BaseController {
     @Resource
     UserServiceImpl userService;
 
+//    @GetMapping("/{type}/callback")
+//    public void callback(@PathVariable String type, AuthCallback callback, HttpServletResponse hresponse) {
+//
+////        UserVo userVo1 = new UserVo();
+////        userVo1.setToken("234");
+////        writeHtml(userVo1, hresponse);
+////        return;
+//        AuthRequest authRequest = factory.get(type);
+//        AuthResponse response = authRequest.login(callback);
+//
+//        log.info("【response】= {}", JSONUtil.toJsonStr(response));
+//
+//        JSONObject data = JSONUtil.parseObj(response.getData());
+//        log.info("【data】= {}", data);
+//        if (response.getCode() == 2000) {
+//            String uuid = data.getStr("uuid");
+//            UserThirdAuth one = userThirdAuthService.getOne(new QueryWrapper<UserThirdAuth>().eq("openid", uuid));
+//
+//
+////            User user1 = new User();
+////            user1.setEmail(data.getStr("email"));
+////            User user2 = userService.getUserByThirdAuth(uuid, user1);
+//
+//            if (one != null) {
+//                // 已经绑定过了
+//                User user = userService.getOne(new QueryWrapper<User>().eq("id", one.getUserId()));
+//
+//                UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
+//                String token = CreateUserToken(user);
+//                userVo.setToken(token);
+////                return ResultUtil.success(userVo);
+//
+//                writeHtml(userVo, hresponse);
+//
+//            } else {
+//                // 没有绑定过,需要绑定
+//                String username = data.getStr("username");
+//                String avatar = data.getStr("avatar");
+//                String email = data.getStr("email");
+//                String gender = data.getStr("gender");
+//                String token = data.getJSONObject("token").getStr("accessToken");
+//                User user = new User();
+//                user.setUsername(username);
+//                user.setImgPath(avatar);
+//                user.setEmail(email);
+//                user.setStatus(UserStatusEnum.NORMAL);//第三方登录的用户默认是正常状态
+//                user.setSalt(BCrypt.gensalt());//获取盐
+//
+//                UserThirdAuth thirdAuth = new UserThirdAuth();
+//                thirdAuth.setAccessToken(token);
+//                thirdAuth.setOpenid(uuid);
+//                thirdAuth.setLoginType(type);
+//
+//                boolean flag = userService.registerUserAndInitDisk(user);
+//                if (flag) {
+//                    thirdAuth.setUserId(user.getId());
+//                    boolean save = userThirdAuthService.save(thirdAuth);
+//                    if (save) {
+//                        UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
+//                        String userToken = CreateUserToken(user);
+//                        userVo.setToken(userToken);
+//                        writeHtml(userVo, hresponse);
+//                    }else{
+//                        throw new RuntimeException("授权失败,请重试");
+//                    }
+//                }else{
+//                    throw new RuntimeException("授权失败,请重试");
+//                }
+//
+//            }
+//        } else {
+//
+//            throw new RuntimeException("授权失败" + response.getCode());
+//        }
+//    }
+//
+
     @GetMapping("/{type}/callback")
     public void callback(@PathVariable String type, AuthCallback callback, HttpServletResponse hresponse) {
 
-//        UserVo userVo1 = new UserVo();
-//        userVo1.setToken("234");
-//        writeHtml(userVo1, hresponse);
-//        return;
         AuthRequest authRequest = factory.get(type);
-        AuthResponse response = authRequest.login(callback);
+        AuthResponse response = null;
+        try {
+            response = authRequest.login(callback);
+        } catch (Exception e) {
+            log.error("获取授权失败，",e);
+            throw new RuntimeException("网络异常，请稍后再试");
+        }
 
         log.info("【response】= {}", JSONUtil.toJsonStr(response));
 
         JSONObject data = JSONUtil.parseObj(response.getData());
         log.info("【data】= {}", data);
         if (response.getCode() == 2000) {
-            String uuid = data.getStr("uuid");
-            UserThirdAuth one = userThirdAuthService.getOne(new QueryWrapper<UserThirdAuth>().eq("openid", uuid));
-
-
-//            User user1 = new User();
-//            user1.setEmail(data.getStr("email"));
-//            User user2 = userService.getUserByThirdAuth(uuid, user1);
-
-            if (one != null) {
-                // 已经绑定过了
-                User user = userService.getOne(new QueryWrapper<User>().eq("id", one.getUserId()));
-
+            User user = getUserOrRegister(response, type);
+            if (user != null) {
                 UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
-                String token = CreateUserToken(user);
-                userVo.setToken(token);
-//                return ResultUtil.success(userVo);
-
+                String userToken = CreateUserToken(user);
+                userVo.setToken(userToken);
                 writeHtml(userVo, hresponse);
-
-            } else {
-                // 没有绑定过,需要绑定
-                String username = data.getStr("username");
-                String avatar = data.getStr("avatar");
-                String email = data.getStr("email");
-                String gender = data.getStr("gender");
-                String token = data.getJSONObject("token").getStr("accessToken");
-                User user = new User();
-                user.setUsername(username);
-                user.setImgPath(avatar);
-                user.setEmail(email);
-                user.setStatus(UserStatusEnum.NORMAL);//第三方登录的用户默认是正常状态
-                user.setSalt(BCrypt.gensalt());//获取盐
-
-                UserThirdAuth thirdAuth = new UserThirdAuth();
-                thirdAuth.setAccessToken(token);
-                thirdAuth.setOpenid(uuid);
-                thirdAuth.setLoginType(type);
-
-                boolean flag = userService.registerUserAndInitDisk(user);
-                if (flag) {
-                    thirdAuth.setUserId(user.getId());
-                    boolean save = userThirdAuthService.save(thirdAuth);
-                    if (save) {
-                        UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
-                        String userToken = CreateUserToken(user);
-                        userVo.setToken(userToken);
-                        writeHtml(userVo, hresponse);
-                    }else{
-                        throw new RuntimeException("授权失败,请重试");
-                    }
-                }else{
-                    throw new RuntimeException("授权失败,请重试");
-                }
-
+            }else{
+                log.error("用户通过第三方登录，失败");
+                throw new BizException("业务发送异常，请等待修复");
             }
         } else {
-
             throw new RuntimeException("授权失败" + response.getCode());
         }
     }
@@ -151,8 +183,8 @@ public class UserThirdAuthController extends BaseController {
     private void writeHtml(UserVo userVo, HttpServletResponse httpServletResponse) {
         StringBuilder stringBuilder = new StringBuilder();
 //       String html = "<!DOCTYPE html>\n" +
-        String html=    "<html lang=\"en\">\n" +
-            "  <head>\n" +
+        String html = "<html lang=\"en\">\n" +
+                "  <head>\n" +
                 "    <meta charset=\"UTF-8\" />\n" +
                 "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n" +
                 "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n" +
@@ -199,8 +231,8 @@ public class UserThirdAuthController extends BaseController {
                 "      }\n" +
                 "    </style>\n" +
                 "  </head>\n";
-            stringBuilder.append(html);
-        html="  <body>\n" +
+        stringBuilder.append(html);
+        html = "  <body>\n" +
                 "    <div class=\"loadingSeven\" style=\"text-align: center\">\n" +
                 "      <span></span>\n" +
                 "      <span></span>\n" +
@@ -232,7 +264,7 @@ public class UserThirdAuthController extends BaseController {
                 "    clearTimeout(timer);\n" +
                 "    window.parent.close();\n" +
                 "   });\n" +
-                "  </script>"+
+                "  </script>" +
                 "  </body>\n" +
                 "</html>\n";
         stringBuilder.append(html);
@@ -272,14 +304,8 @@ public class UserThirdAuthController extends BaseController {
             thirdAuth.setOpenid(uuid);
             thirdAuth.setLoginType(type);
 
-            boolean flag = userService.registerUserAndInitDisk(user);
-            if (flag) {
-                thirdAuth.setUserId(user.getId());
-                boolean save = userThirdAuthService.save(thirdAuth);
-                if (save) {
-                    return user;
-                }
-            }
+            boolean flag = userThirdAuthService.registerOauthUser(user, thirdAuth);
+            if (flag) return user;
         }
         return null;
     }

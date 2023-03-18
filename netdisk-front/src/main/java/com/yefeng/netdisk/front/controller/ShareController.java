@@ -7,6 +7,7 @@ import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.front.bo.ShareBo;
 import com.yefeng.netdisk.front.entity.Share;
+import com.yefeng.netdisk.front.mapStruct.mapper.ShareMapperStruct;
 import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.util.DateUtil;
 import com.yefeng.netdisk.front.vo.ShareVo;
@@ -19,6 +20,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.Min;
 import java.text.ParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -48,12 +50,14 @@ public class ShareController {
      */
     @ApiOperation("查看我的分享文件")
     @GetMapping("/list")
-    public ApiResult<List<Share>> listShare(@RequestParam("disk_id") String diskId,@RequestParam(defaultValue = "0")@Min(value = 1,message = "分页最小从1开始") Integer pageNum,
-                               @RequestParam(defaultValue = "20",name = "pageSize") Integer pageSize) {
+    public ApiResult<List<ShareVo>> listShare(@RequestParam("disk_id") String diskId,@RequestParam(defaultValue = "0",name = "page_num")@Min(value = 1,message = "分页最小从1开始") Integer pageNum,
+                               @RequestParam(defaultValue = "20",name = "page_size") Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);
         List<Share> shareList = shareService.list(new QueryWrapper<Share>()
                 .eq("disk_id", diskId));
-        return ResultUtil.success(shareList);
+        List<ShareVo> collect = shareList.stream().map(ShareMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
+
+        return ResultUtil.success(collect);
     }
 
 

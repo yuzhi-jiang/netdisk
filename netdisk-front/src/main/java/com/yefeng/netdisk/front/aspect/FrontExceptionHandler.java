@@ -56,7 +56,8 @@ public class FrontExceptionHandler {
             }
             log.info("表字段{}重复了", repeatField);
             log.info("SQLIntegrityConstraintViolationException ：" + ex.getMessage());
-            return new ApiResult(HttpCodeEnum.UNPROCESABLE_ENTITY.getCode(), "表单" + Arrays.toString(repeatField.toArray()) + "字段已经被使用了");
+//            return new ApiResult(HttpCodeEnum.UNPROCESABLE_ENTITY.getCode(), "表单" + Arrays.toString(repeatField.toArray()) + "字段已经被使用了");
+            return new ApiResult(HttpCodeEnum.UNPROCESABLE_ENTITY.getCode(),   Arrays.toString(repeatField.toArray()) + "已经被注册");
         }
         return new ApiResult(HttpCodeEnum.FAIL.getCode(), "数据库连接失败");
     }

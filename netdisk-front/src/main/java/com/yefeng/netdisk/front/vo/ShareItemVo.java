@@ -1,5 +1,7 @@
 package com.yefeng.netdisk.front.vo;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,7 +12,7 @@ import java.io.Serializable;
  * @author 夜枫
  * @version 2023-02-25 15:51
  */
-
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Data
 public class ShareItemVo implements Serializable {
 //    {

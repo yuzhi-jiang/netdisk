@@ -114,7 +114,7 @@ public class UserController extends BaseController {
 
             userVo.setToken(token);
             //将userid设置到header中
-            response.setHeader("userid", user.getId().toString());
+//            response.setHeader("userid", user.getId().toString());
             return ResultUtil.success(userVo);
         }
         else if (type == LoginEnum.MOBILE_CAPTCHA.getCode()) {
@@ -295,6 +295,32 @@ public class UserController extends BaseController {
 //    @PostMapping("/bindThirdAccount")
 
 
+    //注销用户
+    @ApiOperation("注销用户")
+    @PostMapping("/delete")
+    public ApiResult<String> delete(@RequestHeader("user_id") String userId) {
+
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<User>().set("status", UserStatusEnum.DISABLE).eq("id", userId);
+
+        boolean flag = userService.update(updateWrapper);
+        if(!flag){
+            throw new BizException("注销失败，请重新注销");
+        }
+        return ResultUtil.success("注销成功");
+    }
+
+    //删除用户
+    @ApiOperation("删除用户")
+    @PostMapping("/remove")
+    public ApiResult<String> remove(@RequestHeader("user_id") String userId) {
+
+        boolean flag = userService.removeById(userId);
+        if(!flag){
+            throw new BizException("删除失败，请重新删除");
+        }
+        return ResultUtil.success("删除成功");
+    }
+
     //解除绑定手机号码
     @ApiOperation("解除绑定手机号码")
     @PostMapping("/unbindMobile")
@@ -329,30 +355,30 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户信息
-     * @param UserId
+     * @param userId
      * @return
      */
-    @ApiOperation("获取用户信息")
+    @ApiOperation("获取用户信息 调用这个接口需调用 userdisk接口获取用户的云盘信息")
     @GetMapping("/userinfo")
-    public ApiResult<UserVo> getUser(@RequestHeader("user_id")@ApiParam("用户id") String UserId) {
+    public ApiResult<UserVo> getUser(@RequestHeader("user_id")@ApiParam("用户id") String userId) {
+        Assert.isBlank(userId, "用户id不能为空");
         //todo 是否查看用户状态
-        User user = userService.getById(Long.parseLong(UserId));
-        Assert.isNull(user, "用户不存在");
+        User user = userService.getById(Long.parseLong(userId));
 
+        Assert.isNull(user, "获取用户信息失败，原因：用户不存在");
 
         return ResultUtil.success(UserMapperStruct.INSTANCE.toDto(user));
     }
 
-    @GetMapping("/userDisk")
+    @ApiOperation("获取用户信息和云盘信息 与上面的接口不同的是，这个接口会返回用户的云盘信息")
+    @GetMapping("/userdisk")
     public ApiResult<UserDiskVo> getUserDisk(@RequestHeader("user_id") String UserId) {
         //todo 是否查看用户状态
         User user = userService.getById(Long.parseLong(UserId));
         Assert.isNull(user, "用户不存在");
 
 
-        UserVo userVo = new UserVo();
-
-        BeanUtils.copyProperties(user, userVo);
+        UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
 
         DiskVo diskvo = diskService.getDiskInfoByUerId(user.getId());
         Assert.isNull(diskvo, "没有数据，用户已注销云盘");

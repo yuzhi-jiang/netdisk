@@ -4,7 +4,7 @@ import com.yefeng.netdisk.front.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
+    /**
  * <p>
  *  服务类
  * </p>
@@ -21,5 +21,5 @@ public interface IUserService extends IService<User> {
      * @return
      */
     Boolean uploadAvatar(MultipartFile avatarFile, String userId);
-
+    boolean registerUserAndInitDisk(User user);
 }

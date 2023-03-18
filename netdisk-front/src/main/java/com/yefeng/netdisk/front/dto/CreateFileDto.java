@@ -41,10 +41,10 @@ public class CreateFileDto {
     @ApiModelProperty("用户文件的父文件夹名称（同样的文件每个人文件有不同的路径）")
     private String parentFileId;
 
-    @ApiModelProperty("文件类型  1：文件  2：文件夹")
+    @ApiModelProperty("文件类型  1(file)：文件  2(folder)：文件夹")
     private String type;
 
-    @ApiModelProperty("文件状态0待上传,1.已经成功上传2.激活可用3.不可用")
+        @ApiModelProperty("文件状态0(create)待上传,1(upload).已经成功上传 2(valid).激活可用 3(invalid).不可用")
     private String status;
 
     @ApiModelProperty("数据库文件id")

@@ -1,5 +1,7 @@
 package com.yefeng.netdisk.front.bo;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,6 +13,8 @@ import lombok.Data;
  * @author 夜枫
  * @version 2023-01-23 14:04
  */
+
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Data
 public class FileBo {
 

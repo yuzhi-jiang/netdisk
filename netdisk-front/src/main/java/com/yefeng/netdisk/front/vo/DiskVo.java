@@ -1,9 +1,12 @@
 package com.yefeng.netdisk.front.vo;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.yefeng.netdisk.front.entity.DiskItem;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 
 /**
  * This class is for
@@ -11,6 +14,7 @@ import java.util.List;
  * @author 夜枫
  * @version 2023-01-22 13:10
  */
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class DiskVo {
 
     private Long id;
