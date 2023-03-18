@@ -1,7 +1,6 @@
 package com.yefeng.netdisk.front.vo;
 
 import cn.hutool.core.util.DesensitizedUtil;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
@@ -48,14 +47,14 @@ public class UserVo implements Serializable {
     private Long createUser;
 
     @ApiModelProperty("创建时间")
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty("修改人")
     private Long modifyUser;
 
     @ApiModelProperty("修改时间")
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime modifyTime;
 
     public Long getCreateUser() {

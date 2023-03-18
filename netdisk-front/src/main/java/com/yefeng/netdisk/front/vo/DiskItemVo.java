@@ -1,11 +1,8 @@
 package com.yefeng.netdisk.front.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -28,23 +25,23 @@ public class DiskItemVo {
     private BigDecimal capaticyValue;
 
     //    @ApiModelProperty("过期时间 -1为不过期，最低单位为天")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDate expireTime;
+//    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime expireTime;
 
     @ApiModelProperty("创建人")
     private String createUser;
 
     @ApiModelProperty("创建时间")
 //    @JsonSerialize(using = LocalDateTimeConfig.LocalDateTimeSerializer.class)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty("修改人")
     private String modifyUser;
 
     @ApiModelProperty("修改时间")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+//    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime modifyTime;
 
     public Long getId() {
@@ -79,11 +76,11 @@ public class DiskItemVo {
         this.capaticyValue = capaticyValue;
     }
 
-    public LocalDate getExpireTime() {
+    public LocalDateTime getExpireTime() {
         return expireTime;
     }
 
-    public void setExpireTime(LocalDate expireTime) {
+    public void setExpireTime(LocalDateTime expireTime) {
         this.expireTime = expireTime;
     }
 
