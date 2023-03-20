@@ -44,15 +44,15 @@ public class ShareController {
      * 查看我的分享文件
      *
      * @param diskId
-     * @param pageNum
+     * @param page
      * @param pageSize
      * @return List
      */
     @ApiOperation("查看我的分享文件")
     @GetMapping("/list")
-    public ApiResult<List<ShareVo>> listShare(@RequestParam("diskId") String diskId,@RequestParam(defaultValue = "0",name = "pageNum")@Min(value = 1,message = "分页最小从1开始") Integer pageNum,
+    public ApiResult<List<ShareVo>> listShare(@RequestParam("diskId") String diskId,@RequestParam(defaultValue = "0",name = "page")@Min(value = 1,message = "分页最小从1开始") Integer page,
                                @RequestParam(defaultValue = "20",name = "pageSize") Integer pageSize) {
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(page,pageSize);
         List<Share> shareList = shareService.list(new QueryWrapper<Share>()
                 .eq("disk_id", diskId));
         List<ShareVo> collect = shareList.stream().map(ShareMapperStruct.INSTANCE::toDto).collect(Collectors.toList());

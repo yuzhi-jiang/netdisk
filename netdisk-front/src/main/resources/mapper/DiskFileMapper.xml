@@ -20,11 +20,6 @@
                       on tf.id = tdf.file_id
     </sql>
 
-    <select id="getFileList" resultType="com.yefeng.netdisk.front.entity.DiskFile">
-        select *
-        from tb_disk_file as tdf
-        where tdf.disk_id = #{diskId}
-    </select>
 
     <sql id="fileVo">
         ${tf}.id,
@@ -47,6 +42,13 @@
               WHERE @r IS NOT NULL) T
                  JOIN tb_disk_file df ON T.disk_file_id = df.disk_file_id
         where disk_id = #{diskId}
+    </select>
+    <select id="getFileList" resultType="com.yefeng.netdisk.front.dto.DiskFileDto">
+        select tdf.*,tf.length,tf.hash,tf.status
+        from tb_disk_file as tdf
+                 left join tb_file tf on tf.id=tdf.file_id
+        where tdf.disk_id = #{diskId} and tdf.parent_file_id=#{parentFileId}
+
     </select>
 
     <update id="deleteFile">

@@ -1,7 +1,5 @@
 package com.yefeng.netdisk.common.result;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serializable;
 
 
@@ -9,7 +7,7 @@ import java.io.Serializable;
  * 操作结果集封装
  * @author zealon
  */
-@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
+//@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 
 public class ApiResult<T>  implements Serializable {
 

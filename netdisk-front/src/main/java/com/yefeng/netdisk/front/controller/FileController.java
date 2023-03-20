@@ -704,16 +704,16 @@ public class FileController {
      *
      * @param shareId
      * @param parentFileId
-     * @param pageNum
+     * @param page
      * @param pageSize
      * @return
      */
     @GetMapping("/list_by_share")
     public ApiResult<List<DiskFileVo>> listByShare(@RequestParam("shareId") String shareId,
                                  @RequestParam(name = "parentFileId", defaultValue = "root") String parentFileId,
-                                 @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
+                                 @RequestParam(name = "page", defaultValue = "0") Integer page, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
 
-        List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, pageNum, pageSize);
+        List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, page, pageSize);
         List<DiskFileVo> collect = diskFiles.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
 
         return ResultUtil.success(collect);

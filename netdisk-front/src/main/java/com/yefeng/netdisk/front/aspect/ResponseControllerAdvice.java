@@ -1,11 +1,14 @@
 package com.yefeng.netdisk.front.aspect;
 
 import cn.hutool.json.JSONConfig;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -82,10 +85,17 @@ public class ResponseControllerAdvice implements ResponseBodyAdvice<Object> {
             generator.flush();
             String unescapedJsonString = generator.getOutputTarget().toString();
 
-            JSONConfig jsonConfig = new JSONConfig();
-            jsonConfig.setIgnoreNullValue(true);
+            JsonNode jsonNode = objectMapper.readTree(unescapedJsonString);
+            objectMapper.enable(SerializationFeature.WRITE_NULL_MAP_VALUES);
 
-            return JSONUtil.parseObj(unescapedJsonString,jsonConfig);
+            JSONConfig jsonConfig = new JSONConfig();
+            jsonConfig.setIgnoreNullValue(false);
+
+//            return body;
+//            JSONObject jsonObject = JSONUtil.parseObj(generator.getOutputTarget(), false);
+            JSONObject jsonObject = JSONUtil.parseObj(unescapedJsonString, true);
+            return jsonNode;
+//            return jsonObject;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

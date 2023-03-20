@@ -4,6 +4,8 @@ package com.yefeng.netdisk.front.controller;
 import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yefeng.netdisk.common.constans.LoginEnum;
 import com.yefeng.netdisk.common.exception.BizException;
 import com.yefeng.netdisk.common.result.ApiResult;
@@ -24,6 +26,7 @@ import com.yefeng.netdisk.front.service.impl.UserServiceImpl;
 import com.yefeng.netdisk.front.task.SendEmailByRegisterTask;
 import com.yefeng.netdisk.front.util.*;
 import com.yefeng.netdisk.front.vo.DiskVo;
+import com.yefeng.netdisk.front.vo.ListDataVo;
 import com.yefeng.netdisk.front.vo.UserDiskVo;
 import com.yefeng.netdisk.front.vo.UserVo;
 import io.swagger.annotations.*;
@@ -80,22 +83,21 @@ public class UserController extends BaseController {
 
     @ApiOperation("获取所有用户，仅供测试使用")
     @GetMapping("/list")
-    public ApiResult<List<User>> getUserList(){
+    public ApiResult<ListDataVo<User>> getUserList(){
+        PageHelper.startPage(0,10);
         List<User> list = userService.list();
-        return ResultUtil.success(list);
+        PageInfo<User> page = new PageInfo<User>(list);
+
+        System.out.println(page);
+        return ResultUtil.success(new ListDataVo<User>(page.getList(),page.getTotal()));
     }
 
 
     @ApiOperation(value = "用户登录,使用用户名/邮箱，或是手机号")
     @PostMapping("/login")
     public ApiResult<UserVo> login(@RequestBody LoginBo loginBo,Integer type) {
-
-
-
-
         //用户/邮箱密码
         if (type == LoginEnum.ACCOUNT.getCode() || type == LoginEnum.MOBILE_PASS.getCode()) {
-
             String account = loginBo.getAccount();
             QueryWrapper<User> query = new QueryWrapper<User>();
 
@@ -103,7 +105,7 @@ public class UserController extends BaseController {
                 account = loginBo.getAccount();
                 query.eq("mobile", account);
             } else {
-                query.eq("username", account).or().eq("email", account);
+                    query.eq("username", account).or().eq("email", account);
             }
 
             User user = userService.getOne(query);
@@ -209,9 +211,9 @@ public class UserController extends BaseController {
                 //邮箱注册需要发送一个邮箱验
                 commonQueueThreadPool.execute(new SendEmailByRegisterTask(webClientAddress,user.getId(), user.getEmail(), userActiveTime));
 
-                return new ApiResult(HttpCodeEnum.OK.getCode(), "注册成功,请激活邮箱");
+                return new ApiResult<>(HttpCodeEnum.OK.getCode(), "注册成功,请激活邮箱");
             }
-            return new ApiResult(HttpCodeEnum.FAIL.getCode(), "当前请求过大，请稍后再试");
+            return new ApiResult<>(HttpCodeEnum.FAIL.getCode(), "当前请求过大，请稍后再试");
         }
         // 2. 通过手机验证码注册
         else if (Objects.equals(LoginEnum.MOBILE_CAPTCHA.getCode(), type)) {
@@ -232,13 +234,13 @@ public class UserController extends BaseController {
             boolean flag = userService.registerUserAndInitDisk(user);
             if (flag) {
 
-                return new ApiResult(HttpCodeEnum.OK.getCode(), "注册成功");
+                return new ApiResult<>(HttpCodeEnum.OK.getCode(), "注册成功");
             }
-            return new ApiResult(HttpCodeEnum.FAIL.getCode(), "当前请求过大，请稍后再试");
+            return new ApiResult<>(HttpCodeEnum.FAIL.getCode(), "当前请求过大，请稍后再试");
 
         }
 
-        return new ApiResult(HttpCodeEnum.FAIL.getCode(), "请根据参数请求");
+        return new ApiResult<>(HttpCodeEnum.FAIL.getCode(), "请根据参数请求");
     }
 
 

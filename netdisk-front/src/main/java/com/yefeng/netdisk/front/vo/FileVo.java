@@ -2,6 +2,8 @@ package com.yefeng.netdisk.front.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.time.LocalDateTime;
+
 /**
  * This class is for
  *
@@ -39,6 +41,15 @@ public class FileVo {
     private String type;
 
 
+
+    @ApiModelProperty("创建时间")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("修改人")
+    private String modifyUser;
+
+    @ApiModelProperty("修改时间")
+    private LocalDateTime modifyTime;
 
 
     @Override
@@ -126,5 +137,26 @@ public class FileVo {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+
+
+
+    public LocalDateTime getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDateTime modifyTime) {
+        this.modifyTime = modifyTime;
     }
 }

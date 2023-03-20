@@ -55,17 +55,17 @@ public class RecycleController {
      *
      * @param diskId
      * @param pageSize
-     * @param pageNum
+     * @param page
      * @return
      */
     @ApiOperation("获取回收站文件列表")
     @PostMapping("/list")
-    public ApiResult<List<DiskFileVo>> recycleList(@RequestParam("diskId") String diskId, @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) {
+    public ApiResult<List<DiskFileVo>> recycleList(@RequestParam("diskId") String diskId, @RequestParam("page") Integer page, @RequestParam("pageSize") Integer pageSize) {
         QueryWrapper<DiskFile> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("disk_id", diskId);
         queryWrapper.eq("status", FileStatusEnum.invalid);
 
-        PageHelper.startPage(pageNum, pageSize);
+        PageHelper.startPage(page, pageSize);
 
         List<DiskFile> list = diskFileService.list(queryWrapper);
         List<DiskFileVo> diskFileVos = list.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());

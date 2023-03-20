@@ -2,6 +2,7 @@ package com.yefeng.netdisk.front.mapStruct.mapper;
 
 import com.yefeng.netdisk.common.constans.FileTypeEnum;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
+import com.yefeng.netdisk.front.dto.DiskFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
@@ -26,6 +27,13 @@ public interface DiskFileMapperStruct {
             @Mapping(source = "status", target = "status",qualifiedByName = "mapStatus")
     })
     DiskFileVo toDto(DiskFile diskFile);
+
+    @Mappings({
+            @Mapping(source = "type", target = "type",qualifiedByName = "mapType"),
+            @Mapping(source = "status", target = "status",qualifiedByName = "mapStatus"),
+            @Mapping(source = "diskFileId",target = "fileId")
+    })
+    DiskFileVo dtoToVo(DiskFileDto diskFileDto);
 
     @Mappings({
             @Mapping(source = "type", target = "type",qualifiedByName = "mapType"),

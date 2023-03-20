@@ -14,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  * @version 2023-01-15 12:47
  */
 @MapperScan("com.yefeng.netdisk.front.mapper")
+
 //@MapperScan("com.yefeng.netdisk")
 @SpringBootApplication(scanBasePackages ={"com.yefeng.netdisk","com.yefeng.hdfs.feign"})
 @EnableFeignClients(basePackages = {"com.yefeng.hdfs.feign"})

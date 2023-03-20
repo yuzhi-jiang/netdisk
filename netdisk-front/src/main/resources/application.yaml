@@ -57,11 +57,19 @@ justauth:
   enabled: true
   type:
     GITHUB:
-#      client-id: xxxxxx
-#      client-secret: xxxxxx
+      #      client-id: xxxxxx
+      #      client-secret: xxxxxx
       client-id: 4b8985aeb5441b4ce940
       client-secret: xxxx
-      redirect-uri: http://localhost:8082/front/oauth/github/callback
-
+      redirect-uri: http://192.168.196.80:8082/front/oauth/github/callback
+  http-config:
+    timeout: 30000
+    proxy:
+      GITHUB:
+        type: HTTP
+        hostname: 127.0.0.1
+        port: 7890
 webclient:
-    url: http://localhost:8082/front
+  hostname: 192.168.196.80
+  port: 8082
+  url: http://localhost:8082/front

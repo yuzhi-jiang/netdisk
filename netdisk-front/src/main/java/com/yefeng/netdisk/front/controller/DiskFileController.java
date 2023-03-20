@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qcloud.cos.utils.Md5Utils;
 import com.yefeng.hdfs.feign.client.HdfsClient;
 import com.yefeng.netdisk.common.constans.FileTypeEnum;
@@ -14,6 +15,7 @@ import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.BatchBo;
 import com.yefeng.netdisk.front.bo.BatchBodyBo;
+import com.yefeng.netdisk.front.bo.FileParamBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
@@ -23,6 +25,7 @@ import com.yefeng.netdisk.front.service.IFileService;
 import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.CapacityContents;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
+import com.yefeng.netdisk.front.vo.ListDataVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -34,7 +37,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.Min;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -77,24 +79,35 @@ public class DiskFileController {
     ExecutorService commonQueueThreadPool;
 
     //todo 根据路径获取文件列表
-    @ApiOperation("获取云盘列表")
-    @GetMapping("/list/{diskId}")
-    public ApiResult<List<DiskFileVo>> list(@PathVariable("diskId") String diskId,
-                          @RequestParam(name = "parentFileId", defaultValue = "root")
-                          String parentFileId,
-                          @RequestParam(name = "pageNum",defaultValue = "1")
-                              @Min(value = 1,message = "分页最小从1开始") Integer pageNum,
-                          @RequestParam(name = "pageSize", defaultValue = "20") Integer pageSize
 
-    ) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<DiskFileVo> fileVoList = diskFileService.getFileList(diskId, parentFileId);
+//    public ApiResult<List<DiskFileVo>> list(@RequestParam("diskId") String diskId,
+//                          @RequestParam(name = "parentFileId", defaultValue = "root")
+//                          String parentFileId,
+//                          @RequestParam(name = "page",defaultValue = "1")
+//                              @Min(value = 1,message = "分页最小从1开始") Integer page,
+//                          @RequestParam(name = "pageSize", defaultValue = "20") Integer pageSize
+//
+//    )
+    @ApiOperation("获取云盘文件列表")
+    @GetMapping("/list")
+    public ApiResult<ListDataVo<DiskFileVo>> list( FileParamBo fileParamBo){
+        PageHelper.startPage(fileParamBo.getPageNum(),fileParamBo.getPageSize());
+        List<DiskFileVo> fileVoList = diskFileService.getFileList(fileParamBo.getDiskId(), fileParamBo.getParentFileId());
 
         log.info("Disk file list:{}", fileVoList);
 
-        return ResultUtil.success(fileVoList);
+
+
+
+        PageInfo<DiskFileVo> page = new PageInfo<DiskFileVo>(fileVoList);
+
+        System.out.println(page);
+        return ResultUtil.success(new ListDataVo<DiskFileVo>(page.getList(),page.getTotal()));
+
 
     }
+
+
     /**
      * 获取文件夹路径
      * @param deskId

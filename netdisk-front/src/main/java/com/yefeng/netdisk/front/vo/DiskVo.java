@@ -1,5 +1,7 @@
 package com.yefeng.netdisk.front.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -13,6 +15,7 @@ import java.util.List;
 
 public class DiskVo {
 
+    @JsonProperty("diskId")
     private Long id;
     private String userId;
 

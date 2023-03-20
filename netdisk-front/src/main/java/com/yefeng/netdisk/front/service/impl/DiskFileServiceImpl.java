@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
+import com.yefeng.netdisk.front.dto.DiskFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskFileMapper;
@@ -145,7 +146,9 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
 
     @Override
     public List<DiskFileVo> getFileList(String diskId, String parentFileId) {
-        return baseMapper.getFileList(diskId, parentFileId).stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
+        List<DiskFileDto> fileList = baseMapper.getFileList(diskId, parentFileId);
+        List<DiskFileVo> collect = fileList.stream().map(DiskFileMapperStruct.INSTANCE::dtoToVo).collect(Collectors.toList());
+        return collect;
     }
 
 
