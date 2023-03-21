@@ -23,6 +23,8 @@ public class FileParamBo {
     String parentFileId;
     //file or folder
     String type;
+
+    // name asc/desc
     String order;
     @Min(value = 1, message = "分页参数最小值为1")
     @NotBlank(message = "pageNum不能为空")

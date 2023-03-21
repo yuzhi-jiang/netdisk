@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface DiskFileMapper extends BaseMapper<DiskFile> {
 
-    List<DiskFileDto> getFileList(@Param("diskId") String diskId, @Param("parentFileId") String parentFileId);
+    List<DiskFileDto> getFileList(@Param("diskId") String diskId, @Param("parentFileId") String parentFileId,@Param("status") Byte status);
     List<DiskFile> selectFilePathByDiskIDAndFileId(@Param("diskId") Long diskId,@Param("disk_file_id") String fileId);
 
     int deleteFile(String diskId, List<String> fileIds);

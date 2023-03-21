@@ -24,6 +24,7 @@ import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
 import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.CapacityContents;
+import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
 import com.yefeng.netdisk.front.vo.ListDataVo;
 import io.swagger.annotations.Api;
@@ -92,7 +93,7 @@ public class DiskFileController {
     @GetMapping("/list")
     public ApiResult<ListDataVo<DiskFileVo>> list( FileParamBo fileParamBo){
         PageHelper.startPage(fileParamBo.getPageNum(),fileParamBo.getPageSize());
-        List<DiskFileVo> fileVoList = diskFileService.getFileList(fileParamBo.getDiskId(), fileParamBo.getParentFileId());
+        List<DiskFileVo> fileVoList = diskFileService.getFileList(fileParamBo.getDiskId(), fileParamBo.getParentFileId(), FileStatusEnum.valid.getCode());
 
         log.info("Disk file list:{}", fileVoList);
 
@@ -217,7 +218,7 @@ public class DiskFileController {
             DiskFile diskFile = new DiskFile();
             diskFile.setDiskFileId(body.getFileID());
             diskFile.setParentFileId(body.getToParentFileId());
-           diskFile.setDiskId(Long.valueOf(body.getDriveID()));
+           diskFile.setDiskId(Long.valueOf(body.getDiskId()));
            return diskFile;
         }).collect(Collectors.toList());
 

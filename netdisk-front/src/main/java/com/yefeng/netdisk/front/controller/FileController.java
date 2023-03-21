@@ -7,6 +7,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yefeng.hdfs.feign.client.HdfsClient;
 import com.yefeng.netdisk.common.constans.FileTypeEnum;
 import com.yefeng.netdisk.common.request.RequestParams;
@@ -27,6 +28,7 @@ import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.*;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
+import com.yefeng.netdisk.front.vo.ListDataVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -709,14 +711,18 @@ public class FileController {
      * @return
      */
     @GetMapping("/list_by_share")
-    public ApiResult<List<DiskFileVo>> listByShare(@RequestParam("shareId") String shareId,
-                                 @RequestParam(name = "parentFileId", defaultValue = "root") String parentFileId,
-                                 @RequestParam(name = "page", defaultValue = "0") Integer page, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
+    public ApiResult<ListDataVo<DiskFileVo>> listByShare(@RequestParam("shareId") String shareId,
+                                                         @RequestParam(name = "parentFileId", defaultValue = "root") String parentFileId,
+                                                         @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
 
-        List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, page, pageSize);
+        PageHelper.startPage(pageNum,pageSize);
+        List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, pageNum, pageSize);
         List<DiskFileVo> collect = diskFiles.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
 
-        return ResultUtil.success(collect);
+        PageInfo<DiskFile> pageInfo = new PageInfo<>(diskFiles);
+
+        ListDataVo<DiskFileVo> diskFileVoListDataVo = new ListDataVo<>(collect, pageInfo.getTotal());
+        return ResultUtil.success(diskFileVoListDataVo);
 
     }
 

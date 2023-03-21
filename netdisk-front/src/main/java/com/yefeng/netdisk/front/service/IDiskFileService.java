@@ -17,7 +17,8 @@ import java.util.List;
  * @since 2023-01-15
  */
 public interface IDiskFileService extends IService<DiskFile> {
-    List<DiskFileVo> getFileList(String diskId, String parentFileId);
+
+    List<DiskFileVo> getFileList(String diskId, String parentFileId, Byte status);
 
     boolean saveWithFileId(String diskId, String diskFileId, Long fileId);
 

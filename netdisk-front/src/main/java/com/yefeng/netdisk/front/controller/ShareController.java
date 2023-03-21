@@ -3,6 +3,7 @@ package com.yefeng.netdisk.front.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.front.bo.ShareBo;
@@ -10,6 +11,7 @@ import com.yefeng.netdisk.front.entity.Share;
 import com.yefeng.netdisk.front.mapStruct.mapper.ShareMapperStruct;
 import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.util.DateUtil;
+import com.yefeng.netdisk.front.vo.ListDataVo;
 import com.yefeng.netdisk.front.vo.ShareVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,14 +52,16 @@ public class ShareController {
      */
     @ApiOperation("查看我的分享文件")
     @GetMapping("/list")
-    public ApiResult<List<ShareVo>> listShare(@RequestParam("diskId") String diskId,@RequestParam(defaultValue = "0",name = "page")@Min(value = 1,message = "分页最小从1开始") Integer page,
-                               @RequestParam(defaultValue = "20",name = "pageSize") Integer pageSize) {
+    public ApiResult<ListDataVo<ShareVo>> listShare(@RequestParam("diskId") String diskId, @RequestParam(defaultValue = "0",name = "page")@Min(value = 1,message = "分页最小从1开始") Integer page,
+                                                    @RequestParam(defaultValue = "20",name = "pageSize") Integer pageSize) {
         PageHelper.startPage(page,pageSize);
         List<Share> shareList = shareService.list(new QueryWrapper<Share>()
                 .eq("disk_id", diskId));
+        PageInfo<Share> pageInfo = new PageInfo<>(shareList);
         List<ShareVo> collect = shareList.stream().map(ShareMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
 
-        return ResultUtil.success(collect);
+
+        return ResultUtil.success(new ListDataVo<>(collect,pageInfo.getTotal()));
     }
 
 

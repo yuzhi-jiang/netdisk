@@ -2,15 +2,18 @@ package com.yefeng.netdisk.front.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.front.bo.BatchBo;
 import com.yefeng.netdisk.front.bo.BatchRequestBo;
+import com.yefeng.netdisk.front.bo.FileParamBo;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
+import com.yefeng.netdisk.front.vo.ListDataVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -50,26 +53,28 @@ public class RecycleController {
         return ResultUtil.success(diskFileVo);
     }
 
+
     /**
      * 获取回收站文件列表
-     *
-     * @param diskId
-     * @param pageSize
-     * @param page
+     * @param fileParamBo
      * @return
      */
     @ApiOperation("获取回收站文件列表")
-    @PostMapping("/list")
-    public ApiResult<List<DiskFileVo>> recycleList(@RequestParam("diskId") String diskId, @RequestParam("page") Integer page, @RequestParam("pageSize") Integer pageSize) {
+    @GetMapping("/list")
+    public ApiResult<ListDataVo<DiskFileVo>> recycleList(FileParamBo fileParamBo) {
         QueryWrapper<DiskFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("disk_id", diskId);
-        queryWrapper.eq("status", FileStatusEnum.invalid);
+        queryWrapper.eq("disk_id", fileParamBo.getDiskId());
+        queryWrapper.eq("status", FileStatusEnum.invalid.getCode());
 
-        PageHelper.startPage(page, pageSize);
+        PageHelper.startPage(fileParamBo.getPageNum(),fileParamBo.getPageSize());
 
         List<DiskFile> list = diskFileService.list(queryWrapper);
+        PageInfo<DiskFile> pageInfo = new PageInfo<>(list);
         List<DiskFileVo> diskFileVos = list.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
-        return ResultUtil.success(diskFileVos);
+
+
+
+        return ResultUtil.success(new ListDataVo<DiskFileVo>(diskFileVos,pageInfo.getTotal()));
     }
 
     /**
