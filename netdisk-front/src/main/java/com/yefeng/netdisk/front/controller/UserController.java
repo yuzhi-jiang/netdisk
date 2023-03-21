@@ -4,8 +4,6 @@ package com.yefeng.netdisk.front.controller;
 import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.yefeng.netdisk.common.constans.LoginEnum;
 import com.yefeng.netdisk.common.exception.BizException;
 import com.yefeng.netdisk.common.result.ApiResult;
@@ -15,6 +13,7 @@ import com.yefeng.netdisk.common.util.CheckUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.common.validator.ValidatorUtils;
+import com.yefeng.netdisk.front.annotation.Page;
 import com.yefeng.netdisk.front.bo.LoginBo;
 import com.yefeng.netdisk.front.bo.RegisterBo;
 import com.yefeng.netdisk.front.bo.ResetPasswordBo;
@@ -26,7 +25,6 @@ import com.yefeng.netdisk.front.service.impl.UserServiceImpl;
 import com.yefeng.netdisk.front.task.SendEmailByRegisterTask;
 import com.yefeng.netdisk.front.util.*;
 import com.yefeng.netdisk.front.vo.DiskVo;
-import com.yefeng.netdisk.front.vo.ListDataVo;
 import com.yefeng.netdisk.front.vo.UserDiskVo;
 import com.yefeng.netdisk.front.vo.UserVo;
 import io.swagger.annotations.*;
@@ -83,13 +81,13 @@ public class UserController extends BaseController {
 
     @ApiOperation("获取所有用户，仅供测试使用")
     @GetMapping("/list")
-    public ApiResult<ListDataVo<User>> getUserList(){
-        PageHelper.startPage(0,10);
+    @Page
+    public ApiResult<List<User>> getUserList(){
+//        PageHelper.startPage(0,10);
         List<User> list = userService.list();
-        PageInfo<User> page = new PageInfo<User>(list);
+//        PageInfo<User> page = new PageInfo<User>(list);
 
-        System.out.println(page);
-        return ResultUtil.success(new ListDataVo<User>(page.getList(),page.getTotal()));
+        return ResultUtil.success(list);
     }
 
 
