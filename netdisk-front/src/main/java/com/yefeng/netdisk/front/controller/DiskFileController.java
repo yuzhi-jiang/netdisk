@@ -216,7 +216,7 @@ public class DiskFileController {
         List<DiskFile> bodyBos = Arrays.stream(batchBo.getRequests()).map(request->{
             BatchBodyBo body = request.getBody();
             DiskFile diskFile = new DiskFile();
-            diskFile.setDiskFileId(body.getFileID());
+            diskFile.setDiskFileId(body.getFileId());
             diskFile.setParentFileId(body.getToParentFileId());
            diskFile.setDiskId(Long.valueOf(body.getDiskId()));
            return diskFile;

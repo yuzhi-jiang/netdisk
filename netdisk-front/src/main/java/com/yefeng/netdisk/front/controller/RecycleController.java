@@ -86,7 +86,7 @@ public class RecycleController {
     @ApiOperation("清空回收站")
     @PostMapping("/clear")
     public ApiResult clear(String diskId) {
-        boolean flag = diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_id", diskId).eq("status", FileStatusEnum.invalid));
+        boolean flag = diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_id", diskId).eq("status", FileStatusEnum.invalid.getCode()));
         if (flag) {
             return ResultUtil.success();
         }
@@ -120,7 +120,9 @@ public class RecycleController {
     @ApiOperation("还原文件")
     @PostMapping("/restore")
     public ApiResult restore(@RequestBody BatchBo batchBo) {
-        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getFileId).collect(Collectors.toList());
+        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(m->m.getBody().getFileId()).collect(Collectors.toList());
+
+        System.out.println(fileIds);
         String diskId = batchBo.getDiskId();
         boolean flag = diskFileService.updateStatus(diskId, fileIds, FileStatusEnum.valid);
         if (flag) {
@@ -185,7 +187,7 @@ public class RecycleController {
             @RequestBody  BatchBo batchBo
     ) {
 
-        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(BatchRequestBo::getFileId).collect(Collectors.toList());
+        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(m->m.getBody().getFileId()).collect(Collectors.toList());
 
         //todo
         String diskId = batchBo.getDiskId();

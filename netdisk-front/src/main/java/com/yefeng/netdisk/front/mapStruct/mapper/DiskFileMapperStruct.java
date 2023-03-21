@@ -24,7 +24,8 @@ public interface DiskFileMapperStruct {
     DiskFileMapperStruct INSTANCE = Mappers.getMapper(DiskFileMapperStruct.class);
     @Mappings({
             @Mapping(source = "type", target = "type",qualifiedByName = "mapType"),
-            @Mapping(source = "status", target = "status",qualifiedByName = "mapStatus")
+            @Mapping(source = "status", target = "status",qualifiedByName = "mapStatus"),
+            @Mapping(source = "diskFileId",target = "fileId")
     })
     DiskFileVo toDto(DiskFile diskFile);
 

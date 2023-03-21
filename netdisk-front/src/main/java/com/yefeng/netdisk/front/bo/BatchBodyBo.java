@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class BatchBodyBo {
     private String diskId;
-    private String fileID;
+    private String fileId;
     private String toDriveId;
     private String toParentFileId;
 
