@@ -396,6 +396,8 @@ public class UserController extends BaseController {
         DiskVo diskvo = diskService.getDiskInfoByUerId(user.getId());
         Assert.isNull(diskvo, "没有数据，用户已注销云盘");
         UserDiskVo userDiskVo = new UserDiskVo();
+        userVo.setDiskId(diskvo.getDiskId());
+        diskvo.setUserId(userId);
         userDiskVo.setUserVo(userVo);
         userDiskVo.setDiskVo(diskvo);
 

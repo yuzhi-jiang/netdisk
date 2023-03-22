@@ -6,6 +6,7 @@ import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.entity.Disk;
 import com.yefeng.netdisk.front.entity.DiskItem;
 import com.yefeng.netdisk.front.mapStruct.mapper.DiskItemMapperStruct;
+import com.yefeng.netdisk.front.mapStruct.mapper.DiskMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskItemMapper;
 import com.yefeng.netdisk.front.mapper.DiskMapper;
 import com.yefeng.netdisk.front.service.IDiskService;
@@ -73,9 +74,9 @@ public class DiskServiceImpl extends ServiceImpl<DiskMapper, Disk> implements ID
 
         List<DiskItem> diskItems = getDiskItems(disk.getId());
 
-        DiskVo diskVo = new DiskVo();
 
-        BeanUtils.copyProperties(disk,diskVo);
+
+        DiskVo diskVo=DiskMapperStruct.INSTANCE.toDto(disk);
         diskVo.setDiskItems(diskItems.stream().map(DiskItemMapperStruct.INSTANCE::toVo).collect(Collectors.toList()));
         return diskVo;
     }

@@ -15,8 +15,8 @@ import java.util.List;
 
 public class DiskVo {
 
-    @JsonProperty("diskId")
-    private String id;
+//    @JsonProperty("diskId")
+    private String diskId;
     private String userId;
 
     private BigDecimal totalCapacity;
@@ -26,23 +26,12 @@ public class DiskVo {
 
     List<DiskItemVo> diskItems;
 
-    public String getId() {
-        return id;
+    public String getDiskId() {
+        return diskId;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "DiskVo{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", totalCapacity=" + totalCapacity +
-                ", useCapacity=" + useCapacity +
-                ", diskItems=" + diskItems +
-                '}';
+    public void setDiskId(String diskId) {
+        this.diskId = diskId;
     }
 
     public String getUserId() {
