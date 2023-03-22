@@ -175,7 +175,7 @@ public class UserThirdAuthController extends BaseController {
                 throw new BizException("业务发送异常，请等待修复");
             }
         } else {
-            throw new RuntimeException("授权失败" + response.getCode());
+            throw new RuntimeException("授权失败：请稍后再试，授权码是：" + response.getCode());
         }
     }
 
