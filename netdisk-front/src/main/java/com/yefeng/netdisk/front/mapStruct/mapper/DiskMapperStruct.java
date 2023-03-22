@@ -22,6 +22,10 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface DiskMapperStruct {
     DiskMapperStruct INSTANCE = Mappers.getMapper(DiskMapperStruct.class);
+
+    @Mappings({
+            @Mapping(source = "id",target = "diskId")
+    })
     DiskVo toDto(Disk disk);
 
 
