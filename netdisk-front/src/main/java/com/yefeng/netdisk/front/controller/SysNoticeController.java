@@ -1,7 +1,13 @@
 package com.yefeng.netdisk.front.controller;
 
+import com.yefeng.netdisk.front.entity.SysNotice;
+import com.yefeng.netdisk.front.service.ISysNoticeService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -12,7 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2023-01-15
  */
 @RestController
-@RequestMapping("/sysNotice")
+@RequestMapping("/notice")
 public class SysNoticeController {
+
+    @Resource
+    ISysNoticeService noticeService;
+
+    //获取所有通知
+    @GetMapping("list")
+    public List<SysNotice> getAllNotices() {
+        return noticeService.list();
+    }
+
 
 }

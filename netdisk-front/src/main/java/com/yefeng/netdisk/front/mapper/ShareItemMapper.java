@@ -1,6 +1,7 @@
 package com.yefeng.netdisk.front.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yefeng.netdisk.front.dto.ShareItemDto;
 import com.yefeng.netdisk.front.entity.ShareItem;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,5 +17,7 @@ public interface ShareItemMapper extends BaseMapper<ShareItem> {
      * @return
      */
     Integer insertShareItems(@Param("shareItems") List<ShareItem> shareItems);
+
+    List<ShareItemDto> selectListByShareId(@Param("shareId") String shareId, @Param("parentFileId") String parentFileId);
 
 }

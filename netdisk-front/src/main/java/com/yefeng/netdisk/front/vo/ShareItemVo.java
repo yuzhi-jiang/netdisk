@@ -27,12 +27,15 @@ public class ShareItemVo implements Serializable {
 
 
 
-    private String deskId;
+    private String diskId;
+
     private String fileId;
     private String shareId;
-    private String name;
+    private String fileName;
     private String type;
     private String parentFileId;
-
-
+    private String length;
+    private String createUser;
+    private String createTime;
+    private String modifyTime;
 }

@@ -227,9 +227,7 @@ public class DiskFileController {
             List<DiskFileVo> collect = bodyBos.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
             return ResultUtil.success(collect);
         }
-
         return ResultUtil.fail();
-
     }
 
     //修改文件名称

@@ -1,6 +1,5 @@
 package com.yefeng.netdisk.front.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -30,7 +29,7 @@ public class ShareVo implements Serializable {
     private String fullShareMsg;
 
     
-    private Long expiredTime;
+    private LocalDateTime expiredTime;
 
     
     private Byte isValid;
@@ -41,8 +40,6 @@ public class ShareVo implements Serializable {
     @ApiModelProperty("分享的文件类型1（file）.文件2文件夹（如果有多个，则有文件夹则优先文件夹）")
      String type;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    LocalDateTime expiration;
 
     public String getId() {
         return id;
@@ -84,13 +81,7 @@ public class ShareVo implements Serializable {
         this.fullShareMsg = fullShareMsg;
     }
 
-    public Long getExpiredTime() {
-        return expiredTime;
-    }
 
-    public void setExpiredTime(Long expiredTime) {
-        this.expiredTime = expiredTime;
-    }
 
     public Byte getIsValid() {
         return isValid;
@@ -116,11 +107,11 @@ public class ShareVo implements Serializable {
         this.type = type;
     }
 
-    public LocalDateTime getExpiration() {
-        return expiration;
+    public LocalDateTime getExpiredTime() {
+        return expiredTime;
     }
 
-    public void setExpiration(LocalDateTime expiration) {
-        this.expiration = expiration;
+    public void setExpiredTime(LocalDateTime expiredTime) {
+        this.expiredTime = expiredTime;
     }
 }

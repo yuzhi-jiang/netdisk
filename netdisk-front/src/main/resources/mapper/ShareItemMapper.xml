@@ -6,8 +6,21 @@
     <insert id="insertShareItems">
         insert into tb_share_item (`file_id`,`share_id`,`type`,`disk_id`)
         values
-        <foreach collection="shareItems" item="item" index="index" separator="," >
+        <foreach collection="shareItems" item="item" index="index" separator=",">
             (#{item.fileId},#{item.shareId},#{item.type},#{item.diskId})
         </foreach>
     </insert>
+    <select id="selectListByShareId" resultType="com.yefeng.netdisk.front.dto.ShareItemDto">
+
+        select tdf.type,tdf.parent_file_id,tdf.disk_file_id,tdf.disk_id,tdf.file_name,tdf.create_time,tdf.create_user,tdf.modify_time,
+        tsi.share_id, tf.length
+        from tb_share_item tsi
+        join tb_disk_file tdf on tdf.disk_file_id = tsi.file_id
+        left join tb_file tf on tf.file_id = tdf.file_id
+        where tsi.share_id = #{shareId}
+        <if test="parentFileId != null and parentFileId!=''">
+            and tdf.parent_file_id = #{parentFileId}
+        </if>
+    </select>
+
 </mapper>

@@ -2,9 +2,9 @@ package com.yefeng.netdisk.front.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.pagehelper.PageHelper;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.ShareBo;
+import com.yefeng.netdisk.front.dto.ShareItemDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.Share;
 import com.yefeng.netdisk.front.entity.ShareItem;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -59,7 +58,7 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
         share.setSharePwd(shareBo.getSharePwd());
         share.setShareTitle(shareTitle);
         share.setFullShareMsg(shareTitle);
-        share.setExpiredTime(shareBo.getExpiration());
+        share.setExpiredTime(shareBo.getExpiredTime());
 
         baseMapper.insert(share);
 
@@ -94,31 +93,18 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
     @Resource
     DiskFileMapper diskFileMapper;
 
-    public List<DiskFile> getFilesByShareId(String shareId, String parentFileId, @RequestParam("page_num") Integer pageNum, @RequestParam("page_size") Integer pageSize) {
-        QueryWrapper<ShareItem> queryWrapper = new QueryWrapper<ShareItem>().eq("share_id", shareId);
-
-//        Page<ShareItem> shareItemPage = shareItemMapper.selectPage(new Page<>(pageNum, pageSize), queryWrapper);
-//
-//        List<ShareItem> shareItems = shareItemPage.getRecords();
-
-        PageHelper.startPage(pageNum,pageSize);
-        List<ShareItem> shareItems=  shareItemMapper.selectList(queryWrapper);
+    public List<ShareItemDto> getFilesByShareId(String shareId, String parentFileId, @RequestParam("page_num") Integer pageNum, @RequestParam("page_size") Integer pageSize) {
 
 
-        Long diskId = shareItems.get(0).getDiskId();
-
-        List<String> fileIds = shareItems.stream().map(ShareItem::getFileId).collect(Collectors.toList());
-
-
-        List<DiskFile> diskFiles = diskFileMapper.selectList(new QueryWrapper<DiskFile>().eq("disk_id", diskId)
-                .eq("parent_file_id", parentFileId));
-
-
-        //todo  可能过滤后少于需要的，也就是正确的没有查到，查到的不够，是需要结果limit，不是过滤前的limit
-        List<DiskFile> resFiles = diskFiles.stream()
-                .filter(df -> fileIds.contains(df.getDiskFileId()))
-                .collect(Collectors.toList());
-
-        return resFiles;
+        List<ShareItemDto> shareItemDtos;
+        if (parentFileId.equals("root")) {
+            shareItemDtos = shareItemMapper.selectListByShareId(shareId, null);
+            shareItemDtos.forEach(shareItemDto -> {
+                shareItemDto.setParentFileId("root");
+            });
+        } else {
+            shareItemDtos = shareItemMapper.selectListByShareId(shareId, parentFileId);
+        }
+        return shareItemDtos;
     }
 }

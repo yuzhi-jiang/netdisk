@@ -18,8 +18,10 @@ import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.FileBo;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
+import com.yefeng.netdisk.front.dto.ShareItemDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
+import com.yefeng.netdisk.front.entity.Share;
 import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskMapper;
 import com.yefeng.netdisk.front.service.IDiskFileService;
@@ -40,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -703,25 +706,34 @@ public class FileController {
 
     /**
      * 根据分享id查看文件
-     *
      * @param shareId
      * @param parentFileId
-     * @param page
+     * @param pageNum
      * @param pageSize
      * @return
      */
-    @GetMapping("/list_by_share")
-    public ApiResult<ListDataVo<DiskFileVo>> listByShare(@RequestParam("shareId") String shareId,
+    @GetMapping("/listByShare")
+    public ApiResult<ListDataVo<ShareItemDto>> listByShare(@RequestParam("shareId") String shareId,
                                                          @RequestParam(name = "parentFileId", defaultValue = "root") String parentFileId,
                                                          @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
 
+
+        Share share = shareService.getOne(new QueryWrapper<Share>().eq("is_valid","1"));
+        if (share == null) {
+            return ResultUtil.failMsg("分享不存在");
+        }
+
+        //是否过期
+        if (share.getExpiredTime().isBefore(LocalDateTime.now())) {
+            return ResultUtil.failMsg("分享已过期");
+        }
+
         PageHelper.startPage(pageNum,pageSize);
-        List<DiskFile> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, pageNum, pageSize);
-        List<DiskFileVo> collect = diskFiles.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
+        List<ShareItemDto> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, pageNum, pageSize);
 
-        PageInfo<DiskFile> pageInfo = new PageInfo<>(diskFiles);
+        PageInfo<ShareItemDto> pageInfo = new PageInfo<>(diskFiles);
 
-        ListDataVo<DiskFileVo> diskFileVoListDataVo = new ListDataVo<>(collect, pageInfo.getTotal());
+        ListDataVo<ShareItemDto> diskFileVoListDataVo = new ListDataVo<>(pageInfo.getList(), pageInfo.getTotal());
         return ResultUtil.success(diskFileVoListDataVo);
 
     }

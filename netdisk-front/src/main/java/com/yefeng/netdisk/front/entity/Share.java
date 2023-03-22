@@ -37,7 +37,7 @@ public class Share implements Serializable {
     private String shareTitle;
 
     @ApiModelProperty("过期时间,永久为空")
-    private String expiredTime;
+    private LocalDateTime expiredTime;
 
     @ApiModelProperty("是否有效")
     private Byte isValid;
@@ -92,11 +92,10 @@ public class Share implements Serializable {
         this.shareTitle = shareTitle;
     }
 
-    public String getExpiredTime() {
+    public LocalDateTime getExpiredTime() {
         return expiredTime;
     }
-
-    public void setExpiredTime(String expiredTime) {
+    public void setExpiredTime(LocalDateTime expiredTime) {
         this.expiredTime = expiredTime;
     }
 

@@ -1,7 +1,10 @@
 package com.yefeng.netdisk.front.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * This class is for
@@ -115,9 +118,12 @@ public class ShareBo {
     String diskId;
 
 
-    @ApiModelProperty("过期时间,格式为: yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("分享id")
+    String shareId;
 
-    String expiration;
+    @ApiModelProperty("过期时间,格式为: yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime expiredTime;
     //分享文件的类型 1，文件，2，文件夹，3.txt,4.doc,5.other
     @ApiModelProperty(value = "分享文件的类型 1，文件，2，文件夹，3.txt,4.doc,5.other",dataType = "Byte")
     Byte type;

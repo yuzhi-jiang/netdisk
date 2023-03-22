@@ -6,21 +6,26 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.ResultUtil;
+import com.yefeng.netdisk.front.bo.BatchBo;
+import com.yefeng.netdisk.front.bo.BatchBodyBo;
 import com.yefeng.netdisk.front.bo.ShareBo;
+import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.Share;
+import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.mapStruct.mapper.ShareMapperStruct;
+import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IShareService;
-import com.yefeng.netdisk.front.util.DateUtil;
+import com.yefeng.netdisk.front.vo.DiskFileVo;
 import com.yefeng.netdisk.front.vo.ListDataVo;
 import com.yefeng.netdisk.front.vo.ShareVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.Min;
-import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,7 +61,7 @@ public class ShareController {
                                                     @RequestParam(defaultValue = "20",name = "pageSize") Integer pageSize) {
         PageHelper.startPage(page,pageSize);
         List<Share> shareList = shareService.list(new QueryWrapper<Share>()
-                .eq("disk_id", diskId));
+                .eq("disk_id", diskId).eq("is_valid","1"));
         PageInfo<Share> pageInfo = new PageInfo<>(shareList);
         List<ShareVo> collect = shareList.stream().map(ShareMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
 
@@ -67,26 +72,18 @@ public class ShareController {
 
     /**
      * 更改失效时间
-     * @param diskId
-     * @param shareId
-     * @param expiration
+     * @param shareBo
      * @return
-     *
-     * @throws ParseException
      */
     @ApiOperation("更改失效时间")
     @PostMapping("/updateExpire")
-    public ApiResult updateExpired(@RequestParam("diskId") String diskId,@RequestParam("shareId") String shareId
-            ,@RequestParam("expiration") String expiration) {
-        if (StringUtils.isBlank(expiration)) {
-            expiration="9999-12-31T23:59:59Z";
-            //永久
-        }
-        String expirationTime = DateUtil.getDateFormat(expiration);
+    public ApiResult updateExpired(@RequestBody ShareBo shareBo) {
+        String diskId = shareBo.getDiskId();
+
         boolean update = shareService.update(new UpdateWrapper<Share>()
                 .eq("disk_id", diskId)
-                .eq("id", shareId)
-                .set("expired_time", expirationTime));
+                .eq("id", shareBo.getShareId())
+                .set("expired_time", shareBo.getExpiredTime()));
         if (update) {
             return ResultUtil.success();
         }
@@ -103,31 +100,88 @@ public class ShareController {
     @PostMapping("/create")
     public ApiResult<ShareVo> create(@RequestBody ShareBo shareBo) {
 
-        shareBo.setExpiration(DateUtil.getDateFormat(shareBo.getExpiration()));
+        shareBo.setExpiredTime(shareBo.getExpiredTime());
 
         ShareVo shareVo = shareService.create(shareBo);
         return ResultUtil.success(shareVo);
     }
 
 
-
     /**
      * 取消分享文件
      * @param diskId
-     * @param shareId
+     * @param shareIds
      * @return
      */
     @ApiOperation("取消分享")
-    @DeleteMapping("/cancel")
-    public ApiResult cancel(@RequestParam("diskId") String diskId,
-                            @RequestParam("shareId") String shareId) {
+    @DeleteMapping("/cancel/{diskId}")
+    public ApiResult cancel(@PathVariable("diskId") String diskId,
+                            @RequestBody String[] shareIds) {
         UpdateWrapper<Share> wrapper = new UpdateWrapper<Share>().eq("disk_id", diskId)
-                .eq("id", shareId)
+                .in("id", (Object[]) shareIds)
                 .set("is_valid", "0");
 
         boolean update = shareService.update(wrapper);
         if (update) {
             return ResultUtil.success();
+        }
+        return ResultUtil.fail();
+    }
+    @ApiOperation("清空分享")
+    @DeleteMapping("/clear/{diskId}")
+    public ApiResult cancel(@PathVariable("diskId") String diskId) {
+        UpdateWrapper<Share> wrapper = new UpdateWrapper<Share>().eq("disk_id", diskId)
+                .set("is_valid", "0");
+
+        boolean update = shareService.update(wrapper);
+        if (update) {
+            return ResultUtil.success();
+        }
+        return ResultUtil.fail();
+    }
+
+    @Resource
+    IDiskFileService diskFileService;
+
+    @Value("${mycloud.fileIdSize}")
+    Integer fileIdSize;
+
+
+    @ApiOperation("文件转存")
+    @PutMapping("/save")
+    public ApiResult<List<DiskFileVo>> move(@RequestBody BatchBo batchBo){
+
+        //查到文件信息list 并将其存入到新的磁盘中
+        List<DiskFile> diskFileList = Arrays.stream(batchBo.getRequests()).map(request->{
+            BatchBodyBo body = request.getBody();
+            DiskFile diskFile = new DiskFile();
+
+            diskFile.setDiskFileId(body.getFileId());
+
+            diskFile.setDiskId(Long.valueOf(body.getDiskId()));
+
+            return diskFile;
+        }).collect(Collectors.toList());
+
+        List<DiskFile> list = diskFileService.list(new QueryWrapper<DiskFile>().eq("disk_id", "").in("disk_file_id", diskFileList.stream().map(DiskFile::getDiskFileId).collect(Collectors.toList())));
+
+        //将信息放到新的磁盘中
+        List<DiskFile> bodyBos = Arrays.stream(batchBo.getRequests()).map(request->{
+            BatchBodyBo body = request.getBody();
+            DiskFile diskFile = new DiskFile();
+
+            diskFile.setDiskFileId(body.getFileId());
+            diskFile.setParentFileId(body.getToParentFileId());
+            diskFile.setDiskId(Long.valueOf(body.getToDiskId()));
+
+            return diskFile;
+        }).collect(Collectors.toList());
+
+        //拿到diskFileId 通过diskFileId查询文件信息 并将其存入到新的磁盘中
+        boolean flag = diskFileService.saveBatch(bodyBos);
+        if(flag){
+            List<DiskFileVo> collect = bodyBos.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
+            return ResultUtil.success(collect);
         }
         return ResultUtil.fail();
     }
