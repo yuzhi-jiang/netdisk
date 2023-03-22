@@ -44,24 +44,24 @@ public class UserVo implements Serializable {
 
 
     @ApiModelProperty("创建人")
-    private Long createUser;
+    private String createUser;
 
     @ApiModelProperty("创建时间")
 //    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty("修改人")
-    private Long modifyUser;
+    private String modifyUser;
 
     @ApiModelProperty("修改时间")
 //    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime modifyTime;
 
-    public Long getCreateUser() {
+    public String getCreateUser() {
         return createUser;
     }
 
-    public void setCreateUser(Long createUser) {
+    public void setCreateUser(String createUser) {
         this.createUser = createUser;
     }
 
@@ -73,11 +73,11 @@ public class UserVo implements Serializable {
         this.createTime = createTime;
     }
 
-    public Long getModifyUser() {
+    public String getModifyUser() {
         return modifyUser;
     }
 
-    public void setModifyUser(Long modifyUser) {
+    public void setModifyUser(String modifyUser) {
         this.modifyUser = modifyUser;
     }
 

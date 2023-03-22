@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  */
 
 public class DiskItemVo {
-    private Long id;
+    private String id;
 
     @ApiModelProperty("隶属盘")
     private String diskId;
@@ -44,11 +44,11 @@ public class DiskItemVo {
 //    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime modifyTime;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

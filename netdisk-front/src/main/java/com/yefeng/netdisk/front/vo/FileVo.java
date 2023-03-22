@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  */
 
 public class FileVo {
-    private Long id;
+    private String id;
 
     private String diskId;
 
@@ -67,12 +67,20 @@ public class FileVo {
                 '}';
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(String modifyUser) {
+        this.modifyUser = modifyUser;
     }
 
     public String getDiskId() {

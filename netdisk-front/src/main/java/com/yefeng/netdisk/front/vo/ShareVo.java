@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 public class ShareVo implements Serializable {
     @JsonProperty("shareId")
-    private Long id;
+    private String id;
 
     
     private String diskId;
@@ -44,11 +44,11 @@ public class ShareVo implements Serializable {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     LocalDateTime expiration;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
