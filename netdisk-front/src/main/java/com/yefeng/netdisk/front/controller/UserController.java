@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,6 +56,7 @@ import java.util.concurrent.ExecutorService;
 @RestController
 @RequestMapping("/user")
 @CrossOrigin
+@RefreshScope
 public class UserController extends BaseController {
 
     @Value("${webclient.hostname:localhost}:${webclient.port:8082}")
