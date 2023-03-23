@@ -24,7 +24,7 @@ public interface ShareMapperStruct {
             @Mapping(source = "type", target = "type",qualifiedByName = "mapType")
 //            @Mapping(source = "status", target = "status",qualifiedByName = "mapStatus")
     })
-    ShareVo toDto(Share file);
+    ShareVo toVo(Share file);
 
 
     @Named("mapStatus")

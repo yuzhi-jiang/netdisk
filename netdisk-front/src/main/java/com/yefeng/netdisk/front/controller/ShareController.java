@@ -21,6 +21,7 @@ import com.yefeng.netdisk.front.vo.ShareVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,7 +43,12 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin
 @RequestMapping("/share")
+@RefreshScope
 public class ShareController {
+
+
+    @Value("${webclient.url}")
+    String webClientUrl;
 
     @Resource
     IShareService shareService;
@@ -63,7 +69,11 @@ public class ShareController {
         List<Share> shareList = shareService.list(new QueryWrapper<Share>()
                 .eq("disk_id", diskId).eq("is_valid","1"));
         PageInfo<Share> pageInfo = new PageInfo<>(shareList);
-        List<ShareVo> collect = shareList.stream().map(ShareMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
+        List<ShareVo> collect = shareList.stream().map(share -> {
+            ShareVo shareVo = ShareMapperStruct.INSTANCE.toVo(share);
+            shareVo.setShareUrl(webClientUrl + "/share/" + share.getId());
+            return shareVo;
+        }).collect(Collectors.toList());
 
 
         return ResultUtil.success(new ListDataVo<>(collect,pageInfo.getTotal()));
@@ -101,7 +111,7 @@ public class ShareController {
     public ApiResult<ShareVo> create(@RequestBody ShareBo shareBo) {
 
         shareBo.setExpiredTime(shareBo.getExpiredTime());
-
+        shareBo.setShareUrl(webClientUrl);
         ShareVo shareVo = shareService.create(shareBo);
         return ResultUtil.success(shareVo);
     }

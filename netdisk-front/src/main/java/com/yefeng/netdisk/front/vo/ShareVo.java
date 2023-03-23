@@ -33,7 +33,8 @@ public class ShareVo implements Serializable {
 
     
     private Byte isValid;
-    
+    private String  shareUrl;
+
     
     String[] fileIdList;
 
@@ -114,4 +115,15 @@ public class ShareVo implements Serializable {
     public void setExpiredTime(LocalDateTime expiredTime) {
         this.expiredTime = expiredTime;
     }
+
+    public String getShareUrl() {
+        return shareUrl;
+    }
+
+    public void setShareUrl(String shareUrl) {
+        this.shareUrl = shareUrl;
+    }
+
+
+
 }

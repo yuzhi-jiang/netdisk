@@ -8,6 +8,7 @@ import com.yefeng.netdisk.front.dto.ShareItemDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.Share;
 import com.yefeng.netdisk.front.entity.ShareItem;
+import com.yefeng.netdisk.front.mapStruct.mapper.ShareMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskFileMapper;
 import com.yefeng.netdisk.front.mapper.ShareItemMapper;
 import com.yefeng.netdisk.front.mapper.ShareMapper;
@@ -52,9 +53,14 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
 
         int shareSize = shareBo.getFileIdList().length;
         if (shareSize > 1) {
-            shareTitle += "等文件";
+            shareTitle += "等" + shareSize + "个文件";
         }
-        share.setType(shareBo.getType());
+        share.setDiskId(diskId);
+        share.setIsValid((byte) 1);
+        share.setType((byte) 1);//默认为文件
+        if (shareBo.getType() != null && (shareBo.getType() == 1 || shareBo.getType() == 2)) {
+            share.setType(shareBo.getType());
+        }
         share.setSharePwd(shareBo.getSharePwd());
         share.setShareTitle(shareTitle);
         share.setFullShareMsg(shareTitle);
@@ -79,8 +85,8 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
         Integer integer = shareItemMapper.insertShareItems(shareItems);
 
         if (integer == shareSize) {
-            ShareVo shareVo = new ShareVo();
-            BeanUtils.copyProperties(share, shareVo);
+            ShareVo shareVo = ShareMapperStruct.INSTANCE.toVo(share);
+            shareVo.setShareUrl(shareBo.getShareUrl() + "/" + share.getId());
             shareVo.setFileIdList(shareBo.getFileIdList());
             return shareVo;
         }

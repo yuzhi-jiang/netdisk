@@ -121,6 +121,9 @@ public class ShareBo {
     @ApiModelProperty("分享id")
     String shareId;
 
+
+    String ShareUrl;
+
     @ApiModelProperty("过期时间,格式为: yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime expiredTime;
