@@ -124,8 +124,8 @@ public class ShareController {
      * @return
      */
     @ApiOperation("取消分享")
-    @DeleteMapping("/cancel/{diskId}")
-    public ApiResult cancel(@PathVariable("diskId") String diskId,
+    @DeleteMapping("/cancel")
+    public ApiResult cancel(@RequestParam("diskId") String diskId,
                             @RequestBody String[] shareIds) {
         UpdateWrapper<Share> wrapper = new UpdateWrapper<Share>().eq("disk_id", diskId)
                 .in("id", (Object[]) shareIds)
@@ -138,8 +138,8 @@ public class ShareController {
         return ResultUtil.fail();
     }
     @ApiOperation("清空分享")
-    @DeleteMapping("/clear/{diskId}")
-    public ApiResult cancel(@PathVariable("diskId") String diskId) {
+    @DeleteMapping("/clear")
+    public ApiResult cancel(@RequestParam("diskId") String diskId) {
         UpdateWrapper<Share> wrapper = new UpdateWrapper<Share>().eq("disk_id", diskId)
                 .set("is_valid", "0");
 
