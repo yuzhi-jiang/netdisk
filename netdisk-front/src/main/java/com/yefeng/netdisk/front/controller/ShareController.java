@@ -111,7 +111,7 @@ public class ShareController {
     public ApiResult<ShareVo> create(@RequestBody ShareBo shareBo) {
 
         shareBo.setExpiredTime(shareBo.getExpiredTime());
-        shareBo.setShareUrl(webClientUrl);
+        shareBo.setShareUrl(webClientUrl+"/share");
         ShareVo shareVo = shareService.create(shareBo);
         return ResultUtil.success(shareVo);
     }
