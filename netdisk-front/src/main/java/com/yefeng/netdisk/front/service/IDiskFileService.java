@@ -5,6 +5,7 @@ import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -38,4 +39,6 @@ public interface IDiskFileService extends IService<DiskFile> {
     boolean updateStatus(String diskId, List<String> fileIds, FileStatusEnum status);
 
     boolean moveFile(List<DiskFile> diskFiles);
+
+    Long copyDiskFileBatch(@Param("shareId") String shareId, @Param("toDiskId") String toDiskId, @Param("toParentFileId") String toParentFileId, @Param("fileIdList") List<String> fileIdList);
 }

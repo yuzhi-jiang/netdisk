@@ -1,24 +1,28 @@
 package com.yefeng.netdisk.front.config;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.*;
 
+
+//@ConfigurationProperties(prefix = "mycloud.thread-pool.common")
 @Configuration
-@ConfigurationProperties(prefix = "mycloud.thread-pool.common")
 public class ThreadPoolConfig {
 
+
     /** 核心线程数 */
-    private int corePoolSize;
-    /** 最大线程数 */
-    private int maximumPoolSize;
-    /** 线程存活时间 */
-    private Long keepAliveTime;
-    /** 队列容量 */
-    private int queueCapacity;
+
+
+
+    @Value("${mycloud.thread-pool.common}")
+    ThreadPoolConfigProperties common;
+
+    @Value("${mycloud.thread-pool.filedisk}")
+    ThreadPoolConfigProperties fileDisk;
 
     /**
      * 通用消费线程池
@@ -30,10 +34,35 @@ public class ThreadPoolConfig {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("common-queue-thread-%d").build();
         // 实例化线程池
-        ExecutorService pool = new ThreadPoolExecutor(this.getCorePoolSize(), this.getMaximumPoolSize(), this.getKeepAliveTime(), TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(this.getQueueCapacity()), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+        ExecutorService pool = new ThreadPoolExecutor(common.getCorePoolSize(), common.getMaximumPoolSize(), common.getKeepAliveTime(), TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(common.getQueueCapacity()), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
         return pool;
     }
+
+
+
+    @Bean(value = "diskFileQueueThreadPool")
+    public ExecutorService diskfileQueueThreadPool() {
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+                .setNameFormat("fileDisk-queue-thread-%d").build();
+        // 实例化线程池
+        ExecutorService pool = new ThreadPoolExecutor(fileDisk.getCorePoolSize(), fileDisk.getMaximumPoolSize(), fileDisk.getKeepAliveTime(), TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(fileDisk.getQueueCapacity()), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+        return pool;
+    }
+
+
+
+
+}
+class ThreadPoolConfigProperties {
+    private int corePoolSize;
+    /** 最大线程数 */
+    private int maximumPoolSize;
+    /** 线程存活时间 */
+    private Long keepAliveTime;
+    /** 队列容量 */
+    private int queueCapacity;
 
 
     public int getCorePoolSize() {

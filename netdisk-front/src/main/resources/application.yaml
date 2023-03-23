@@ -31,9 +31,15 @@ mycloud:
   thread-pool:
     # 公用线程池
     common:
-      corePoolSize: 1
-      maximumPoolSize: 5
+      corePoolSize: 3
+      maximumPoolSize: 50
       keepAliveTime: 0
+      queueCapacity: 20480
+    # 文件线程池
+    diskfile:
+      corePoolSize: 10
+      maximumPoolSize: 15
+      keepAliveTime: 300
       queueCapacity: 20480
   upload:
     idSize: 32

@@ -158,8 +158,8 @@ public class ShareController {
 
 
     @ApiOperation("文件转存")
-    @PutMapping("/save")
-    public ApiResult<List<DiskFileVo>> move(@RequestBody BatchBo batchBo){
+    @PostMapping("/save")
+    public ApiResult<List<DiskFileVo>> copy(@RequestBody BatchBo batchBo){
 
         //查到文件信息list 并将其存入到新的磁盘中
         List<DiskFile> diskFileList = Arrays.stream(batchBo.getRequests()).map(request->{
@@ -168,7 +168,7 @@ public class ShareController {
 
             diskFile.setDiskFileId(body.getFileId());
 
-            diskFile.setDiskId(Long.valueOf(body.getDiskId()));
+            diskFile.setDiskId(Long.valueOf(body.getToDiskId()));
 
             return diskFile;
         }).collect(Collectors.toList());

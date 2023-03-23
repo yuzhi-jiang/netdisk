@@ -7,6 +7,9 @@ import lombok.Data;
 public class BatchBodyBo {
     private String diskId;
     private String fileId;
+
+    private String shareId;
+
     private String toDiskId;
     private String toParentFileId;
 

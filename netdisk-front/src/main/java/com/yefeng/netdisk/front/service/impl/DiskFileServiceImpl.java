@@ -141,6 +141,10 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         return count>0;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public Long copyDiskFileBatch(String shareId, String toDiskId, String toParentFileId, List<String> fileIdList) {
+        return null;
+    }
     @Resource
     FileMapper fileMapper;
 
