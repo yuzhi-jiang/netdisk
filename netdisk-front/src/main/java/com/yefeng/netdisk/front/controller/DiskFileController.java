@@ -268,6 +268,8 @@ public class DiskFileController {
         File file = fileService.getFileWithDiskIdAndFileId(diskId, fileId);
         Assert.isNull(file, "没有该文件");
 
+
+
         String downloadToken = JWTUtil.createToken(new HashMap<>() {
             {
                 put("diskId", diskId);

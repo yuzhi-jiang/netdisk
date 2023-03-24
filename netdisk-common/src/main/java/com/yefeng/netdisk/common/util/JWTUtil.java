@@ -113,6 +113,26 @@ public class JWTUtil {
         }
         return payloads;
     }
+    public static HashMap<String, Object> getPayloadMapFromToken(String token, String... payloadKeys) {
+        HashMap<String, Object> resMap = new HashMap<>();
+        try {
+
+            Claims claims = getClaimsFromToken(token);
+            List<String> keys = Arrays.asList(payloadKeys);
+
+            int i = 0;
+            for (String key : payloadKeys) {
+                Object payload = claims.get(key);
+                resMap.put(key,payload);
+            }
+
+        } catch (Exception e) {
+
+            log.info("error:{}", "payload未能获取 from token");
+            throw new RuntimeException("payload未能获取"+payloadKeys+" from token");
+        }
+        return resMap;
+    }
 
     /**
      * 从token中获取荷载

@@ -718,13 +718,13 @@ public class FileController {
                                                          @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
 
 
-        Share share = shareService.getOne(new QueryWrapper<Share>().eq("is_valid","1"));
+        Share share = shareService.getOne(new QueryWrapper<Share>().eq("is_valid","1").eq("id", shareId));
         if (share == null) {
             return ResultUtil.failMsg("分享不存在");
         }
 
         //是否过期
-        if (share.getExpiredTime().isBefore(LocalDateTime.now())) {
+        if (share.getExpiredTime()!=null&&share.getExpiredTime().isBefore(LocalDateTime.now())) {
             return ResultUtil.failMsg("分享已过期");
         }
 

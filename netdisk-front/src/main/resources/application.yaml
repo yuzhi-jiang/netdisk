@@ -48,6 +48,8 @@ mycloud:
     urlExpireTime: 3600 #downloadUrltoken失效时间 默认10分钟600秒
   useractive:
     tokenExpire: 7200 #7200 sec  is 2 hours
+  share:
+    tokenExpire: 3600 #3600 sec  is 1 hours
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

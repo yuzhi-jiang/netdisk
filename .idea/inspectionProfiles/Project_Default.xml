@@ -10,6 +10,7 @@
         <set>
           <option value="  &quot;account&quot;" />
           <option value="subject" />
+          <option value="shareToken" />
         </set>
       </option>
     </inspection_tool>
