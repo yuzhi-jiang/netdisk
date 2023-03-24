@@ -14,7 +14,6 @@ import com.yefeng.netdisk.front.mapper.ShareItemMapper;
 import com.yefeng.netdisk.front.mapper.ShareMapper;
 import com.yefeng.netdisk.front.service.IShareService;
 import com.yefeng.netdisk.front.vo.ShareVo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -95,11 +94,11 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
         log.warn(shareBo.toString());
         throw new RuntimeException("分享失败~请稍后再试");
     }
-
     @Resource
     DiskFileMapper diskFileMapper;
 
     public List<ShareItemDto> getFilesByShareId(String shareId, String parentFileId, @RequestParam("page_num") Integer pageNum, @RequestParam("page_size") Integer pageSize) {
+
 
 
         List<ShareItemDto> shareItemDtos;

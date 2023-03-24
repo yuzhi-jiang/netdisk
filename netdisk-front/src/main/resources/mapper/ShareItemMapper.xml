@@ -12,15 +12,36 @@
     </insert>
     <select id="selectListByShareId" resultType="com.yefeng.netdisk.front.dto.ShareItemDto">
 
-        select tdf.type,tdf.parent_file_id,tdf.disk_file_id,tdf.disk_id,tdf.file_name,tdf.create_time,tdf.create_user,tdf.modify_time,
+        select
+        tdf.type,tdf.parent_file_id,tdf.disk_file_id,tdf.disk_id,tdf.file_name,tdf.create_time,tdf.create_user,tdf.modify_time,
         tsi.share_id, tf.length
         from tb_share_item tsi
-        join tb_disk_file tdf on tdf.disk_file_id = tsi.file_id
+        join tb_disk_file tdf on tdf.disk_id = tsi.disk_id
         left join tb_file tf on tf.file_id = tdf.file_id
         where tsi.share_id = #{shareId}
+        <if test="parentFileId==null or parentFileId=='' or parentFileId=='root'">
+            and tsi.file_id=tdf.disk_file_id
+        </if>
         <if test="parentFileId != null and parentFileId!=''">
             and tdf.parent_file_id = #{parentFileId}
+            AND (tsi.file_id IN (
+            SELECT
+            df.disk_file_id
+            FROM
+            (
+            SELECT @r AS disk_file_id,
+            ( SELECT @r := parent_file_id FROM tb_disk_file WHERE disk_file_id = @r LIMIT 1 ) AS parent_file_id
+            FROM
+            ( SELECT @r := #{parentFileId} ) vars,
+            tb_disk_file
+            WHERE
+            @r IS NOT NULL
+            ) T
+            JOIN tb_disk_file df ON T.disk_file_id = df.disk_file_id
+            ))
         </if>
+
+
     </select>
 
 </mapper>

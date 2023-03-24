@@ -9,17 +9,13 @@ import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.BatchBo;
-import com.yefeng.netdisk.front.bo.BatchBodyBo;
 import com.yefeng.netdisk.front.bo.ShareBo;
 import com.yefeng.netdisk.front.entity.Disk;
-import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.Share;
-import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.mapStruct.mapper.ShareMapperStruct;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IDiskService;
 import com.yefeng.netdisk.front.service.IShareService;
-import com.yefeng.netdisk.front.vo.DiskFileVo;
 import com.yefeng.netdisk.front.vo.ListDataVo;
 import com.yefeng.netdisk.front.vo.ShareVo;
 import io.swagger.annotations.Api;
@@ -32,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,7 +71,7 @@ public class ShareController {
         PageInfo<Share> pageInfo = new PageInfo<>(shareList);
         List<ShareVo> collect = shareList.stream().map(share -> {
             ShareVo shareVo = ShareMapperStruct.INSTANCE.toVo(share);
-            shareVo.setShareUrl(webClientUrl + "/share/" + share.getId());
+            shareVo.setShareUrl(webClientUrl + "/sharelist/" + share.getId());
             return shareVo;
         }).collect(Collectors.toList());
 
