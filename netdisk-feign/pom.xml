@@ -19,6 +19,7 @@
     <modules>
         <module>netdisk-hdfs-feign-client</module>
         <module>netdisk-front-feign-client</module>
+        <module>netdisk-filestroage-feign-client</module>
     </modules>
 
 

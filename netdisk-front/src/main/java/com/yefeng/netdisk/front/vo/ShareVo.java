@@ -24,8 +24,10 @@ public class ShareVo implements Serializable {
     private String shareTitle;
 
     
-    private String sharePwd;
-    
+//    private String sharePwd;
+
+    private Boolean hasPwd;
+
     private String fullShareMsg;
 
     
@@ -66,12 +68,12 @@ public class ShareVo implements Serializable {
         this.shareTitle = shareTitle;
     }
 
-    public String getSharePwd() {
-        return sharePwd;
+    public Boolean getHasPwd() {
+        return hasPwd;
     }
 
-    public void setSharePwd(String sharePwd) {
-        this.sharePwd = sharePwd;
+    public void setHasPwd(Boolean hasPwd) {
+        this.hasPwd = hasPwd;
     }
 
     public String getFullShareMsg() {

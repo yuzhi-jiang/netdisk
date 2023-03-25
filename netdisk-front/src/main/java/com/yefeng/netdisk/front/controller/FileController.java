@@ -6,8 +6,10 @@ import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.yefeng.filestorage.feign.client.FileStroageClient;
 import com.yefeng.hdfs.feign.client.HdfsClient;
 import com.yefeng.netdisk.common.constans.FileTypeEnum;
 import com.yefeng.netdisk.common.request.RequestParams;
@@ -23,6 +25,7 @@ import com.yefeng.netdisk.front.entity.DiskFile;
 import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.entity.Share;
 import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
+import com.yefeng.netdisk.front.mapStruct.mapper.ShareMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskMapper;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IFileService;
@@ -31,6 +34,8 @@ import com.yefeng.netdisk.front.task.DiskCapacityTask;
 import com.yefeng.netdisk.front.util.*;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
 import com.yefeng.netdisk.front.vo.ListDataVo;
+import com.yefeng.netdisk.front.vo.MyFileInfoVo;
+import com.yefeng.netdisk.front.vo.ShareItemVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -44,10 +49,13 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
+
+;
 
 /**
  *
@@ -207,6 +215,9 @@ public class FileController {
     IFileService fileService;
     @Resource
     HdfsClient hdfsClient;
+
+    @Autowired
+    FileStroageClient fileStroageClient;
 
 
     public ApiResult<Object> createWithFolders(@RequestBody RequestParams params) {
@@ -428,7 +439,7 @@ public class FileController {
             //如果数据库有文件则获取文件信息，并标注快速上传
             File hasFile = fileService.getOne(new QueryWrapper<File>().eq("hash", contentHash));
             if (hasFile != null) {
-                diskFileId = hasFile.getFileId();
+//                diskFileId = hasFile.getFileId();
                 diskFile.setStatus(FileStatusEnum.invalid.getCode());//直接可用
                 diskFile.setFileId(hasFile.getId());
             }
@@ -441,9 +452,10 @@ public class FileController {
 
             if (hasFile != null) {
                 createFile.setRapidUpload(true);
+                createFile.setExist(true);
             } else {
                 createFile.setRapidUpload(false);
-
+                createFile.setExist(false);
                 String uploadId = RandomUtil.randomString(uploadIdSize);
 //                String finalFileId = RandomUtil.randomString(40);
                 String finalFileId = diskFileId;
@@ -467,6 +479,10 @@ public class FileController {
         return ResultUtil.fail();
     }
 
+
+
+
+
     /**
      * 上传文件块
      *
@@ -484,8 +500,10 @@ public class FileController {
             JWTUtil.validateToken(token);
             String contentHash = DigestUtil.sha1Hex(file.getBytes());
             System.out.println(contentHash);
-            Object[] payload = JWTUtil.getPayloadFromToken(token, "uploadId", "contentHash", "diskId");
-            if (payload == null || payload.length != 3) {
+            Object[] payload = JWTUtil.getPayloadFromToken(token, "uploadId", "contentHash", "diskId","fileId");
+            String diskId = (String) payload[2];
+            String diskFileId = (String) payload[3];
+            if (payload == null || payload.length != 4) {
                 return ResultUtil.failMsg("token 参数校验不通过");
             }
             if (contentHash != null && !contentHash.equals(payload[1])) {
@@ -511,11 +529,11 @@ public class FileController {
 
             ApiResult apiResult= null;
             try {
-
-                apiResult  = hdfsClient.uploadFile(hdfsBasePath, file);
+                 apiResult = fileStroageClient.uploadFile(file, null);
+//                apiResult  = hdfsClient.uploadFile(hdfsBasePath, file);
             }catch (Exception e){
                 //上传失败，删除,重新上传
-                String diskFileId = (String) payload[2];
+
                 diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_file_id",diskFileId));
             }
 
@@ -523,24 +541,38 @@ public class FileController {
                 return ResultUtil.failMsg("upload failed");
             }
 
+            List<LinkedHashMap<String,Object>> datas = (List<LinkedHashMap<String,Object>>) apiResult.getData();
+            if (datas.size() == 0) {
+                return ResultUtil.failMsg("upload failed");
+            }
+            LinkedHashMap<String,Object> map=  (LinkedHashMap<String,Object>)datas.get(0);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            MyFileInfoVo myFileInfoVo = objectMapper.convertValue(map, MyFileInfoVo.class);
+
 
             File file1 = new File();
-            file1.setPath(hdfsBasePath);
+//            file1.setPath(hdfsBasePath);
+            file1.setPath(myFileInfoVo.getUrl());
             file1.setOriginalName(file.getOriginalFilename());
             file1.setName(file1.getOriginalName());
             file1.setHash((String) payload[1]);
             file1.setLength(String.valueOf(file.getSize()));
 //            file1.setFileId(payload[2]);
-            file1.setFileId(RandomUtil.randomString(fileIdSize));
+
+//            file1.setFileId(RandomUtil.randomString(fileIdSize));
+            file1.setFileId(myFileInfoVo.getId());
 
             file1.setType((byte) FileTypeEnum.FILE.getCode());
             file1.setStatus(FileStatusEnum.upload.getCode());//文件上传了
 
 
             file1.setUploadId(uploadId);
-
-            boolean saved = fileService.save(file1);
-
+            DiskFile diskFile = new DiskFile();
+            diskFile.setDiskId(Long.valueOf(diskId));
+            diskFile.setDiskFileId(diskFileId);
+//            boolean saved = diskFileService.saveFile(file1,diskFile);
+            boolean saved =  fileService.save(file1);
 
             if (openRedis && saved) {
                 redisUtil.setObject(uploadKey, file1.getId());
@@ -548,7 +580,8 @@ public class FileController {
 
             JSONObject jsonObject = new JSONObject(apiResult.getData());
 
-            jsonObject.putOnce("file_id", file1.getId());
+            //diskFileId
+            jsonObject.putOnce("fileId", diskFileId);
             apiResult.setData(jsonObject);
 
             return apiResult;
@@ -713,7 +746,7 @@ public class FileController {
      * @return
      */
     @GetMapping("/listByShare")
-    public ApiResult<ListDataVo<ShareItemDto>> listByShare(@RequestParam("shareId") String shareId,
+    public ApiResult<ListDataVo<ShareItemVo>> listByShare(@RequestParam("shareId") String shareId,
                                                          @RequestParam(name = "parentFileId", defaultValue = "root") String parentFileId,
                                                          @RequestParam(name = "pageNum", defaultValue = "0") Integer pageNum, @RequestParam(name = "pageSize", defaultValue = "0") Integer pageSize) {
 
@@ -731,9 +764,10 @@ public class FileController {
         PageHelper.startPage(pageNum,pageSize);
         List<ShareItemDto> diskFiles = shareService.getFilesByShareId(shareId, parentFileId, pageNum, pageSize);
 
+        List<ShareItemVo> collect = diskFiles.stream().map(ShareMapperStruct.INSTANCE::itemDtotoVo).collect(Collectors.toList());
         PageInfo<ShareItemDto> pageInfo = new PageInfo<>(diskFiles);
 
-        ListDataVo<ShareItemDto> diskFileVoListDataVo = new ListDataVo<>(pageInfo.getList(), pageInfo.getTotal());
+        ListDataVo<ShareItemVo> diskFileVoListDataVo = new ListDataVo<>(collect, pageInfo.getTotal());
         return ResultUtil.success(diskFileVoListDataVo);
 
     }

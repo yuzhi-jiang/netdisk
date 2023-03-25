@@ -3,6 +3,7 @@ package com.yefeng.netdisk.front.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
+import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
 import org.apache.ibatis.annotations.Param;
@@ -18,6 +19,8 @@ import java.util.List;
  * @since 2023-01-15
  */
 public interface IDiskFileService extends IService<DiskFile> {
+
+    boolean saveFile(File file, DiskFile diskFile);
 
     List<DiskFileVo> getFileList(String diskId, String parentFileId, Byte status);
 
@@ -41,4 +44,5 @@ public interface IDiskFileService extends IService<DiskFile> {
     boolean moveFile(List<DiskFile> diskFiles);
 
     Long copyDiskFileBatch(@Param("shareId") String shareId, @Param("toDiskId") String toDiskId, @Param("toParentFileId") String toParentFileId, @Param("fileIdList") List<String> fileIdList);
+
 }

@@ -13,7 +13,7 @@ mycloud:
 
   upload:
     idSize: 32
-    tokenExpire: 600 #600 sec  is 10 minutes
+    tokenExpire: 72000 #600 sec  is 10 minutes
   download:
     urlExpireTime: 3600 #downloadUrltoken失效时间 默认10分钟600秒
 

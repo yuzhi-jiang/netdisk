@@ -1,10 +1,12 @@
 package com.yefeng.netdisk.front.controller;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.yefeng.netdisk.common.result.ApiResult;
+import com.yefeng.netdisk.common.result.HttpCodeEnum;
 import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
@@ -165,10 +167,11 @@ public class ShareController {
     @Resource
     IDiskService diskService;
 
-    //get_share_token
-    @ApiOperation("获取分享token")
-    @GetMapping("/getShareToken")
-    public ApiResult<String> getShareToken(@RequestParam("shareId") String shareId, @RequestParam("sharePwd") String sharePwd) {
+
+    @ApiOperation("获取分享文件信息")
+    @GetMapping("/info")
+    public ApiResult getShareInfo(@RequestParam("shareId") String shareId){
+        //根据shareId
         Share share = shareService.getOne(new QueryWrapper<Share>().eq("id", shareId));
         if (share == null) {
             return ResultUtil.failMsg("分享不存在");
@@ -176,10 +179,32 @@ public class ShareController {
         if (share.getIsValid().equals("0")) {
             return ResultUtil.failMsg("分享已失效");
         }
-        if (share.getExpiredTime().isBefore(LocalDateTime.now())) {
+        if (share.getExpiredTime()!=null&&share.getExpiredTime().isBefore(LocalDateTime.now())) {
             return ResultUtil.failMsg("分享已过期");
         }
-        if(sharePwd==null&& StringUtils.isNotBlank(share.getSharePwd())){
+        ShareVo shareVo = ShareMapperStruct.INSTANCE.toVo(share);
+        return ResultUtil.success(shareVo);
+
+    }
+
+    //get_share_token
+    @ApiOperation("获取分享token")
+    @GetMapping("/getShareToken")
+    public ApiResult getShareToken(@RequestParam("shareId") String shareId, @RequestParam(value = "sharePwd",defaultValue = "") String sharePwd) {
+        Share share = shareService.getOne(new QueryWrapper<Share>().eq("id", shareId));
+        if (StringUtils.isBlank(share.getSharePwd())) {
+            share.setSharePwd("");
+        }
+        if (share == null) {
+            return ResultUtil.failMsg("分享不存在");
+        }
+        if (share.getIsValid().equals("0")) {
+            return ResultUtil.failMsg("分享已失效");
+        }
+        if (share.getExpiredTime()!=null&&share.getExpiredTime().isBefore(LocalDateTime.now())) {
+            return ResultUtil.failMsg("分享已过期");
+        }
+        if(sharePwd.isBlank()&&StringUtils.isNotBlank(share.getSharePwd())){
             return ResultUtil.failMsg("分享需要密码");
         }
         if (!share.getSharePwd().equals(sharePwd)) {
@@ -191,15 +216,18 @@ public class ShareController {
             put("sharePwd", sharePwd);
             //当前时间+过期时间 token过期时间 并转秒
             put("exp", System.currentTimeMillis() / 1000 + shareTokenExpire);
-            put("diskId", share.getDiskId());
+            put("diskId", String.valueOf(share.getDiskId()));
             put("createUser", disk.getUserId());
         }}, shareTokenExpire);
-        return ResultUtil.success(token);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.putOnce("shareToken", token);
+
+        return ResultUtil.success(jsonObject);
     }
 
 
     @ApiOperation("文件转存")
-    @PostMapping("/save")
+    @PutMapping("/save")
     public ApiResult copy(@RequestHeader("shareToken")String token,@RequestBody BatchBo batchBo) {
 
         Assert.isBlank(token, "token不能为空");
@@ -213,11 +241,11 @@ public class ShareController {
         }
         //判断diskId shareId sharePwd是否正确
 //        if(shareId.equals(batchBo.getRequests()[0].getBody().getShareId())
-        if(!batchBo.getDiskId().equals(diskId)){
-            return ResultUtil.failMsg("转存目标磁盘错误");
-        }
+//        if(!batchBo.getDiskId().equals(diskId)){
+//            return ResultUtil.failMsg("转存目标磁盘错误");
+//        }
 
 
-        return ResultUtil.success("正在开发中");
+        return ResultUtil.custom(HttpCodeEnum.OK.getCode(),"转存成功");
     }
 }

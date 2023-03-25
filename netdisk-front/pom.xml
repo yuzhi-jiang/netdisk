@@ -38,6 +38,12 @@
             <artifactId>netdisk-hdfs-feign-client</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.yefeng</groupId>
+            <artifactId>netdisk-filestroage-feign-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+<!--            <scope>compile</scope>-->
+        </dependency>
 
 <!--        百度云 ocs 对象存储-->
         <dependency>
@@ -105,7 +111,6 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-
         </dependency>
 
         <!-- 注册中心 -->
@@ -191,6 +196,7 @@
             <artifactId>justauth-spring-boot-starter</artifactId>
             <version>1.4.0</version>
         </dependency>
+
 
     </dependencies>
 

@@ -16,8 +16,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @MapperScan("com.yefeng.netdisk.front.mapper")
 
 //@MapperScan("com.yefeng.netdisk")
-@SpringBootApplication(scanBasePackages ={"com.yefeng.netdisk","com.yefeng.hdfs.feign"})
-@EnableFeignClients(basePackages = {"com.yefeng.hdfs.feign"})
+@SpringBootApplication(scanBasePackages ={"com.yefeng.netdisk","com.yefeng.hdfs.feign","com.yefeng.filestorage.feign"})
+@EnableFeignClients(basePackages = {"com.yefeng.filestorage.feign","com.yefeng.hdfs.feign"})
 @EnableWebMvc
 @EnableAsync
 public class FrontApplication {

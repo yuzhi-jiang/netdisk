@@ -280,9 +280,10 @@ public class DiskFileController {
         }, downloadUrlExpireTime);
 
 
-        String downloadUrl = file.getPath() + "/" + file.getOriginalName();
+        String downloadUrl = file.getPath();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.putOnce("downloadUrl", downloadUrl);
+        jsonObject.putOnce("previewUrl", downloadUrl);
+        jsonObject.putOnce("fileId", file.getFileId());
         jsonObject.putOnce("downloadToken", downloadToken);
 
 

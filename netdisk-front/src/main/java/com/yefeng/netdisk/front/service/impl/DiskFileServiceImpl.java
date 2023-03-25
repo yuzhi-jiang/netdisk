@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.dto.DiskFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
+import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.mapStruct.mapper.DiskFileMapperStruct;
 import com.yefeng.netdisk.front.mapper.DiskFileMapper;
 import com.yefeng.netdisk.front.mapper.FileMapper;
@@ -145,6 +146,21 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     public Long copyDiskFileBatch(String shareId, String toDiskId, String toParentFileId, List<String> fileIdList) {
         return null;
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean saveFile(File file, DiskFile diskFile) {
+        //保存文件并更新diskFile的fileId
+        int count = fileMapper.insert(file);
+        if (count>0){
+            diskFile.setFileId(file.getId());
+            diskFile.setStatus(FileStatusEnum.valid.getCode());
+            count=baseMapper.update(diskFile,new QueryWrapper<DiskFile>().eq("disk_file_id",diskFile.getDiskFileId()).eq("disk_id",diskFile.getDiskId()));
+            return count>0;
+        }
+        return false;
+    }
+
     @Resource
     FileMapper fileMapper;
 
