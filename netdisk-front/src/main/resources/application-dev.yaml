@@ -69,7 +69,8 @@ spring:
       filters: stat,wall,1og4j
       max-pool-prepared-statement-per-connection-size: 20
       use-global-data-source-stat: true
-#    connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+  #    connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
   redis:
     database: 0
     host: 127.0.0.1

@@ -13,7 +13,7 @@
     </sql>
     <sql id="fileColumns">
         ${tf}.id,
-            ${tdf}.file_id,
+            ${tf}.file_id,
             original_name,
             `path`,
             length,
