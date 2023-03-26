@@ -1,7 +1,5 @@
 package com.yefeng.netdisk.front.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * This class is for
  *
@@ -28,7 +26,6 @@ public class ShareItemDto {
     public void setDiskId(String diskId) {
         this.diskId = diskId;
     }
-    @JsonProperty("fileId")
     public String getDiskFileId() {
         return diskFileId;
     }
@@ -100,4 +97,6 @@ public class ShareItemDto {
     public void setModifyTime(String modifyTime) {
         this.modifyTime = modifyTime;
     }
+
+
 }

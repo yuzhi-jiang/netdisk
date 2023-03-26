@@ -29,8 +29,7 @@ public interface ShareMapperStruct {
     ShareVo toVo(Share share);
     @Mappings({
             @Mapping(source = "type", target = "type",qualifiedByName = "mapType"),
-            @Mapping(source = "diskFileId", target = "fileId"),
-//            @Mapping(source = "sharePwd", target = "hasPwd",qualifiedByName = "mapHasPwd")
+            @Mapping(source = "diskFileId", target = "fileId")
     })
     ShareItemVo itemDtotoVo(ShareItemDto shareItemDto);
     @Named("mapHasPwd")
