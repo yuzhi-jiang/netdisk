@@ -3,7 +3,7 @@ server:
     context-path: /front
 spring:
   profiles:
-    active: local
+    active: dev
   jackson:
     serialization:
       fail-on-empty-beans: false
