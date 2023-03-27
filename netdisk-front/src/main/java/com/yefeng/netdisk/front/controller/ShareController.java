@@ -73,7 +73,7 @@ public class ShareController {
         PageInfo<Share> pageInfo = new PageInfo<>(shareList);
         List<ShareVo> collect = shareList.stream().map(share -> {
             ShareVo shareVo = ShareMapperStruct.INSTANCE.toVo(share);
-            shareVo.setShareUrl(webClientUrl + "/sharelist/" + share.getId());
+            shareVo.setShareUrl(webClientUrl.endsWith("/")?webClientUrl:(webClientUrl+"/")+ share.getId());
             return shareVo;
         }).collect(Collectors.toList());
 
