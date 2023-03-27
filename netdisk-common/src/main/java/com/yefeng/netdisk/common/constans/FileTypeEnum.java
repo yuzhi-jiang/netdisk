@@ -19,25 +19,28 @@ public enum FileTypeEnum {
     ;
 
     FileTypeEnum(int code, String value) {
+        this.code = (byte) code;
+        this.value = value;
+    }
+    FileTypeEnum(byte code, String value) {
         this.code = code;
         this.value = value;
     }
-
     /**
      * 类型代码
      */
-    private int code;
+    private byte code;
 
     /**
      * 类型名称
      */
     private String value;
 
-    public int getCode() {
+    public byte getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(byte code) {
         this.code = code;
     }
 
