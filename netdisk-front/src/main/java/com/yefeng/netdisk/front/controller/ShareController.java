@@ -18,6 +18,7 @@ import com.yefeng.netdisk.front.mapStruct.mapper.ShareMapperStruct;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IDiskService;
 import com.yefeng.netdisk.front.service.IShareService;
+import com.yefeng.netdisk.front.util.ShareStatusEnum;
 import com.yefeng.netdisk.front.vo.ListDataVo;
 import com.yefeng.netdisk.front.vo.ShareVo;
 import io.swagger.annotations.Api;
@@ -114,7 +115,7 @@ public class ShareController {
     public ApiResult<ShareVo> create(@RequestBody ShareBo shareBo) {
 
         shareBo.setExpiredTime(shareBo.getExpiredTime());
-        shareBo.setShareUrl(webClientUrl + "/share");
+        shareBo.setShareUrl(webClientUrl + "/sharelist");
         ShareVo shareVo = shareService.create(shareBo);
         return ResultUtil.success(shareVo);
     }
@@ -133,7 +134,7 @@ public class ShareController {
                             @RequestBody String[] shareIds) {
         UpdateWrapper<Share> wrapper = new UpdateWrapper<Share>().eq("disk_id", diskId)
                 .in("id", (Object[]) shareIds)
-                .set("is_valid", "0");
+                .set("is_valid", ShareStatusEnum.invalid.getCode());
 
         boolean update = shareService.update(wrapper);
         if (update) {

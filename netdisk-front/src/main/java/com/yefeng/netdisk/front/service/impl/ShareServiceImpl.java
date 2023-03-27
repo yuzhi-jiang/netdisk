@@ -2,6 +2,8 @@ package com.yefeng.netdisk.front.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yefeng.netdisk.common.constans.FileTypeEnum;
+import com.yefeng.netdisk.common.exception.CheckFailException;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.ShareBo;
 import com.yefeng.netdisk.front.dto.ShareItemDto;
@@ -13,6 +15,7 @@ import com.yefeng.netdisk.front.mapper.DiskFileMapper;
 import com.yefeng.netdisk.front.mapper.ShareItemMapper;
 import com.yefeng.netdisk.front.mapper.ShareMapper;
 import com.yefeng.netdisk.front.service.IShareService;
+import com.yefeng.netdisk.front.util.ShareStatusEnum;
 import com.yefeng.netdisk.front.vo.ShareVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -45,6 +49,10 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
         String firstFileId = shareBo.getFileIdList()[0];
 
         DiskFile diskFile = diskFileMapper.selectOne(new QueryWrapper<DiskFile>().eq("disk_file_id", firstFileId));
+        if(!diskFile.getDiskId().equals(diskId)){
+            throw new CheckFailException("文件不存在");
+        }
+
 
         Assert.isNull(diskFile, "文件不存在");
 
@@ -54,12 +62,30 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
         if (shareSize > 1) {
             shareTitle += "等" + shareSize + "个文件";
         }
-        share.setDiskId(diskId);
-        share.setIsValid((byte) 1);
-        share.setType((byte) 1);//默认为文件
+
         if (shareBo.getType() != null && (shareBo.getType() == 1 || shareBo.getType() == 2)) {
             share.setType(shareBo.getType());
         }
+        else{
+            share.setType(FileTypeEnum.FILE.getCode());//默认为文件
+            String[] fileIdList = shareBo.getFileIdList();
+            List<Map<String, Object>> maps = diskFileMapper.selectMaps(new QueryWrapper<DiskFile>().select("type").in("disk_file_id", fileIdList));
+            Long count=diskFileMapper.selectCount(new QueryWrapper<DiskFile>().eq("type",FileTypeEnum.FOLDER.getCode()).in("disk_file_id", fileIdList));
+            if(count>0){
+                share.setType(FileTypeEnum.FOLDER.getCode());
+            }
+//            for (Map<String, Object> map : maps) {
+//                if (map.get("type").equals(FileTypeEnum.FOLDER.getCode())) {
+//                    share.setType((byte) 2);
+//                    break;
+//                }
+//            }
+        }
+
+
+        share.setDiskId(diskId);
+        share.setIsValid(ShareStatusEnum.valid.getCode());
+
         share.setSharePwd(shareBo.getSharePwd());
         share.setShareTitle(shareTitle);
         share.setFullShareMsg(shareTitle);
