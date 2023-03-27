@@ -1,5 +1,6 @@
 package com.yefeng.netdisk.front.aspect;
 
+import com.yefeng.netdisk.common.exception.CheckFailException;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.HttpCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -75,5 +76,11 @@ public class FrontExceptionHandler {
         return new ApiResult(HttpCodeEnum.FAIL.getCode(),"请检查参数正确");
     }
 
+    @ExceptionHandler(value = {CheckFailException.class})
+    public ApiResult CheckFailException(CheckFailException ex){
+        log.error("Exception msg:{}",ex.getMessage());
+
+        return new ApiResult(HttpCodeEnum.NOT_FOUND.getCode(),ex.getMessage());
+    }
 
 }
