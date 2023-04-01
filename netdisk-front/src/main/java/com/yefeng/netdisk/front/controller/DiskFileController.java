@@ -284,6 +284,7 @@ public class DiskFileController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.putOnce("previewUrl", downloadUrl);
         jsonObject.putOnce("fileId", file.getFileId());
+        jsonObject.putOnce("fileName", file.getName());
         jsonObject.putOnce("downloadToken", downloadToken);
 
 

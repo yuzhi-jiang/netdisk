@@ -13,7 +13,6 @@ import com.yefeng.netdisk.common.util.CheckUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.common.validator.ValidatorUtils;
-import com.yefeng.netdisk.front.annotation.Page;
 import com.yefeng.netdisk.front.bo.LoginBo;
 import com.yefeng.netdisk.front.bo.RegisterBo;
 import com.yefeng.netdisk.front.bo.ResetPasswordBo;
@@ -39,7 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
@@ -81,95 +79,75 @@ public class UserController extends BaseController {
     @Resource
     HttpServletResponse response;
 
-    @ApiOperation("获取所有用户，仅供测试使用")
-    @GetMapping("/list")
-    @Page
-    public ApiResult<List<User>> getUserList(){
-//        PageHelper.startPage(0,10);
-        List<User> list = userService.list();
-//        PageInfo<User> page = new PageInfo<User>(list);
-
-        return ResultUtil.success(list);
-    }
-
-
     @ApiOperation(value = "用户登录,使用用户名/邮箱，或是手机号")
     @PostMapping("/login")
-    public ApiResult<UserVo> login(@RequestBody LoginBo loginBo,Integer type) {
-        //用户/邮箱密码
-        if (type == LoginEnum.ACCOUNT.getCode() || type == LoginEnum.MOBILE_PASS.getCode()) {
-            String account = loginBo.getAccount();
-            QueryWrapper<User> query = new QueryWrapper<User>();
+        public ApiResult<UserVo> login(@RequestBody LoginBo loginBo,Integer type) {
+            //用户/邮箱密码
+            if (type == LoginEnum.ACCOUNT.getCode() || type == LoginEnum.MOBILE_PASS.getCode()) {
+                String account = loginBo.getAccount();
+                QueryWrapper<User> query = new QueryWrapper<User>();
 
-            if (type == LoginEnum.MOBILE_PASS.getCode()) {
-                account = loginBo.getAccount();
-                query.eq("mobile", account);
-            } else {
-                    query.eq("username", account).or().eq("email", account);
-            }
-
-            User user = userService.getOne(query);
-
-            Assert.isNull(user, "用户不存在");
-
-            String password = loginBo.getPassword();
-            String password1 = user.getPassword();
-            log.info("加密密文为：{}", password1);
-            if (!BCrypt.checkpw(password, user.getPassword())) {
-                throw new BizException("用户账号或密码错误！");
-            }
-
-
-            UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
-
-
-            String token = CreateUserToken(user);
-
-            userVo.setToken(token);
-            //将userid设置到header中
-//            response.setHeader("userid", user.getId().toString());
-            return ResultUtil.success(userVo);
-        }
-        else if (type == LoginEnum.MOBILE_CAPTCHA.getCode()) {
-            String mobile =loginBo.getMobile();
-            String captcha =loginBo.getCaptcha();
-
-            // todo 检查 验证码
-            if (!captchaUtil.checkCaptcha(mobile, captcha)) {
-                throw new BizException("验证码错误请重试！");
-            }
-
-            QueryWrapper<User> query = new QueryWrapper<>();
-
-            query.eq("mobile", mobile);
-            User user = userService.getOne(query);
-
-            if (user == null && registerByMobileLogin) {
-                //自动注册
-                user = new User();
-                user.setMobile(mobile);
-                user.setSalt(BCrypt.gensalt());//获取盐
-                user.setStatus(UserStatusEnum.NORMAL);//手机号码登录直接就激活了
-                boolean flag = userService.registerUserAndInitDisk(user);
-                if (!flag) {
-                    throw new BizException("注册失败");
+                if (type == LoginEnum.MOBILE_PASS.getCode()) {
+                    account = loginBo.getAccount();
+                    query.eq("mobile", account);
+                } else {
+                        query.eq("username", account).or().eq("email", account);
                 }
+
+                User user = userService.getOne(query);
+
+                Assert.isNull(user, "用户不存在");
+
+                String password = loginBo.getPassword();
+                String password1 = user.getPassword();
+                log.info("加密密文为：{}", password1);
+                if (!BCrypt.checkpw(password, user.getPassword())) {
+                    throw new BizException("用户账号或密码错误！");
+                }
+
+                UserVo userVo = UserMapperStruct.INSTANCE.toDto(user);
+                String token = CreateUserToken(user);
+                userVo.setToken(token);
+                //将userid设置到header中
+    //            response.setHeader("userid", user.getId().toString());
+                return ResultUtil.success(userVo);
+            }
+            else if (type == LoginEnum.MOBILE_CAPTCHA.getCode()) {
+                String mobile =loginBo.getMobile();
+                String captcha =loginBo.getCaptcha();
+
+                // todo 检查 验证码
+                if (!captchaUtil.checkCaptcha(mobile, captcha)) {
+                    throw new BizException("验证码错误请重试！");
+                }
+
+                QueryWrapper<User> query = new QueryWrapper<>();
+
+                query.eq("mobile", mobile);
+                User user = userService.getOne(query);
+
+                if (user == null && registerByMobileLogin) {
+                    //自动注册
+                    user = new User();
+                    user.setMobile(mobile);
+                    user.setSalt(BCrypt.gensalt());//获取盐
+                    user.setStatus(UserStatusEnum.NORMAL);//手机号码登录直接就激活了
+                    boolean flag = userService.registerUserAndInitDisk(user);
+                    if (!flag) {
+                        throw new BizException("注册失败");
+                    }
+                }
+                user = userService.getOne(query);
+                Assert.isNull(user, "用户不存在");
+                UserVo userVo =UserMapperStruct.INSTANCE.toDto(user);
+                String token = CreateUserToken(user);
+                userVo.setToken(token);
+                return ResultUtil.success(userVo);
             }
 
-            user = userService.getOne(query);
-            Assert.isNull(user, "用户不存在");
-
-
-            UserVo userVo =UserMapperStruct.INSTANCE.toDto(user);
-
-            String token = CreateUserToken(user);
-            userVo.setToken(token);
-            return ResultUtil.success(userVo);
+            log.info("params is {}", loginBo);
+            throw new BizException("登录方式不正确");
         }
-
-        log.info("params is {}", loginBo);
-        throw new BizException("登录方式不正确");
-    }
 
 
 
