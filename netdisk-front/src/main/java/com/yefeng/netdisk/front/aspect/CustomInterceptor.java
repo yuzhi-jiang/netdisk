@@ -9,6 +9,7 @@ import com.yefeng.netdisk.front.annotation.UpdateTime;
 import com.yefeng.netdisk.front.entity.BaseEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.binding.MapperMethod;
+import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.Interceptor;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.Executor;
+
 
 /**
  * 自定义 Mybatis 插件，自动设置 createTime 和 updatTime 的值。
