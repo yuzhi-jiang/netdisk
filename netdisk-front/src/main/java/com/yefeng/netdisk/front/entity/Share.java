@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  */
 @TableName("tb_share")
 @ApiModel(value = "Share对象", description = "分享表")
-public class Share implements Serializable {
+public class Share extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,17 +48,6 @@ public class Share implements Serializable {
     @ApiModelProperty("分享的文件类型1.文件2文件夹（如果有多个，则有文件夹则优先文件夹）")
     private Byte type;
 
-    @ApiModelProperty("创建人")
-    private Long createUser;
-
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty("修改人")
-    private Long modifyUser;
-
-    @ApiModelProperty("修改时间")
-    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -123,38 +112,6 @@ public class Share implements Serializable {
         this.type = type;
     }
 
-    public Long getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(Long modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(LocalDateTime modifyTime) {
-        this.modifyTime = modifyTime;
-    }
-
     @Override
     public String toString() {
         return "Share{" +
@@ -166,10 +123,6 @@ public class Share implements Serializable {
             ", isValid = " + isValid +
             ", sharePwd = " + sharePwd +
             ", type = " + type +
-            ", createUser = " + createUser +
-            ", createTime = " + createTime +
-            ", modifyUser = " + modifyUser +
-            ", modifyTime = " + modifyTime +
         "}";
     }
 

@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -19,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @TableName("tb_share_item")
 @ApiModel(value = "Shareitem对象", description = "分享item表")
-public class ShareItem implements Serializable {
+public class ShareItem extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 112312323432414314L;
 
@@ -39,17 +38,7 @@ public class ShareItem implements Serializable {
     @ApiModelProperty("网盘id")
     private Long diskId;
 
-    @ApiModelProperty("创建人")
-    private Long createUser;
 
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty("修改人")
-    private Long modifyUser;
-
-    @ApiModelProperty("修改时间")
-    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -92,37 +81,6 @@ public class ShareItem implements Serializable {
         this.diskId = diskId;
     }
 
-    public Long getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(Long modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(LocalDateTime modifyTime) {
-        this.modifyTime = modifyTime;
-    }
 
     @Override
     public String toString() {
@@ -132,10 +90,6 @@ public class ShareItem implements Serializable {
                 ", shareId=" + shareId +
                 ", type=" + type +
                 ", diskId=" + diskId +
-                ", createUser=" + createUser +
-                ", createTime=" + createTime +
-                ", modifyUser=" + modifyUser +
-                ", modifyTime=" + modifyTime +
                 '}';
     }
 }

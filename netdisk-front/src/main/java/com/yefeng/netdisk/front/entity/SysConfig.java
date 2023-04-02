@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  */
 @TableName("sys_config")
 @ApiModel(value = "SysConfig对象", description = "系统配置信息表")
-public class SysConfig implements Serializable {
+public class SysConfig  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

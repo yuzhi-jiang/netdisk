@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  */
 @TableName("tb_disk_item")
 @ApiModel(value = "DiskItem对象", description = "")
-public class DiskItem implements Serializable {
+public class DiskItem extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,17 +50,6 @@ public class DiskItem implements Serializable {
     @ApiModelProperty("过期时间 -1为不过期，最低单位为天")
     private LocalDateTime expireTime;
 
-    @ApiModelProperty("创建人")
-    private Long createUser;
-
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty("修改人")
-    private Long modifyUser;
-
-    @ApiModelProperty("修改时间")
-    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -102,50 +91,5 @@ public class DiskItem implements Serializable {
         this.expireTime = expireTime;
     }
 
-    public Long getCreateUser() {
-        return createUser;
-    }
 
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(Long modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(LocalDateTime modifyTime) {
-        this.modifyTime = modifyTime;
-    }
-
-    @Override
-    public String toString() {
-        return "DiskItem{" +
-            "id = " + id +
-            ", diskId = " + diskId +
-            ", capaticyName = " + capaticyName +
-            ", capaticyValue = " + capaticyValue +
-            ", expireTime = " + expireTime +
-            ", createUser = " + createUser +
-            ", createTime = " + createTime +
-            ", modifyUser = " + modifyUser +
-            ", modifyTime = " + modifyTime +
-        "}";
-    }
 }

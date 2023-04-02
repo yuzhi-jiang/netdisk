@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -19,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @TableName("tb_disk_file")
 @ApiModel(value = "DiskFile对象", description = "")
-public class DiskFile implements Serializable {
+public class DiskFile extends BaseEntity  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,17 +45,7 @@ public class DiskFile implements Serializable {
     @ApiModelProperty("数据库文件id")
     private Long fileId;
 
-    @ApiModelProperty("创建人")
-    private Long createUser;
 
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty("修改人")
-    private Long modifyUser;
-
-    @ApiModelProperty("修改时间")
-    private LocalDateTime modifyTime;
 
     public Long getId() {
         return id;
@@ -122,53 +111,5 @@ public class DiskFile implements Serializable {
         this.fileId = fileId;
     }
 
-    public Long getCreateUser() {
-        return createUser;
-    }
 
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(Long modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(LocalDateTime modifyTime) {
-        this.modifyTime = modifyTime;
-    }
-
-    @Override
-    public String toString() {
-        return "DiskFile{" +
-            "id = " + id +
-            ", diskId = " + diskId +
-            ", diskFileId = " + diskFileId +
-            ", fileName = " + fileName +
-            ", parentFileId = " + parentFileId +
-            ", type = " + type +
-            ", status = " + status +
-            ", fileId = " + fileId +
-            ", createUser = " + createUser +
-            ", createTime = " + createTime +
-            ", modifyUser = " + modifyUser +
-            ", modifyTime = " + modifyTime +
-        "}";
-    }
 }
