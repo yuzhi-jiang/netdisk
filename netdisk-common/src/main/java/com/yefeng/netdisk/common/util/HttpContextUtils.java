@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class HttpContextUtils {
 
-	private static final String AUTHORIZATION_TOKEN = "token";
+	private static final String AUTHORIZATION_TOKEN = "Authorization";
 
 	public static HttpServletRequest getHttpServletRequest() {
 		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -15,6 +15,7 @@ public class HttpContextUtils {
 	public static String getTokenByHeader() {
 		HttpServletRequest request = getHttpServletRequest();
 		String rightToken = request.getHeader(AUTHORIZATION_TOKEN);
+		rightToken=rightToken.substring(rightToken.indexOf("6"));
 		JWTUtil.validateToken(rightToken);
 		return rightToken;
 	}
