@@ -1,6 +1,7 @@
 package com.yefeng.netdisk.front.aspect;
 
 import com.yefeng.netdisk.common.exception.CheckFailException;
+import com.yefeng.netdisk.common.exception.TokenException;
 import com.yefeng.netdisk.common.result.ApiResult;
 import com.yefeng.netdisk.common.result.HttpCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -74,6 +75,12 @@ public class FrontExceptionHandler {
         log.error("MissingServletRequestPartException msg:{}",ex.getMessage());
         ex.printStackTrace();
         return new ApiResult(HttpCodeEnum.FAIL.getCode(),"请检查参数正确");
+    }
+    @ExceptionHandler(value = {TokenException.class})
+    public ApiResult TokenException(Exception ex){
+        log.error("MissingServletRequestPartException msg:{}",ex.getMessage());
+        ex.printStackTrace();
+        return new ApiResult(HttpCodeEnum.TOKEN_ERR,ex.getMessage());
     }
 
     @ExceptionHandler(value = {CheckFailException.class})
