@@ -1,5 +1,8 @@
 package com.yefeng.netdisk.front.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.time.LocalDateTime;
@@ -12,7 +15,7 @@ import java.time.LocalDateTime;
  */
 public class BaseEntity {
     @ApiModelProperty("创建人")
-
+    @TableField(fill = FieldFill.INSERT)
     private Long createUser;
 
     @ApiModelProperty("创建时间")
@@ -20,11 +23,11 @@ public class BaseEntity {
     private LocalDateTime createTime;
 
     @ApiModelProperty("修改人")
-
+    @TableField(fill = FieldFill.UPDATE)
     private Long modifyUser;
 
     @ApiModelProperty("修改时间")
-
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime modifyTime;
 
 
