@@ -1,9 +1,5 @@
 package com.yefeng.netdisk.front.entity;
 
-import com.yefeng.netdisk.front.annotation.CreateBy;
-import com.yefeng.netdisk.front.annotation.CreateTime;
-import com.yefeng.netdisk.front.annotation.UpdateBy;
-import com.yefeng.netdisk.front.annotation.UpdateTime;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.time.LocalDateTime;
@@ -16,19 +12,19 @@ import java.time.LocalDateTime;
  */
 public class BaseEntity {
     @ApiModelProperty("创建人")
-    @CreateBy
+
     private Long createUser;
 
     @ApiModelProperty("创建时间")
-    @CreateTime
+
     private LocalDateTime createTime;
 
     @ApiModelProperty("修改人")
-    @UpdateBy
+
     private Long modifyUser;
 
     @ApiModelProperty("修改时间")
-    @UpdateTime
+
     private LocalDateTime modifyTime;
 
 
