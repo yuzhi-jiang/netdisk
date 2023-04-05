@@ -64,7 +64,7 @@
 
     <update id="updateStatus">
         update tb_disk_file tdf
-        set tdf.status=#{statusCode}
+        set tdf.status=#{statusCode},tdf.modify_time=now()
         where
         tdf.disk_file_id in
         <foreach collection="fileIds" separator="," open="(" close=")" item="item">
@@ -76,7 +76,7 @@
     <update id="moveFileBatch">
 
         <foreach collection="diskFiles" item="item" separator=";">
-            update tb_disk_file set parent_file_id =#{item.parentFileId} where disk_file_id=#{item.diskFileId}
+            update tb_disk_file set parent_file_id =#{item.parentFileId},modify_time=#{item.modifyTime} where disk_file_id=#{item.diskFileId}
         </foreach>
 
 

@@ -4,10 +4,10 @@
 
 
     <insert id="insertShareItems">
-        insert into tb_share_item (`file_id`,`share_id`,`type`,`disk_id`)
+        insert into tb_share_item (`file_id`,`share_id`,`type`,`disk_id`,create_time,modify_time)
         values
         <foreach collection="shareItems" item="item" index="index" separator=",">
-            (#{item.fileId},#{item.shareId},#{item.type},#{item.diskId})
+            (#{item.fileId},#{item.shareId},#{item.type},#{item.diskId}),#{createTime},#{modifyTime}
         </foreach>
     </insert>
     <select id="selectListByShareId" resultType="com.yefeng.netdisk.front.dto.ShareItemDto">

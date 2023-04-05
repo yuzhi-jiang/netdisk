@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,9 @@ public class ShareServiceImpl extends ServiceImpl<ShareMapper, Share> implements
             shareItem.setType(shareBo.getType());
             shareItem.setDiskId(Long.valueOf(shareBo.getDiskId()));
             shareItem.setShareId(share.getId());
-
+            LocalDateTime now = LocalDateTime.now();
+            shareItem.setCreateTime(now);
+            shareItem.setModifyTime(now);
             shareItems.add(shareItem);
         }
 

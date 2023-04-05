@@ -19,8 +19,9 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         System.out.println(metaObject.toString());
 //        log.info("start insert fill.....");
         // setFieldValByName(String fieldName, Object fieldVal, MetaObject
-        this.setFieldValByName("createTime", LocalDateTime.now(),metaObject);
-        this.setFieldValByName("modifyTime",LocalDateTime.now(),metaObject);
+        LocalDateTime now = LocalDateTime.now();
+        this.setFieldValByName("createTime", now,metaObject);
+        this.setFieldValByName("modifyTime",now,metaObject);
         String token = HttpContextUtils.getTokenByHeader();
         if(StringUtils.isNotBlank(token)){
             JWTUtil.validateToken(token);
@@ -28,8 +29,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
             //获取当前登录用户id
             Long createBy= Long.valueOf(subjectFromToken.toString());
-
-
             this.setFieldValByName("createUser",createBy,metaObject);
         }
     }

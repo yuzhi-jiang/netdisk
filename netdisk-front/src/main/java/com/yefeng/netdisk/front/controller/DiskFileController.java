@@ -39,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -218,7 +219,8 @@ public class DiskFileController {
             DiskFile diskFile = new DiskFile();
             diskFile.setDiskFileId(body.getFileId());
             diskFile.setParentFileId(body.getToParentFileId());
-           diskFile.setDiskId(Long.valueOf(body.getDiskId()));
+            diskFile.setDiskId(Long.valueOf(body.getDiskId()));
+            diskFile.setModifyTime(LocalDateTime.now());
            return diskFile;
         }).collect(Collectors.toList());
 
