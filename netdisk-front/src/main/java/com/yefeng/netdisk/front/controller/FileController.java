@@ -19,6 +19,7 @@ import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.FileBo;
+import com.yefeng.netdisk.front.bo.UploadParamsBo;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.dto.ShareItemDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
@@ -440,7 +441,7 @@ public class FileController {
             File hasFile = fileService.getOne(new QueryWrapper<File>().eq("hash", contentHash));
             if (hasFile != null) {
 //                diskFileId = hasFile.getFileId();
-                diskFile.setStatus(FileStatusEnum.invalid.getCode());//直接可用
+                diskFile.setStatus(FileStatusEnum.valid.getCode());//直接可用
                 diskFile.setFileId(hasFile.getId());
             }
 
