@@ -13,10 +13,15 @@ public class HttpContextUtils {
 		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 	}
 	public static String getTokenByHeader() {
-		HttpServletRequest request = getHttpServletRequest();
-		String rightToken = request.getHeader(AUTHORIZATION_TOKEN);
-		rightToken=rightToken.substring(6);
-		JWTUtil.validateToken(rightToken);
+		String rightToken = null;
+		try {
+			HttpServletRequest request = getHttpServletRequest();
+			rightToken = request.getHeader(AUTHORIZATION_TOKEN);
+			rightToken=rightToken.substring(6);
+			JWTUtil.validateToken(rightToken);
+		} catch (Exception e) {
+			rightToken="";
+		}
 		return rightToken;
 	}
 	public static String getHeader(String key) {
