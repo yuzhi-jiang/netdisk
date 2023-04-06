@@ -603,13 +603,13 @@ public class FileController {
     /**
      * 上传完成，请求合并
      *
-     * @param diskId
-     * @param diskFileId
-     * @param uploadId
      * @return
      */
     @PostMapping("/complete")
-    public ApiResult complete(@RequestParam("diskId") String diskId, @RequestParam("fileId") String diskFileId, @RequestParam("uploadId") String uploadId) {
+    public ApiResult complete(@RequestBody UploadParamsBo paramsBo) {
+        String uploadId=paramsBo.getUploadId();
+        String diskId=paramsBo.getDiskId();
+        String diskFileId=paramsBo.getFileId();
         Boolean flag = false;
         Long fileId = null;
         Long fileSize=0L;
