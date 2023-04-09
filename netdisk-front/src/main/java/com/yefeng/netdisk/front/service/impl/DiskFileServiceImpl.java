@@ -4,6 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yefeng.netdisk.common.util.FileNameUtil;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.dto.DiskFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
@@ -61,7 +62,6 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         }
 
 
-
         int count = baseMapper.insert(diskFile);
 
         CreateFileDto createFile = DiskFileMapperStruct.INSTANCE.toCreateFile(diskFile);
@@ -83,8 +83,6 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                     put("type", FileTypeContents.FILE.getCode());
                 }
             }));
-
-
         } else if (checkNameMode.equals(CheckNameModeEnum.auto_rename.getName())) {
             //可能需要重命名
             List<DiskFile> diskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>(4) {
@@ -95,12 +93,15 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                 }
             }).likeRight("file_name", diskFile.getFileName()));
 
-            String fileName=diskFile.getFileName();
-            int i=0;
+            String fileName = diskFile.getFileName();
+            String suffix = FileNameUtil.getSuffix(fileName);
+            String pureName = FileNameUtil.getPureFileNameByPath(fileName);
+            int i = 0;
             for (DiskFile file : diskFiles) {
                 i++;
-                if(!file.getFileName().equals(fileName+"("+i+")")){
-                    diskFile.setFileName(fileName+"("+i+")");
+                String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
+                if(!ansPureName.equals(pureName + "(" + i + ")")){
+                    diskFile.setFileName(pureName + "(" + i + ")"+"."+suffix);
                 }
             }
         }
@@ -120,26 +121,26 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
 
     @Override
     public boolean deleteFile(String diskId, List<String> fileIds) {
-       int count= baseMapper.deleteFile(diskId, fileIds);
-       return count>0;
+        int count = baseMapper.deleteFile(diskId, fileIds);
+        return count > 0;
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean updateStatus(String diskId, List<String> fileIds, FileStatusEnum status) {
 
-       int count= baseMapper.updateStatus(diskId,fileIds,status.getCode());
+        int count = baseMapper.updateStatus(diskId, fileIds, status.getCode());
 
 
-       return count>0;
+        return count > 0;
 
     }
 
     @Override
     public boolean moveFile(List<DiskFile> diskFiles) {
 
-        int count=baseMapper.moveFileBatch(diskFiles);
-        return count>0;
+        int count = baseMapper.moveFileBatch(diskFiles);
+        return count > 0;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -152,11 +153,11 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     public boolean saveFile(File file, DiskFile diskFile) {
         //保存文件并更新diskFile的fileId
         int count = fileMapper.insert(file);
-        if (count>0){
+        if (count > 0) {
             diskFile.setFileId(file.getId());
             diskFile.setStatus(FileStatusEnum.valid.getCode());
-            count=baseMapper.update(diskFile,new QueryWrapper<DiskFile>().eq("disk_file_id",diskFile.getDiskFileId()).eq("disk_id",diskFile.getDiskId()));
-            return count>0;
+            count = baseMapper.update(diskFile, new QueryWrapper<DiskFile>().eq("disk_file_id", diskFile.getDiskFileId()).eq("disk_id", diskFile.getDiskId()));
+            return count > 0;
         }
         return false;
     }
@@ -165,8 +166,8 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     FileMapper fileMapper;
 
     @Override
-    public List<DiskFileVo> getFileList(String diskId, String parentFileId,Byte status) {
-        List<DiskFileDto> fileList = baseMapper.getFileList(diskId, parentFileId,status);
+    public List<DiskFileVo> getFileList(String diskId, String parentFileId, Byte status) {
+        List<DiskFileDto> fileList = baseMapper.getFileList(diskId, parentFileId, status);
         List<DiskFileVo> collect = fileList.stream().map(DiskFileMapperStruct.INSTANCE::dtoToVo).collect(Collectors.toList());
         return collect;
     }
@@ -182,7 +183,7 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         int update = baseMapper.update(diskFile, new QueryWrapper<DiskFile>().eq("disk_id", diskId).eq("disk_file_id", diskFileId));
 
 
-        return update>0;
+        return update > 0;
 
 
     }
@@ -287,11 +288,11 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                 }
             }).likeRight("file_name", fileName));
 
-            int i=0;
+            int i = 0;
             for (DiskFile file : diskFiles) {
                 i++;
-                if(!file.getFileName().equals(fileName+"("+i+")")){
-                    diskFile.setFileName(fileName+"("+i+")");
+                if (!file.getFileName().equals(fileName + "(" + i + ")")) {
+                    diskFile.setFileName(fileName + "(" + i + ")");
                 }
             }
         }
