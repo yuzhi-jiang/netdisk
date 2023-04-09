@@ -14,6 +14,13 @@ public class FileNameUtil {
         return FileUtil.getName(path);
     }
 
+    public static String getPureFileNameByPath(String path) {
+        return FileUtil.mainName(path);
+    }
+    public static String getSuffix(String path) {
+        return FileUtil.extName(path);
+    }
+
     public static void main(String[] args) {
         String name = getFileNameByPath("/yefeng/20220920_200037.mp4");
         String name1 = getFileNameByPath(name);
@@ -29,7 +36,8 @@ public class FileNameUtil {
         String name = FileNameUtil.getFileNameByPath(fileName);
         return name;
     }
-    public static String getMimeType(MultipartFile file){
+
+    public static String getMimeType(MultipartFile file) {
         String name = getFileNameByPath(file);
         return FileUtil.getMimeType(name);
     }
