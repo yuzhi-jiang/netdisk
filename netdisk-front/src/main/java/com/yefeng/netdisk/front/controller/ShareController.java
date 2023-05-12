@@ -11,6 +11,7 @@ import com.yefeng.netdisk.common.result.ResultUtil;
 import com.yefeng.netdisk.common.util.JWTUtil;
 import com.yefeng.netdisk.common.validator.Assert;
 import com.yefeng.netdisk.front.bo.BatchBo;
+import com.yefeng.netdisk.front.bo.BatchRequestBo;
 import com.yefeng.netdisk.front.bo.ShareBo;
 import com.yefeng.netdisk.front.entity.Disk;
 import com.yefeng.netdisk.front.entity.Share;
@@ -18,6 +19,9 @@ import com.yefeng.netdisk.front.mapStruct.mapper.ShareMapperStruct;
 import com.yefeng.netdisk.front.service.IDiskFileService;
 import com.yefeng.netdisk.front.service.IDiskService;
 import com.yefeng.netdisk.front.service.IShareService;
+import com.yefeng.netdisk.front.task.DiskCapacityTask;
+import com.yefeng.netdisk.front.task.DiskFileCopyTask;
+import com.yefeng.netdisk.front.util.CapacityContents;
 import com.yefeng.netdisk.front.util.ShareStatusEnum;
 import com.yefeng.netdisk.front.vo.ListDataVo;
 import com.yefeng.netdisk.front.vo.ShareVo;
@@ -31,8 +35,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 
@@ -115,7 +122,7 @@ public class ShareController {
     public ApiResult<ShareVo> create(@RequestBody ShareBo shareBo) {
 
         shareBo.setExpiredTime(shareBo.getExpiredTime());
-        shareBo.setShareUrl(webClientUrl + "sharelist");
+        shareBo.setShareUrl(webClientUrl + "/#/shareList");
         ShareVo shareVo = shareService.create(shareBo);
         return ResultUtil.success(shareVo);
     }
@@ -225,7 +232,8 @@ public class ShareController {
 
         return ResultUtil.success(jsonObject);
     }
-
+    @Resource(name = "commonQueueThreadPool")
+    ExecutorService commonQueueThreadPool;
 
     @ApiOperation("文件转存")
     @PutMapping("/save")
@@ -245,8 +253,10 @@ public class ShareController {
 //        if(!batchBo.getDiskId().equals(diskId)){
 //            return ResultUtil.failMsg("转存目标磁盘错误");
 //        }
+        BatchRequestBo[] requests = batchBo.getRequests();
+        List<String> fileIds = Arrays.stream(requests).map(obj -> obj.getBody().getFileId()).collect(Collectors.toList());
+        Future submit = commonQueueThreadPool.submit(new DiskFileCopyTask(shareId, diskId, requests[0].getBody().getToParentFileId(), fileIds, diskFileService));
 
-
-        return ResultUtil.custom(HttpCodeEnum.OK.getCode(),"转存成功");
+        return ResultUtil.custom(HttpCodeEnum.OK.getCode(),"后台转存中");
     }
 }

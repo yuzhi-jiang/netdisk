@@ -1,6 +1,7 @@
 package com.yefeng.netdisk.front.task;
 
 import com.yefeng.netdisk.front.service.IDiskFileService;
+import com.yefeng.netdisk.front.util.CapacityContents;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -29,8 +30,8 @@ public class DiskFileCopyTask implements Callable {
     @Override
     public Object call() throws Exception {
 
-        Long count = diskFileService.copyDiskFileBatch(ShareId, toDiskId, toParentFileId, fileIdList);
+        Boolean batch = diskFileService.copyDiskFileBatch(ShareId, toDiskId, toParentFileId, fileIdList);
 
-        return count;
+        return batch;
     }
 }

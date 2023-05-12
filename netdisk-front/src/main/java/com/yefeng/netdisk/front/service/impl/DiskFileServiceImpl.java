@@ -17,6 +17,7 @@ import com.yefeng.netdisk.front.util.CheckNameModeEnum;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.util.FileTypeContents;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,10 +143,48 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         int count = baseMapper.moveFileBatch(diskFiles);
         return count > 0;
     }
-
+    @Value("${mycloud.fileIdSize}")
+    Integer fileIdSize;
     @Transactional(rollbackFor = Exception.class)
-    public Long copyDiskFileBatch(String shareId, String toDiskId, String toParentFileId, List<String> fileIdList) {
-        return null;
+    public Boolean copyDiskFileBatch(String shareId, String toDiskId, String toParentFileId, List<String> fileIdList) {
+        //查询出所有的文件
+        List<DiskFile> diskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().in("disk_file_id", fileIdList));
+
+//        List<DiskFile> diskFiles1 = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>() {
+//            {
+//                put("disk_id", toDiskId);
+////                put("file_name", diskFile.getFileName());
+//                put("parent_file_id", toParentFileId);
+////                put("type", FileTypeContents.FOLDER.getCode());
+//            }
+//        }));
+
+
+        diskFiles.forEach(diskFile -> {
+            String file_id = RandomUtil.randomString(fileIdSize);
+            diskFile.setId(null);
+            diskFile.setDiskFileId(file_id);
+            diskFile.setParentFileId(toParentFileId);
+            diskFile.setDiskId(Long.valueOf(toDiskId));
+
+
+//            String fileName = diskFile.getFileName();
+//            String suffix = FileNameUtil.getSuffix(fileName);
+//            String pureName = FileNameUtil.getPureFileNameByPath(fileName);
+//            int i = 0;
+//            for (DiskFile file : diskFiles1) {
+//                i++;
+//                String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
+//                if(!ansPureName.equals(pureName + "(" + i + ")")){
+//                    diskFile.setFileName(pureName + "(" + i + ")"+"."+suffix);
+//                }
+//            }
+
+        });
+
+        boolean flag = saveBatch(diskFiles);
+
+        return flag;
     }
 
     @Transactional(rollbackFor = Exception.class)
