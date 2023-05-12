@@ -5,6 +5,8 @@ import com.yefeng.netdisk.front.dto.DiskFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import org.apache.ibatis.annotations.Param;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +21,7 @@ public interface DiskFileMapper extends BaseMapper<DiskFile> {
 
     List<DiskFileDto> getFileList(@Param("diskId") String diskId, @Param("parentFileId") String parentFileId,@Param("status") Byte status);
     List<DiskFile> selectFilePathByDiskIDAndFileId(@Param("diskId") Long diskId,@Param("disk_file_id") String fileId);
+    List<DiskFile> selectAllSubDiskFile(@Param("diskId") Long diskId,@Param("diskFileIds") List<String> diskFileIds);
 
     int deleteFile(String diskId, List<String> fileIds);
 

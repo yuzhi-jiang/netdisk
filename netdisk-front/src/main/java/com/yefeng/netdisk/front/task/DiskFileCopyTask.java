@@ -12,14 +12,16 @@ public class DiskFileCopyTask implements Callable {
 
     String ShareId;
     String toDiskId;
+    String sourceDiskId;
     String toParentFileId;
     List<String> fileIdList;
 
     IDiskFileService diskFileService;
 
-    public DiskFileCopyTask(String shareId, String toDiskId, String toParentFileId, List<String> fileIdList, IDiskFileService diskFileService) {
-        ShareId = shareId;
+    public DiskFileCopyTask(String shareId,String sourceDiskId, String toDiskId, String toParentFileId, List<String> fileIdList, IDiskFileService diskFileService) {
+        this.ShareId = shareId;
         this.toDiskId = toDiskId;
+        this.sourceDiskId = sourceDiskId;
         this.toParentFileId = toParentFileId;
         this.fileIdList = fileIdList;
         this.diskFileService = diskFileService;
@@ -30,7 +32,7 @@ public class DiskFileCopyTask implements Callable {
     @Override
     public Object call() throws Exception {
 
-        Boolean batch = diskFileService.copyDiskFileBatch(ShareId, toDiskId, toParentFileId, fileIdList);
+        Boolean batch = diskFileService.copyDiskFileBatch(ShareId, sourceDiskId,toDiskId, toParentFileId, fileIdList);
 
         return batch;
     }

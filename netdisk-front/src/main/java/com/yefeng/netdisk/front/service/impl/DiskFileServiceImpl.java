@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -146,9 +147,12 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     @Value("${mycloud.fileIdSize}")
     Integer fileIdSize;
     @Transactional(rollbackFor = Exception.class)
-    public Boolean copyDiskFileBatch(String shareId, String toDiskId, String toParentFileId, List<String> fileIdList) {
+    public Boolean copyDiskFileBatch(String shareId,String sourceDiskId, String toDiskId, String toParentFileId, List<String> fileIdList) {
         //查询出所有的文件
-        List<DiskFile> diskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().in("disk_file_id", fileIdList));
+        List<DiskFile> diskFiles = diskFileMapper.selectAllSubDiskFile(Long.valueOf(sourceDiskId),fileIdList);
+        Map<String, List<DiskFile>> listMap = diskFiles.stream().collect(Collectors.groupingBy(DiskFile::getParentFileId));
+
+//        List<DiskFile> diskFiles = diskFileMapper.selectList(new QueryWrapper<DiskFile>().in("disk_file_id", fileIdList));
 
 //        List<DiskFile> diskFiles1 = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>() {
 //            {
@@ -163,8 +167,12 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         diskFiles.forEach(diskFile -> {
             String file_id = RandomUtil.randomString(fileIdSize);
             diskFile.setId(null);
-            diskFile.setDiskFileId(file_id);
-            diskFile.setParentFileId(toParentFileId);
+
+//            //子文件的父文件id不用改
+            if(fileIdList.contains(diskFile.getDiskFileId())){
+                diskFile.setParentFileId(toParentFileId);
+            }
+//            diskFile.setDiskFileId(file_id);
             diskFile.setDiskId(Long.valueOf(toDiskId));
 
 

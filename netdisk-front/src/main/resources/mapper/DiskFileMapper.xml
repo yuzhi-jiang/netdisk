@@ -43,6 +43,32 @@
                  JOIN tb_disk_file df ON T.disk_file_id = df.disk_file_id
         where disk_id = #{diskId}
     </select>
+
+    <select id="selectAllSubDiskFile" resultType="com.yefeng.netdisk.front.entity.DiskFile">
+        WITH RECURSIVE sub_files AS (
+            SELECT
+                df.*
+            FROM
+                tb_disk_file df
+            WHERE
+                1=1
+              and disk_id = #{diskId}
+              and disk_file_id in
+                <foreach collection="diskFileIds" item="diskfileid" open="(" separator="," close=")">
+                    #{diskfileid}
+                </foreach>
+            UNION ALL
+            SELECT
+                df.*
+            FROM
+                sub_files sf
+                    JOIN tb_disk_file df ON sf.disk_file_id = df.parent_file_id
+        )
+        SELECT
+            *
+        FROM
+            sub_files;
+    </select>
     <select id="getFileList" resultType="com.yefeng.netdisk.front.dto.DiskFileDto">
         select tdf.*,tf.length,tf.hash,tf.status
         from tb_disk_file as tdf

@@ -244,8 +244,8 @@ public class ShareController {
         HashMap<String, Object> hashMap = JWTUtil.getPayloadMapFromToken(token, "shareId", "sharePwd", "exp", "diskId");
         String shareId = (String) hashMap.get("shareId");
         String sharePwd = (String) hashMap.get("sharePwd");
-        String diskId = (String) hashMap.get("diskId");
-        if (shareId == null || sharePwd == null || diskId == null) {
+        String sourceDiskId = (String) hashMap.get("diskId");
+        if (shareId == null || sharePwd == null || sourceDiskId == null) {
             return ResultUtil.failMsg("token错误");
         }
         //判断diskId shareId sharePwd是否正确
@@ -255,7 +255,7 @@ public class ShareController {
 //        }
         BatchRequestBo[] requests = batchBo.getRequests();
         List<String> fileIds = Arrays.stream(requests).map(obj -> obj.getBody().getFileId()).collect(Collectors.toList());
-        Future submit = commonQueueThreadPool.submit(new DiskFileCopyTask(shareId, diskId, requests[0].getBody().getToParentFileId(), fileIds, diskFileService));
+        Future submit = commonQueueThreadPool.submit(new DiskFileCopyTask(shareId,requests[0].getBody().getDiskId(), sourceDiskId, requests[0].getBody().getToParentFileId(), fileIds, diskFileService));
 
         return ResultUtil.custom(HttpCodeEnum.OK.getCode(),"后台转存中");
     }

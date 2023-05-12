@@ -43,6 +43,6 @@ public interface IDiskFileService extends IService<DiskFile> {
 
     boolean moveFile(List<DiskFile> diskFiles);
 
-    Boolean copyDiskFileBatch(@Param("shareId") String shareId, @Param("toDiskId") String toDiskId, @Param("toParentFileId") String toParentFileId, @Param("fileIdList") List<String> fileIdList);
+    Boolean copyDiskFileBatch(String shareId,String sourceDiskId,String toDiskId, String toParentFileId, List<String> fileIdList);
 
 }
