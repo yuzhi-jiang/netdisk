@@ -32,7 +32,7 @@ spring:
 #    url: jdbc:mysql://146.56.96.241:3306/netdisk?serverTimezone=UTC  #24g
     username: root
     password: xxxx
-#    password: xxxxx
+#    password: xxxxxx
     # 指定类型为我们自己的
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
@@ -72,9 +72,9 @@ spring:
   #    connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
   redis:
     database: 0
-    host: 146.56.116.51
+    host: 127.0.0.1
     port: 6379
-    password: xxxx
+    password: xxxxxxx
 feign:
   okhttp:
     enabled: true
@@ -101,10 +101,10 @@ justauth:
   enabled: true
   type:
     GITHUB:
-      #      client-id: a4bad19c0484ac324762
-      #      client-secret: fa016f426e037f944549b86a13576a0ed036f555
+      #      client-id: xxxxxx
+      #      client-secret: xxxxxx
       client-id: 4b8985aeb5441b4ce940
-      client-secret: f2759b3fe59c8f6f09fb493595bf6d4b12168e4e
+      client-secret: xxxx
       redirect-uri: http://192.168.196.80:8082/front/oauth/github/callback
   http-config:
     timeout: 30000

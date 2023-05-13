@@ -134,7 +134,7 @@ public class FileController {
     @PostMapping("/search")
     public ApiResult<List<DiskFileVo>> search(@RequestParam("diskId") String diskId,
                             @RequestParam("query") String query,
-                            @RequestParam(value = "orderBy", required = false) String orderBy,
+                            @RequestParam(value = "orderBy", required = false,defaultValue = "file_name asc") String orderBy,
                             @RequestParam(value = "limit", defaultValue = "20") Integer limit
     ) {
 
