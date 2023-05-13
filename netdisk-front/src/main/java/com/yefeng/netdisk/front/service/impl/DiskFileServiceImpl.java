@@ -147,21 +147,21 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     @Value("${mycloud.fileIdSize}")
     Integer fileIdSize;
     @Transactional(rollbackFor = Exception.class)
-    public Boolean copyDiskFileBatch(String shareId,String sourceDiskId, String toDiskId, String toParentFileId, List<String> fileIdList) {
+    public Boolean copyDiskFileBatch(String sourceDiskId, String toDiskId, String toParentFileId, List<String> fileIdList) {
         //查询出所有的文件
         List<DiskFile> diskFiles = diskFileMapper.selectAllSubDiskFile(Long.valueOf(sourceDiskId),fileIdList);
         Map<String, List<DiskFile>> listMap = diskFiles.stream().collect(Collectors.groupingBy(DiskFile::getParentFileId));
 
-//        List<DiskFile> diskFiles = diskFileMapper.selectList(new QueryWrapper<DiskFile>().in("disk_file_id", fileIdList));
+//        List<DiskFile> sourceDiskFiles = diskFileMapper.selectList(new QueryWrapper<DiskFile>().in("disk_file_id", fileIdList));
 
-//        List<DiskFile> diskFiles1 = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>() {
-//            {
-//                put("disk_id", toDiskId);
-////                put("file_name", diskFile.getFileName());
-//                put("parent_file_id", toParentFileId);
-////                put("type", FileTypeContents.FOLDER.getCode());
-//            }
-//        }));
+        List<DiskFile> toDiskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>() {
+            {
+                put("disk_id", toDiskId);
+//                put("file_name", diskFile.getFileName());
+                put("parent_file_id", toParentFileId);
+//                put("type", FileTypeContents.FOLDER.getCode());
+            }
+        }));
 
 
         diskFiles.forEach(diskFile -> {
@@ -172,8 +172,32 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
             if(fileIdList.contains(diskFile.getDiskFileId())){
                 diskFile.setParentFileId(toParentFileId);
             }
-//            diskFile.setDiskFileId(file_id);
+
+            //这个文件夹下的所有文件都要改parentFileId
+            List<DiskFile> diskFiles1 = listMap.get(diskFile.getDiskFileId());
+            if(diskFiles1!=null){
+                diskFiles1.forEach(diskFile2 -> {
+                    diskFile2.setParentFileId(file_id);
+                });
+            }
+
             diskFile.setDiskId(Long.valueOf(toDiskId));
+
+            if(fileIdList.contains(diskFile.getDiskFileId())){
+                String fileName = diskFile.getFileName();
+                String suffix = FileNameUtil.getSuffix(fileName);
+                String pureName = FileNameUtil.getPureFileNameByPath(fileName);
+                int i = 0;
+                for (DiskFile file : toDiskFiles) {
+                    i++;
+                    String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
+                    if (!ansPureName.equals(pureName + "(" + i + ")")) {
+                        diskFile.setFileName(pureName + "(" + i + ")" + "." + suffix);
+                    }
+                }
+            }
+
+            diskFile.setDiskFileId(file_id);
 
 
 //            String fileName = diskFile.getFileName();

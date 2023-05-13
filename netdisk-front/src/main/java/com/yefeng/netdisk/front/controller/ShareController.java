@@ -76,16 +76,13 @@ public class ShareController {
     public ApiResult<ListDataVo<ShareVo>> listShare(@RequestParam("diskId") String diskId, @RequestParam(defaultValue = "0", name = "page") @Min(value = 1, message = "分页最小从1开始") Integer page,
                                                     @RequestParam(defaultValue = "20", name = "pageSize") Integer pageSize) {
         PageHelper.startPage(page, pageSize);
-        List<Share> shareList = shareService.list(new QueryWrapper<Share>()
-                .eq("disk_id", diskId).eq("is_valid", "1"));
+        List<Share> shareList = shareService.list(new QueryWrapper<Share>().eq("disk_id", diskId).eq("is_valid", "1"));
         PageInfo<Share> pageInfo = new PageInfo<>(shareList);
         List<ShareVo> collect = shareList.stream().map(share -> {
             ShareVo shareVo = ShareMapperStruct.INSTANCE.toVo(share);
             shareVo.setShareUrl((webClientUrl.endsWith("/")?webClientUrl:(webClientUrl+"/"))+ share.getId());
             return shareVo;
         }).collect(Collectors.toList());
-
-
         return ResultUtil.success(new ListDataVo<>(collect, pageInfo.getTotal()));
     }
 
@@ -255,7 +252,7 @@ public class ShareController {
 //        }
         BatchRequestBo[] requests = batchBo.getRequests();
         List<String> fileIds = Arrays.stream(requests).map(obj -> obj.getBody().getFileId()).collect(Collectors.toList());
-        Future submit = commonQueueThreadPool.submit(new DiskFileCopyTask(shareId,requests[0].getBody().getDiskId(), sourceDiskId, requests[0].getBody().getToParentFileId(), fileIds, diskFileService));
+        Future submit = commonQueueThreadPool.submit(new DiskFileCopyTask(requests[0].getBody().getDiskId(), sourceDiskId, requests[0].getBody().getToParentFileId(), fileIds, diskFileService));
 
         return ResultUtil.custom(HttpCodeEnum.OK.getCode(),"后台转存中");
     }
