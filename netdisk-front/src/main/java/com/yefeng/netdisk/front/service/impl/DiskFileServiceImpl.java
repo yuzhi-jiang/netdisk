@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -182,35 +183,29 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
             }
 
             diskFile.setDiskId(Long.valueOf(toDiskId));
-
+            String fileName = diskFile.getFileName();
             if(fileIdList.contains(diskFile.getDiskFileId())){
-                String fileName = diskFile.getFileName();
-                String suffix = FileNameUtil.getSuffix(fileName);
-                String pureName = FileNameUtil.getPureFileNameByPath(fileName);
-                int i = 0;
-                for (DiskFile file : toDiskFiles) {
-                    i++;
-                    String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
-                    if (!ansPureName.equals(pureName + "(" + i + ")")) {
-                        diskFile.setFileName(pureName + "(" + i + ")" + "." + suffix);
+                boolean match = toDiskFiles.stream().anyMatch(obj -> obj.getFileName().equals(fileName));
+                if(match){
+                    //有重名的
+                    String suffix = FileNameUtil.getSuffix(fileName);
+                    String pureName = FileNameUtil.getPureFileNameByPath(fileName);
+                    int i = 0;
+                    List<DiskFile> someNameDiskFile = toDiskFiles.stream().filter(obj -> obj.getFileName().equals(fileName)).collect(Collectors.toList());
+                    for (DiskFile file : someNameDiskFile) {
+//                        //当前文件是否和目标文件夹下的文件重名
+//                        if(!file.equals(fileName)){
+//                            continue;
+//                        }
+                        i++;
+                        String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
+                        if (!ansPureName.equals(pureName + "(" + i + ")")) {
+                            diskFile.setFileName(pureName + "(" + i + ")" + "." + suffix);
+                        }
                     }
                 }
             }
-
             diskFile.setDiskFileId(file_id);
-
-
-//            String fileName = diskFile.getFileName();
-//            String suffix = FileNameUtil.getSuffix(fileName);
-//            String pureName = FileNameUtil.getPureFileNameByPath(fileName);
-//            int i = 0;
-//            for (DiskFile file : diskFiles1) {
-//                i++;
-//                String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
-//                if(!ansPureName.equals(pureName + "(" + i + ")")){
-//                    diskFile.setFileName(pureName + "(" + i + ")"+"."+suffix);
-//                }
-//            }
 
         });
 
