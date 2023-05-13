@@ -47,9 +47,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 /**
- *
  * 云盘文件
- *
  *
  * @author yefeng
  * @since 2023-01-15
@@ -82,7 +80,7 @@ public class DiskFileController {
 
     //todo 根据路径获取文件列表
 
-//    public ApiResult<List<DiskFileVo>> list(@RequestParam("diskId") String diskId,
+    //    public ApiResult<List<DiskFileVo>> list(@RequestParam("diskId") String diskId,
 //                          @RequestParam(name = "parentFileId", defaultValue = "root")
 //                          String parentFileId,
 //                          @RequestParam(name = "page",defaultValue = "1")
@@ -92,36 +90,30 @@ public class DiskFileController {
 //    )
     @ApiOperation("获取云盘文件列表")
     @GetMapping("/list")
-    public ApiResult<ListDataVo<DiskFileVo>> list( FileParamBo fileParamBo){
-        PageHelper.startPage(fileParamBo.getPageNum(),fileParamBo.getPageSize());
-        List<DiskFileVo> fileVoList = diskFileService.getFileList(fileParamBo.getDiskId(), fileParamBo.getParentFileId(), FileStatusEnum.valid.getCode());
-
-        log.info("Disk file list:{}", fileVoList);
-
-
-
+    public ApiResult<ListDataVo<DiskFileVo>> list(FileParamBo fileParamBo) {
+        PageHelper.startPage(fileParamBo.getPageNum(), fileParamBo.getPageSize());
+        List<DiskFileVo> fileVoList = diskFileService.getFileList(fileParamBo.getDiskId(),
+                fileParamBo.getParentFileId(), FileStatusEnum.valid.getCode());
 
         PageInfo<DiskFileVo> page = new PageInfo<DiskFileVo>(fileVoList);
-
-        System.out.println(page);
-        return ResultUtil.success(new ListDataVo<DiskFileVo>(page.getList(),page.getTotal()));
-
-
+        return ResultUtil.success(new ListDataVo<DiskFileVo>(page.getList(), page.getTotal()));
     }
 
 
     /**
      * 获取文件夹路径
+     *
      * @param deskId
      * @param fileId
      * @return
      */
     @ApiOperation("获取文件夹路径")
     @GetMapping("/getPath")
-    public List<DiskFileVo> getPath(@RequestParam("diskId") String deskId,@RequestParam("fileId") String fileId){
-            List<DiskFileVo> paths= diskFileService.getPath(deskId,fileId);
-            return paths;
+    public List<DiskFileVo> getPath(@RequestParam("diskId") String deskId, @RequestParam("fileId") String fileId) {
+        List<DiskFileVo> paths = diskFileService.getPath(deskId, fileId);
+        return paths;
     }
+
     @Resource
     DiskMapper diskMapper;
 
@@ -209,27 +201,47 @@ public class DiskFileController {
     }
 
 
-
-
     @ApiOperation("文件移动")
     @PutMapping("/move")
-    public ApiResult<List<DiskFileVo>> move(@RequestBody BatchBo batchBo){
-        List<DiskFile> bodyBos = Arrays.stream(batchBo.getRequests()).map(request->{
+    public ApiResult<List<DiskFileVo>> move(@RequestBody BatchBo batchBo) {
+        List<DiskFile> bodyBos = Arrays.stream(batchBo.getRequests()).map(request -> {
             BatchBodyBo body = request.getBody();
             DiskFile diskFile = new DiskFile();
             diskFile.setDiskFileId(body.getFileId());
             diskFile.setParentFileId(body.getToParentFileId());
             diskFile.setDiskId(Long.valueOf(body.getDiskId()));
             diskFile.setModifyTime(LocalDateTime.now());
-           return diskFile;
+            return diskFile;
         }).collect(Collectors.toList());
 
         boolean flag = diskFileService.moveFile(bodyBos);
-        if(flag){
+        if (flag) {
             List<DiskFileVo> collect = bodyBos.stream().map(DiskFileMapperStruct.INSTANCE::toDto).collect(Collectors.toList());
             return ResultUtil.success(collect);
         }
         return ResultUtil.fail();
+    }
+    @ApiOperation("文件复制")
+    @PutMapping("/copy")
+    public Boolean copy(@RequestBody BatchBo batchBo) {
+//        List<DiskFile> bodyBos = Arrays.stream(batchBo.getRequests()).map(request -> {
+//            BatchBodyBo body = request.getBody();
+//            DiskFile diskFile = new DiskFile();
+//            diskFile.setDiskFileId(body.getFileId());
+//            diskFile.setParentFileId(body.getToParentFileId());
+//            diskFile.setDiskId(Long.valueOf(body.getDiskId()));
+//            diskFile.setModifyTime(LocalDateTime.now());
+//            return diskFile;
+//        }).collect(Collectors.toList());
+        String toParentFileId = batchBo.getRequests()[0].getBody().getToParentFileId();
+        String diskId = batchBo.getRequests()[0].getBody().getDiskId();
+        List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(request -> {
+            String diskFileId = request.getBody().getFileId();
+            return diskFileId;
+        }).collect(Collectors.toList());
+        boolean flag = diskFileService.copyDiskFileBatch(diskId,diskId,toParentFileId,fileIds);
+
+        return flag;
     }
 
     //修改文件名称
@@ -269,7 +281,6 @@ public class DiskFileController {
         //todo 获取文件下载地址  ?拼接token,过期时间等验证参数
         File file = fileService.getFileWithDiskIdAndFileId(diskId, fileId);
         Assert.isNull(file, "没有该文件");
-
 
 
         String downloadToken = JWTUtil.createToken(new HashMap<>() {
