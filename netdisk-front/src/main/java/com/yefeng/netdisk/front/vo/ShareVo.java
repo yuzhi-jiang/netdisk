@@ -24,7 +24,7 @@ public class ShareVo implements Serializable {
     private String shareTitle;
 
     
-//    private String sharePwd;
+    private String sharePwd;
 
     private Boolean hasPwd;
 
@@ -43,6 +43,14 @@ public class ShareVo implements Serializable {
     @ApiModelProperty("分享的文件类型1（file）.文件2文件夹（如果有多个，则有文件夹则优先文件夹）")
      String type;
 
+
+    public String getSharePwd() {
+        return sharePwd;
+    }
+
+    public void setSharePwd(String sharePwd) {
+        this.sharePwd = sharePwd;
+    }
 
     public String getId() {
         return id;
