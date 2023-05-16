@@ -254,7 +254,7 @@ public class ShareController {
 //        }
         BatchRequestBo[] requests = batchBo.getRequests();
         List<String> fileIds = Arrays.stream(requests).map(obj -> obj.getBody().getFileId()).collect(Collectors.toList());
-        Future submit = commonQueueThreadPool.submit(new DiskFileCopyTask(requests[0].getBody().getDiskId(), sourceDiskId, requests[0].getBody().getToParentFileId(), fileIds, diskFileService));
+        Future submit = commonQueueThreadPool.submit(new DiskFileCopyTask( sourceDiskId,requests[0].getBody().getDiskId(), requests[0].getBody().getToParentFileId(), fileIds, diskFileService));
 
         return ResultUtil.custom(HttpCodeEnum.OK.getCode(),"后台转存中");
     }
