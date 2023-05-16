@@ -19,7 +19,7 @@ import java.util.List;
  */
 public interface DiskFileMapper extends BaseMapper<DiskFile> {
 
-    List<DiskFileDto> getFileList(@Param("diskId") String diskId, @Param("parentFileId") String parentFileId,@Param("status") Byte status);
+    List<DiskFileDto> getFileList(@Param("diskId") String diskId, @Param("parentFileId") String parentFileId,@Param("status") Byte status,@Param("search") String search);
     List<DiskFile> selectFilePathByDiskIDAndFileId(@Param("diskId") Long diskId,@Param("disk_file_id") String fileId);
     List<DiskFile> selectAllSubDiskFile(@Param("diskId") Long diskId,@Param("diskFileIds") List<String> diskFileIds);
 

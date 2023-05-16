@@ -93,11 +93,12 @@ public class DiskFileController {
     public ApiResult<ListDataVo<DiskFileVo>> list(FileParamBo fileParamBo) {
         PageHelper.startPage(fileParamBo.getPageNum(), fileParamBo.getPageSize());
         List<DiskFileVo> fileVoList = diskFileService.getFileList(fileParamBo.getDiskId(),
-                fileParamBo.getParentFileId(), FileStatusEnum.valid.getCode());
+                fileParamBo.getParentFileId(), FileStatusEnum.valid.getCode(),fileParamBo.getSearch());
 
         PageInfo<DiskFileVo> page = new PageInfo<DiskFileVo>(fileVoList);
         return ResultUtil.success(new ListDataVo<DiskFileVo>(page.getList(), page.getTotal()));
     }
+
 
 
     /**

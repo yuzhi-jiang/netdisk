@@ -22,7 +22,7 @@ public interface IDiskFileService extends IService<DiskFile> {
 
     boolean saveFile(File file, DiskFile diskFile);
 
-    List<DiskFileVo> getFileList(String diskId, String parentFileId, Byte status);
+    List<DiskFileVo> getFileList(String diskId, String parentFileId, Byte status,String search);
 
     boolean saveWithFileId(String diskId, String diskFileId, Long fileId);
 

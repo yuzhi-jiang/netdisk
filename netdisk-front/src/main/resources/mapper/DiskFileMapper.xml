@@ -74,7 +74,9 @@
         from tb_disk_file as tdf
                  left join tb_file tf on tf.id=tdf.file_id
         where tdf.disk_id = #{diskId} and tdf.parent_file_id=#{parentFileId} and tdf.status=#{status}
-
+        <if test="search!=null and search !=''">
+            and tdf.file_name like concat('%',#{search},'%')
+        </if>
     </select>
 
     <update id="deleteFile">

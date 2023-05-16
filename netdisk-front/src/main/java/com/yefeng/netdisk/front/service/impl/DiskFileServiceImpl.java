@@ -232,8 +232,8 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     FileMapper fileMapper;
 
     @Override
-    public List<DiskFileVo> getFileList(String diskId, String parentFileId, Byte status) {
-        List<DiskFileDto> fileList = baseMapper.getFileList(diskId, parentFileId, status);
+    public List<DiskFileVo> getFileList(String diskId, String parentFileId, Byte status,String search) {
+        List<DiskFileDto> fileList = baseMapper.getFileList(diskId, parentFileId, status,search);
         List<DiskFileVo> collect = fileList.stream().map(DiskFileMapperStruct.INSTANCE::dtoToVo).collect(Collectors.toList());
         return collect;
     }
