@@ -3,6 +3,7 @@ package com.yefeng.netdisk.front.controller;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qcloud.cos.utils.Md5Utils;
@@ -92,11 +93,19 @@ public class DiskFileController {
     @GetMapping("/list")
     public ApiResult<ListDataVo<DiskFileVo>> list(FileParamBo fileParamBo) {
         PageHelper.startPage(fileParamBo.getPageNum(), fileParamBo.getPageSize());
+        long total = PageHelper.count(new ISelect() {
+            @Override
+            public void doSelect() {
+//                diskFileService.getFileListCount(fileParamBo.getDiskId(),
+//                        fileParamBo.getParentFileId(), FileStatusEnum.valid.getCode(),fileParamBo.getSearch());
+                diskFileService.getFileList(fileParamBo.getDiskId(),
+                        fileParamBo.getParentFileId(), FileStatusEnum.valid.getCode(),fileParamBo.getSearch());
+            }
+        });
         List<DiskFileVo> fileVoList = diskFileService.getFileList(fileParamBo.getDiskId(),
                 fileParamBo.getParentFileId(), FileStatusEnum.valid.getCode(),fileParamBo.getSearch());
-
         PageInfo<DiskFileVo> page = new PageInfo<DiskFileVo>(fileVoList);
-        return ResultUtil.success(new ListDataVo<DiskFileVo>(page.getList(), page.getTotal()));
+        return ResultUtil.success(new ListDataVo<DiskFileVo>(page.getList(), total));
     }
 
 
