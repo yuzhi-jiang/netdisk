@@ -112,7 +112,7 @@ public class FileController {
     public ApiResult<String> getFileHash(@ApiParam(name = "file", required = true) @RequestPart("file")
                                  MultipartFile file) {
         try {
-            String contentHash = DigestUtil.sha1Hex(file.getBytes());
+            String contentHash = DigestUtil.sha256Hex(file.getBytes());
             return ResultUtil.success(contentHash);
         } catch (IOException e) {
             e.printStackTrace();
@@ -499,7 +499,7 @@ public class FileController {
         try {
             System.out.println("you have uploaded");
             JWTUtil.validateToken(token);
-            String contentHash = DigestUtil.sha1Hex(file.getBytes());
+            String contentHash = DigestUtil.sha256Hex(file.getBytes());
             System.out.println(contentHash);
             Object[] payload = JWTUtil.getPayloadFromToken(token, "uploadId", "contentHash", "diskId","fileId");
             String diskId = (String) payload[2];
