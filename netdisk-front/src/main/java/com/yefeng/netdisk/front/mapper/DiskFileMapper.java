@@ -5,8 +5,6 @@ import com.yefeng.netdisk.front.dto.DiskFileDto;
 import com.yefeng.netdisk.front.entity.DiskFile;
 import org.apache.ibatis.annotations.Param;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +28,6 @@ public interface DiskFileMapper extends BaseMapper<DiskFile> {
 
     int moveFileBatch(@Param("diskFiles") List<DiskFile> diskFiles);
 
-    int updateBatchByIds(List<DiskFile> diskFiles);
+    int updateBatchByIds(@Param("diskFiles")List<DiskFile> diskFiles);
 
 }
