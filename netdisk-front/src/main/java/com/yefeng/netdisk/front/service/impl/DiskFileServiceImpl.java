@@ -76,6 +76,14 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     public DiskFile createFile(DiskFile diskFile, String checkNameMode) {
 
 
+        checkAndWriteFileName(diskFile, checkNameMode);
+        int count = baseMapper.insert(diskFile);
+
+        return diskFile;
+
+    }
+
+    private void checkAndWriteFileName(DiskFile diskFile, String checkNameMode) {
         if (checkNameMode.equals(CheckNameModeEnum.overwrite.getName())) {
             //覆盖，删除相同的文件
             baseMapper.delete(new QueryWrapper<DiskFile>().allEq(new HashMap<>(4) {
@@ -108,10 +116,6 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                 }
             }
         }
-        int count = baseMapper.insert(diskFile);
-
-        return diskFile;
-
     }
 
     @Override
@@ -132,10 +136,20 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     @Override
     public boolean updateStatus(String diskId, List<String> fileIds, FileStatusEnum status) {
 
-        int count = baseMapper.updateStatus(diskId, fileIds, status.getCode());
-
+        List<DiskFile> diskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>(2) {
+            {
+                put("disk_id", diskId);
+            }
+        }).in("file_id", fileIds).select("id","disk_file_id", "file_name", "parent_file_id", "disk_id"));
+//        int count = baseMapper.updateStatus(diskId, fileIds, status.getCode());
+        diskFiles.forEach(file->{
+            checkAndWriteFileName(file, CheckNameModeEnum.auto_rename.getName());
+            file.setStatus(status.getCode());
+        });
+        int count = baseMapper.updateBatchByIds(diskFiles);
 
         return count > 0;
+//        return false;
 
     }
 

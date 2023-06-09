@@ -30,4 +30,6 @@ public interface DiskFileMapper extends BaseMapper<DiskFile> {
 
     int moveFileBatch(@Param("diskFiles") List<DiskFile> diskFiles);
 
+    int updateBatchByIds(List<DiskFile> diskFiles);
+
 }

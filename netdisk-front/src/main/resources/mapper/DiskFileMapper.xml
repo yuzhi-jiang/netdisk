@@ -109,4 +109,16 @@
 
 
     </update>
+    <update id="updateBatchByIds">
+
+        <foreach collection="fileIds" separator="," open="(" close=")" item="item">
+            update tb_disk_file tdf
+            set tdf.status=#{item.status},tdf.modify_time=now(),tdf.file_name=#{item.fileName}
+            where
+            tdf.disk_file_id = #{item.diskFileId}
+            and
+            tdf.disk_id=#{item.diskId}
+        </foreach>
+
+    </update>
 </mapper>
