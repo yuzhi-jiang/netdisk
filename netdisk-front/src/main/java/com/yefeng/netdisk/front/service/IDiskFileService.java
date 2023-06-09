@@ -7,6 +7,7 @@ import com.yefeng.netdisk.front.entity.File;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,6 +41,9 @@ public interface IDiskFileService extends IService<DiskFile> {
     boolean deleteFile(String diskId, List<String> fileIds);
 
     boolean updateStatus(String diskId, List<String> fileIds, FileStatusEnum status);
+
+    @Transactional(rollbackFor = Exception.class)
+    boolean restoreFile(String diskId, List<String> fileIds, FileStatusEnum status);
 
     boolean moveFile(List<DiskFile> diskFiles);
 

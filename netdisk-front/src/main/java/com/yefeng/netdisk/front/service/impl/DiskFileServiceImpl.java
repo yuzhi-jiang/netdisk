@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -135,9 +134,15 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         return count > 0;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean updateStatus(String diskId, List<String> fileIds, FileStatusEnum status) {
+        int count = baseMapper.updateStatus(diskId, fileIds, status.getCode());
+        return count>0;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean restoreFile(String diskId, List<String> fileIds, FileStatusEnum status) {
 
         List<DiskFile> diskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>(2) {
             {
