@@ -26,6 +26,7 @@ public class FileNameUtil {
         String name1 = getFileNameByPath(name);
         System.out.println("name: " + name);
         System.out.println("name1: " + name1);
+        System.out.println(removeSuffix("/yefeng/20220920_200037.mp4"));
     }
 
     public static String getFileNameByPath(MultipartFile file) {
@@ -40,5 +41,8 @@ public class FileNameUtil {
     public static String getMimeType(MultipartFile file) {
         String name = getFileNameByPath(file);
         return FileUtil.getMimeType(name);
+    }
+    public static String removeSuffix(String fileName) {
+        return FileUtil.mainName(fileName);
     }
 }
