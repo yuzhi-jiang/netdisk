@@ -140,7 +140,7 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
             {
                 put("disk_id", diskId);
             }
-        }).in("file_id", fileIds).select("id","disk_file_id", "file_name", "parent_file_id", "disk_id"));
+        }).in("disk_file_id", fileIds).select("id","disk_file_id", "file_name", "parent_file_id", "disk_id"));
 //        int count = baseMapper.updateStatus(diskId, fileIds, status.getCode());
         diskFiles.forEach(file->{
             checkAndWriteFileName(file, CheckNameModeEnum.auto_rename.getName());
