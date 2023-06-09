@@ -95,6 +95,9 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                 }
             }));
         } else if (checkNameMode.equals(CheckNameModeEnum.auto_rename.getName())) {
+            String fileName = diskFile.getFileName();
+
+            String FileNameRemoveSuffix = FileNameUtil.removeSuffix(fileName);
             //可能需要重命名
             List<DiskFile> diskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>(4) {
                 {
@@ -102,9 +105,9 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                     put("parent_file_id", diskFile.getParentFileId());
                     put("type", FileTypeContents.FILE.getCode());
                 }
-            }).likeRight("file_name", diskFile.getFileName()));
+            }).likeRight("file_name", FileNameRemoveSuffix));
 
-            String fileName = diskFile.getFileName();
+
             String suffix = FileNameUtil.getSuffix(fileName);
             String pureName = FileNameUtil.getPureFileNameByPath(fileName);
             int i = 0;
