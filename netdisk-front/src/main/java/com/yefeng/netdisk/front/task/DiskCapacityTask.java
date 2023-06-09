@@ -1,6 +1,7 @@
 package com.yefeng.netdisk.front.task;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yefeng.netdisk.front.entity.Disk;
 import com.yefeng.netdisk.front.mapper.DiskMapper;
 import com.yefeng.netdisk.front.util.CapacityContents;
@@ -35,25 +36,30 @@ public class DiskCapacityTask implements Runnable {
     public void run() {
 
        try {
-            disk = new Disk();
-            disk.setId(diskId);
-
+//            disk = new Disk();
+//            disk.setId(diskId);
+           disk = diskMapper.selectById(diskId);
+           if (disk==null){
+               throw new RuntimeException("云盘不存在");
+           }
            //添加
            if (type.equals(CapacityContents.ADD_TOTAL_CAPACITY)) {
-               diskMapper.updateCapacity(diskId,type,capacity);
+//               diskMapper.updateCapacity(diskId,type,capacity);
+               disk.setUseCapacity(disk.getTotalCapacity().add(BigDecimal.valueOf(capacity)));
            }
            else if(type.equals(CapacityContents.ADD_USE_CAPACITY)){
                disk.setUseCapacity(disk.getUseCapacity().add(BigDecimal.valueOf(capacity)));
            }
            //删除
            else if (type.equals(CapacityContents.DELETE_TOTAL_CAPACITY)) {
-               disk.setTotalCapacity(disk.getUseCapacity().subtract(BigDecimal.valueOf(capacity)));
+               disk.setTotalCapacity(disk.getTotalCapacity().subtract(BigDecimal.valueOf(capacity)));
            }
            else if(type.equals(CapacityContents.DELETE_USE_CAPACITY)){
                disk.setUseCapacity(disk.getUseCapacity().subtract(BigDecimal.valueOf(capacity)));
            }
            diskMapper.updateById(disk);
        }catch (Exception e){
+           e.printStackTrace();
            log.error("云盘容量修改失败,diskId:{} updateType:{},capacity:{}",disk.getId(),type,capacity);
        }
     }

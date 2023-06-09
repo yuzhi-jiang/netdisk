@@ -443,8 +443,8 @@ public class FileController {
 //                diskFileId = hasFile.getFileId();
                 diskFile.setStatus(FileStatusEnum.valid.getCode());//直接可用
                 diskFile.setFileId(hasFile.getId());
-            }
 
+            }
             //创建文件
             DiskFile file = diskFileService.createFile(diskFile, checkNameMode);
 
@@ -454,6 +454,8 @@ public class FileController {
             if (hasFile != null) {
                 createFile.setRapidUpload(true);
                 createFile.setExist(true);
+                Long fileSize= Long.valueOf(hasFile.getLength());
+                commonQueueThreadPool.execute(new DiskCapacityTask(Long.valueOf(diskId), CapacityContents.ADD_USE_CAPACITY, fileSize, this.diskMapper));
             } else {
                 createFile.setRapidUpload(false);
                 createFile.setExist(false);
@@ -474,7 +476,6 @@ public class FileController {
                 createFile.setUploadId(uploadId);
 
             }
-
             return ResultUtil.success(createFile);
         }
         return ResultUtil.fail();
