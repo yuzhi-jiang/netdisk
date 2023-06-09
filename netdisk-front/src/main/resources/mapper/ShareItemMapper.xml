@@ -16,7 +16,7 @@
         tdf.type,tdf.parent_file_id,tdf.disk_file_id,tdf.disk_id,tdf.file_name,tdf.create_time,tdf.create_user,tdf.modify_time,
         tsi.share_id, tf.length
         from tb_share_item tsi
-        join tb_disk_file tdf on tdf.disk_id = tsi.disk_id and dtf.status!=3
+        join tb_disk_file tdf on tdf.disk_id = tsi.disk_id and tdf.status!=3
         left join tb_file tf on tf.file_id = tdf.file_id
         where tsi.share_id = #{shareId}
         <if test="parentFileId==null or parentFileId=='' or parentFileId=='root'">
