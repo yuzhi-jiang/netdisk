@@ -620,6 +620,8 @@ public class FileController {
                 Object afileId = redisUtil.get(uploadKey);
 
                 fileId = Long.valueOf(afileId.toString());
+                File file = fileService.getOne(new QueryWrapper<File>().eq("fileId", fileId));
+                fileSize= Long.valueOf(file.getLength());
             } catch (Exception e) {
                 log.error("Error getting upload");
             }
