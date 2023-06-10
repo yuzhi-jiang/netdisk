@@ -539,7 +539,7 @@ public class FileController {
                 diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_file_id",diskFileId));
             }
 
-            if (apiResult.getCode() != HttpCodeEnum.OK.getCode()) {
+            if (apiResult==null||apiResult.getCode() != HttpCodeEnum.OK.getCode()) {
                 return ResultUtil.failMsg("upload failed");
             }
 
