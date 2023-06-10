@@ -92,8 +92,8 @@ feign:
     config:
       # 全局配置
       default:
-        connectTimeout: 5000
-        readTimeout: 5000
+        connectTimeout: 5000000
+        readTimeout: 5000000
       # 实例配置，feignName即@feignclient中的value，也就是服务名
       hdfsUpload:
         connectTimeout: 100000
