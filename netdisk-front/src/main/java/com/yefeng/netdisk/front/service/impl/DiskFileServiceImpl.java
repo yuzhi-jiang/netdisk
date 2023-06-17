@@ -20,6 +20,7 @@ import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.util.FileTypeContents;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,6 +120,9 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
             }).likeRight("file_name", FileNameRemoveSuffix));
             List<String> fileNames = diskFiles.stream().map(DiskFile::getFileName).collect(Collectors.toList());
             FileNameSorter.sortFileNames(fileNames);
+            //sout file Sort
+            System.out.println("file Sort:");
+            fileNames.forEach(System.out::println);
             String pureName = FileNameUtil.getPureFileNameByPath(fileName);
             int i = 0;
             for (DiskFile file : diskFiles) {
