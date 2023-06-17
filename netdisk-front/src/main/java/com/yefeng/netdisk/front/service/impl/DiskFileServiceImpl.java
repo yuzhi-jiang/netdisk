@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yefeng.netdisk.common.exception.BizException;
+import com.yefeng.netdisk.common.util.FileNameSorter;
 import com.yefeng.netdisk.common.util.FileNameUtil;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.dto.DiskFileDto;
@@ -116,7 +117,8 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                     put("status",FileStatusEnum.valid.getCode());
                 }
             }).likeRight("file_name", FileNameRemoveSuffix));
-
+            List<String> fileNames = diskFiles.stream().map(DiskFile::getFileName).collect(Collectors.toList());
+            FileNameSorter.sortFileNames(fileNames);
             String pureName = FileNameUtil.getPureFileNameByPath(fileName);
             int i = 0;
             for (DiskFile file : diskFiles) {
