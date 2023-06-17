@@ -19,6 +19,7 @@ import com.yefeng.netdisk.front.util.CheckNameModeEnum;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.util.FileTypeContents;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
  * @author yefeng
  * @since 2023-01-15
  */
+@Slf4j
 @Service
 public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> implements IDiskFileService {
 
@@ -121,8 +123,8 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
             List<String> fileNames = diskFiles.stream().map(DiskFile::getFileName).collect(Collectors.toList());
             FileNameSorter.sortFileNames(fileNames);
             //sout file Sort
-            System.out.println("file Sort:");
-            fileNames.forEach(System.out::println);
+            log.info("file Sort:");
+            fileNames.forEach(log::info);
             String pureName = FileNameUtil.getPureFileNameByPath(fileName);
             int i = 0;
             for (DiskFile file : diskFiles) {
