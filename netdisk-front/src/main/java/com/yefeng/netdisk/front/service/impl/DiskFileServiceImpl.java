@@ -4,6 +4,8 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yefeng.netdisk.common.constans.FileTypeEnum;
+import com.yefeng.netdisk.common.exception.BizException;
 import com.yefeng.netdisk.common.util.FileNameUtil;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
 import com.yefeng.netdisk.front.dto.DiskFileDto;
@@ -72,18 +74,24 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         return createFile;
     }
 
+    /**
+     * 创建文件，类型是文件
+     * @param diskFile
+     * @param checkNameMode
+     * @return
+     */
     @Override
     public DiskFile createFile(DiskFile diskFile, String checkNameMode) {
 
 
-        checkAndWriteFileName(diskFile, checkNameMode);
-        int count = baseMapper.insert(diskFile);
+        checkAndWriteFileName(diskFile, checkNameMode, FileTypeContents.FILE);
+        baseMapper.insert(diskFile);
 
         return diskFile;
 
     }
 
-    private void checkAndWriteFileName(DiskFile diskFile, String checkNameMode) {
+    private void checkAndWriteFileName(DiskFile diskFile, String checkNameMode, FileTypeContents fileType) {
         if (checkNameMode.equals(CheckNameModeEnum.overwrite.getName())) {
             //覆盖，删除相同的文件
             baseMapper.delete(new QueryWrapper<DiskFile>().allEq(new HashMap<>(4) {
@@ -91,27 +99,31 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                     put("disk_id", diskFile.getDiskId());
                     put("file_name", diskFile.getFileName());
                     put("parent_file_id", diskFile.getParentFileId());
-                    put("type", FileTypeContents.FILE.getCode());
+                    put("type", fileType.getCode());
                 }
             }));
         } else if (checkNameMode.equals(CheckNameModeEnum.auto_rename.getName())) {
             String fileName = diskFile.getFileName();
 
             String FileNameRemoveSuffix = FileNameUtil.removeSuffix(fileName);
+            String suffix = FileNameUtil.getSuffix(fileName);
             //可能需要重命名
             List<DiskFile> diskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>(4) {
                 {
                     put("disk_id", diskFile.getDiskId());
                     put("parent_file_id", diskFile.getParentFileId());
-                    put("type", FileTypeContents.FILE.getCode());
+                    put("type", fileType.getCode());
                 }
             }).likeRight("file_name", FileNameRemoveSuffix));
 
-
-            String suffix = FileNameUtil.getSuffix(fileName);
             String pureName = FileNameUtil.getPureFileNameByPath(fileName);
             int i = 0;
             for (DiskFile file : diskFiles) {
+                String suffixTmp = FileNameUtil.getSuffix(fileName);
+                if(!suffixTmp.equals(suffix)){
+                    //后缀不同，不需要重命名
+                    continue;
+                }
                 i++;
                 String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
                 if(!ansPureName.equals(pureName + "(" + i + ")")){
@@ -144,15 +156,25 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean restoreFile(String diskId, List<String> fileIds, FileStatusEnum status) {
-
         List<DiskFile> diskFiles = baseMapper.selectList(new QueryWrapper<DiskFile>().allEq(new HashMap<>(2) {
             {
                 put("disk_id", diskId);
             }
-        }).in("disk_file_id", fileIds).select("id","disk_file_id", "file_name", "parent_file_id", "disk_id"));
+        }).in("disk_file_id", fileIds).select("id","disk_file_id", "file_name", "parent_file_id", "disk_id","type"));
 //        int count = baseMapper.updateStatus(diskId, fileIds, status.getCode());
         diskFiles.forEach(file->{
-            checkAndWriteFileName(file, CheckNameModeEnum.auto_rename.getName());
+            FileTypeContents type=null;
+            if(file.getType().equals(FileTypeContents.FOLDER.getCode())) {
+                type = FileTypeContents.FOLDER;
+            }
+            else if(file.getType().equals(FileTypeContents.FILE.getCode())){
+                type = FileTypeContents.FILE;
+            }
+            if(type==null){
+                log.error("文件类型错误");
+                throw new BizException("文件类型错误,无法还原，请联系管理员");
+            }
+            checkAndWriteFileName(file, CheckNameModeEnum.auto_rename.getName(),type);
             file.setStatus(status.getCode());
         });
         int count = baseMapper.updateBatchByIds(diskFiles);

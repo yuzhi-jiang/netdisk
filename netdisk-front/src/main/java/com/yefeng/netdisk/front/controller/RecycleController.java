@@ -121,10 +121,8 @@ public class RecycleController {
     @PostMapping("/restore")
     public ApiResult restore(@RequestBody BatchBo batchBo) {
         List<String> fileIds = Arrays.stream(batchBo.getRequests()).map(m->m.getBody().getFileId()).collect(Collectors.toList());
-
-        System.out.println(fileIds);
         String diskId = batchBo.getDiskId();
-        boolean flag = diskFileService.updateStatus(diskId, fileIds, FileStatusEnum.valid);
+        boolean flag = diskFileService.restoreFile(diskId, fileIds, FileStatusEnum.valid);
         if (flag) {
             return ResultUtil.success();
         }
