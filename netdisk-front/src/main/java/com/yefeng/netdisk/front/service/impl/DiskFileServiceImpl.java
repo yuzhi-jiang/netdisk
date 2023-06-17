@@ -126,8 +126,12 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                 }
                 i++;
                 String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
-                if(!ansPureName.equals(pureName + "(" + i + ")")){
-                    diskFile.setFileName(pureName + "(" + i + ")"+"."+suffix);
+                if(!ansPureName.equals(pureName + "(" + i + ")")) {
+                    String Tmp = "." + suffix;
+                    if (fileType == FileTypeContents.FOLDER){
+                        Tmp = "";
+                    }
+                    diskFile.setFileName(pureName + "(" + i + ")"+Tmp);
                 }
             }
         }
