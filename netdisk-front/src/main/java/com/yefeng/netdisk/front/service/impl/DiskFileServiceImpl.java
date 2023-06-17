@@ -50,6 +50,7 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                 put("file_name", diskFile.getFileName());
                 put("parent_file_id", diskFile.getParentFileId());
                 put("type", FileTypeContents.FOLDER.getCode());
+                put("status",FileStatusEnum.valid.getCode());
             }
         }));
         //有相同文件名，并且是新建文件夹
