@@ -4,7 +4,6 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yefeng.netdisk.common.constans.FileTypeEnum;
 import com.yefeng.netdisk.common.exception.BizException;
 import com.yefeng.netdisk.common.util.FileNameUtil;
 import com.yefeng.netdisk.front.dto.CreateFileDto;
@@ -19,6 +18,7 @@ import com.yefeng.netdisk.front.util.CheckNameModeEnum;
 import com.yefeng.netdisk.front.util.FileStatusEnum;
 import com.yefeng.netdisk.front.util.FileTypeContents;
 import com.yefeng.netdisk.front.vo.DiskFileVo;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,19 +119,26 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
             String pureName = FileNameUtil.getPureFileNameByPath(fileName);
             int i = 0;
             for (DiskFile file : diskFiles) {
-                String suffixTmp = FileNameUtil.getSuffix(fileName);
-                if(!suffixTmp.equals(suffix)){
-                    //后缀不同，不需要重命名
-                    continue;
-                }
-                i++;
-                String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
-                if(!ansPureName.equals(pureName + "(" + i + ")")) {
-                    String Tmp = "." + suffix;
-                    if (fileType == FileTypeContents.FOLDER){
-                        Tmp = "";
+                //如果是文件夹
+                if (fileType == FileTypeContents.FOLDER) {
+                    i++;
+                    //如果文件夹名字相同，就需要重命名
+                    String fileNameTmp = file.getFileName();
+                    if(!fileNameTmp.equals(fileName + "(" + i + ")")){
+                        //如果文件夹名字相同，就需要重命名
+                        diskFile.setFileName(fileName + "(" + i + ")");
                     }
-                    diskFile.setFileName(pureName + "(" + i + ")"+Tmp);
+                } else {
+                    String suffixTmp = FileNameUtil.getSuffix(fileName);
+                    if(!suffixTmp.equals(suffix)){
+                        //后缀不同，不需要重命名
+                        continue;
+                    }
+                    i++;
+                    String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
+                    if(!ansPureName.equals(pureName + "(" + i + ")")) {
+                        diskFile.setFileName(pureName + "(" + i + ")." + suffix);
+                    }
                 }
             }
         }
@@ -167,17 +174,7 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         }).in("disk_file_id", fileIds).select("id","disk_file_id", "file_name", "parent_file_id", "disk_id","type"));
 //        int count = baseMapper.updateStatus(diskId, fileIds, status.getCode());
         diskFiles.forEach(file->{
-            FileTypeContents type=null;
-            if(file.getType().equals(FileTypeContents.FOLDER.getCode())) {
-                type = FileTypeContents.FOLDER;
-            }
-            else if(file.getType().equals(FileTypeContents.FILE.getCode())){
-                type = FileTypeContents.FILE;
-            }
-            if(type==null){
-                log.error("文件类型错误");
-                throw new BizException("文件类型错误,无法还原，请联系管理员");
-            }
+            FileTypeContents type = getFileType(file);
             checkAndWriteFileName(file, CheckNameModeEnum.auto_rename.getName(),type);
             file.setStatus(status.getCode());
         });
@@ -186,6 +183,22 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
         return count > 0;
 //        return false;
 
+    }
+
+    @NotNull
+    private FileTypeContents getFileType(DiskFile file) {
+        FileTypeContents type=null;
+        if(file.getType().equals(FileTypeContents.FOLDER.getCode())) {
+            type = FileTypeContents.FOLDER;
+        }
+        else if(file.getType().equals(FileTypeContents.FILE.getCode())){
+            type = FileTypeContents.FILE;
+        }
+        if(type==null){
+            log.error("文件类型错误");
+            throw new BizException("文件类型错误,无法还原，请联系管理员");
+        }
+        return type;
     }
 
     @Override
@@ -241,17 +254,8 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                     String pureName = FileNameUtil.getPureFileNameByPath(fileName);
                     int i = 0;
                     List<DiskFile> someNameDiskFile = toDiskFiles.stream().filter(obj -> obj.getFileName().equals(fileName)).collect(Collectors.toList());
-                    for (DiskFile file : someNameDiskFile) {
-//                        //当前文件是否和目标文件夹下的文件重名
-//                        if(!file.equals(fileName)){
-//                            continue;
-//                        }
-                        i++;
-                        String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
-                        if (!ansPureName.equals(pureName + "(" + i + ")")) {
-                            diskFile.setFileName(pureName + "(" + i + ")" + "." + suffix);
-                        }
-                    }
+                    FileTypeContents type = getFileType(diskFile);
+                    checkAndWriteFileName(diskFile, CheckNameModeEnum.auto_rename.getName(),type);
                 }
             }
             diskFile.setDiskFileId(file_id);
