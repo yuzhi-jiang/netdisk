@@ -113,15 +113,16 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                     put("disk_id", diskFile.getDiskId());
                     put("parent_file_id", diskFile.getParentFileId());
                     put("type", fileType.getCode());
+                    put("status",FileStatusEnum.valid.getCode());
                 }
             }).likeRight("file_name", FileNameRemoveSuffix));
 
             String pureName = FileNameUtil.getPureFileNameByPath(fileName);
             int i = 0;
             for (DiskFile file : diskFiles) {
+                i++;
                 //如果是文件夹
                 if (fileType == FileTypeContents.FOLDER) {
-                    i++;
                     //如果文件夹名字相同，就需要重命名
                     String fileNameTmp = file.getFileName();
                     if(!fileNameTmp.equals(fileName + "(" + i + ")")){
@@ -134,7 +135,6 @@ public class DiskFileServiceImpl extends ServiceImpl<DiskFileMapper, DiskFile> i
                         //后缀不同，不需要重命名
                         continue;
                     }
-                    i++;
                     String ansPureName = FileNameUtil.getPureFileNameByPath(file.getFileName());
                     if(!ansPureName.equals(pureName + "(" + i + ")")) {
                         diskFile.setFileName(pureName + "(" + i + ")." + suffix);
