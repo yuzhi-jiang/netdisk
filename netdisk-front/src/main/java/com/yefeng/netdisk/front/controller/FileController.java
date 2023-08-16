@@ -528,23 +528,25 @@ public class FileController {
                 }
             }
 
+            String resMsg="";
             ApiResult apiResult= null;
             try {
                  apiResult = fileStroageClient.uploadFile(file, null);
 //                apiResult  = hdfsClient.uploadFile(hdfsBasePath, file);
             }catch (Exception e){
                 //上传失败，删除,重新上传
-                log.error("upload file {}failed",file.getName(),e);
+                resMsg=e.getMessage();
+                log.error("upload file"+file.getName()+"failed",e);
                 diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_file_id",diskFileId));
             }
 
             if (apiResult==null||apiResult.getCode() != HttpCodeEnum.OK.getCode()) {
-                return ResultUtil.failMsg("upload failed");
+                return ResultUtil.failMsg("upload failed"+resMsg);
             }
 
             List<LinkedHashMap<String,Object>> datas = (List<LinkedHashMap<String,Object>>) apiResult.getData();
             if (datas.size() == 0) {
-                return ResultUtil.failMsg("upload failed");
+                return ResultUtil.failMsg("upload failed"+resMsg);
             }
             LinkedHashMap<String,Object> map=  (LinkedHashMap<String,Object>)datas.get(0);
 
@@ -580,7 +582,7 @@ public class FileController {
             }
 
             JSONObject jsonObject = new JSONObject(apiResult.getData());
-            log.error("upload file {} success",file.getName());
+            log.error("upload file"+file.getName()+" success");
             //diskFileId
             jsonObject.putOnce("fileId", diskFileId);
             apiResult.setData(jsonObject);
