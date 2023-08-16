@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author 夜枫
  * @version 2023-01-15 15:25
  */
-@FeignClient(name = "fileStroageservice", url = "http://127.0.0.1:8888", fallbackFactory = FileStroageClientFallback.class)
+@FeignClient(name = "file-storage", fallbackFactory = FileStroageClientFallback.class)
 @Component
 public interface FileStroageClient {
 
