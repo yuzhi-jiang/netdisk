@@ -498,6 +498,7 @@ public class FileController {
                                 @ApiParam(name = "file", required = true) @RequestPart("file")
                                 MultipartFile file) {
         try {
+            log.info("you are upload a filePart");
             JWTUtil.validateToken(token);
             String contentHash = DigestUtil.sha256Hex(file.getBytes());
             System.out.println(contentHash);
