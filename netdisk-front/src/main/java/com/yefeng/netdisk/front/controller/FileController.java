@@ -498,7 +498,6 @@ public class FileController {
                                 @ApiParam(name = "file", required = true) @RequestPart("file")
                                 MultipartFile file) {
         try {
-            System.out.println("you have uploaded");
             JWTUtil.validateToken(token);
             String contentHash = DigestUtil.sha256Hex(file.getBytes());
             System.out.println(contentHash);
@@ -535,7 +534,7 @@ public class FileController {
 //                apiResult  = hdfsClient.uploadFile(hdfsBasePath, file);
             }catch (Exception e){
                 //上传失败，删除,重新上传
-
+                log.error("upload file {}failed",file.getName(),e);
                 diskFileService.remove(new QueryWrapper<DiskFile>().eq("disk_file_id",diskFileId));
             }
 
@@ -581,7 +580,7 @@ public class FileController {
             }
 
             JSONObject jsonObject = new JSONObject(apiResult.getData());
-
+            log.error("upload file {} success",file.getName());
             //diskFileId
             jsonObject.putOnce("fileId", diskFileId);
             apiResult.setData(jsonObject);
