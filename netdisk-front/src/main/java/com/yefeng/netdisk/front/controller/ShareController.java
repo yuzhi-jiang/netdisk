@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @Api(tags = "分享文件")
 @RestController
-@CrossOrigin
+
 @RequestMapping("/share")
 @RefreshScope
 public class ShareController {

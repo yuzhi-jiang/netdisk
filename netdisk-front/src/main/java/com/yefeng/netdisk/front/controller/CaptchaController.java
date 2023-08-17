@@ -32,7 +32,7 @@ import java.io.IOException;
 @RestController
 @Slf4j
 @RequestMapping("/captcha")
-@CrossOrigin
+
 public class CaptchaController {
     @Autowired
     private RedisUtil redisUtil;

@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/file")
 @RefreshScope
 @Validated
-@CrossOrigin
+
 public class DiskFileController {
 
 

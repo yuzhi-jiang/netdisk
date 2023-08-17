@@ -53,7 +53,7 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
+
 @RefreshScope
 public class UserController extends BaseController {
 

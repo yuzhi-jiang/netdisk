@@ -40,7 +40,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/oauth")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@CrossOrigin
+
 public class UserThirdAuthController extends BaseController {
 
     @Resource
