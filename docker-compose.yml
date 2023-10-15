@@ -1,0 +1,20 @@
+version: '3'
+services:
+  gateway:
+    container_name: netdisk-gateway
+    build:
+      context: ./netdisk-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "9527:9527"
+    networks:
+      - netdisk
+  front:
+    container_name: netdisk-front
+    build:
+      context: ./netdisk-front
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    networks:
+      - netdisk

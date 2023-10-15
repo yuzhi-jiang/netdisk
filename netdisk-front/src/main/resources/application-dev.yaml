@@ -104,11 +104,11 @@ justauth:
     GITHUB:
       client-id: xxxxxx
       client-secret: xxxxxx
-      redirect-uri: http://127.0.01:8082/front/oauth/github/callback
+      redirect-uri: http://disk.yefeng.love:8082/front/oauth/github/callback
   cache:
     type: default
 
 webclient:
-  hostname: 127.0.0.1
+  hostname: disk.yefeng.love
   port: 8082
-  url: http://127.0.0.1:3080
+  url: http://disk.yefeng.love:3080
