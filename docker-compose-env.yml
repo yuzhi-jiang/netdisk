@@ -1,0 +1,21 @@
+version: '3'
+services:
+  nacos:
+    image: nacos/nacos-server
+    ports:
+      - "8848:8848"
+    networks:
+      - netdisk
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: your_access_key
+      MINIO_SECRET_KEY: your_secret_key
+    volumes:
+      - /data/minio/data
+    networks:
+      - netdisk
+
+
