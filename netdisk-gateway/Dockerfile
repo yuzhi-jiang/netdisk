@@ -8,6 +8,8 @@ ADD /target/netdisk-gateway-1.0-SNAPSHOT.jar /app/app.jar
 CMD mkdir /app/config/
 
 #设置变量 ENV username=""
+ENV JAVA_OPTS=""
+
 
 
 #公开端口

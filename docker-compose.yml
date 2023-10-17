@@ -18,3 +18,7 @@ services:
       - "8082:8082"
     networks:
       - netdisk
+    environment:
+      - JAVA_OPTS=172.21.0.2:8848
+
+

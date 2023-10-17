@@ -9,6 +9,7 @@ CMD mkdir /app/config/
 
 #设置变量 ENV username=""
 
+ENV JAVA_OPTS=""
 
 #公开端口
 
